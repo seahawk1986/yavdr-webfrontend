@@ -26,10 +26,7 @@ import { onMounted, watch, type Ref } from 'vue'
 
 const props = defineProps<{
   originalChannelCandidates: VDRChannelInterface[]
-  channelIdSet: Ref<
-    Set<string> & Omit<Set<string>, keyof Set<any>>,
-    Set<string> | (Set<string> & Omit<Set<string>, keyof Set<any>>)
-  >
+  channelIdSet: Ref<Set<string>>
 }>()
 
 const [channelCandidatesRef, channelCandidates] = useDragAndDrop([] as VDRChannelInterface[], {
