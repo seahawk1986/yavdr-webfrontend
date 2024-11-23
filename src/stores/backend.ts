@@ -131,7 +131,7 @@ export const useBackendStore = defineStore('backend', () => {
       })
   }
 
-  async function postRequest(url: string, payload: any) {
+  async function postRequest(url: string, payload: unknown) {
     return axios_instance
       .post(url, payload)
       .then((response) => {
