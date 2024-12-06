@@ -22,16 +22,16 @@
       class="text-caption text-disabled"
       style="position: absolute; right: 16px;"
     >
-      &copy; 2016-{{ (new Date()).getFullYear() }} <span class="d-none d-sm-inline-block">Vuetify, LLC</span>
-      —
-      <a
+      &copy; 2024-{{ (new Date()).getFullYear() }} <span class="d-none d-sm-inline-block">seahawk1986</span>
+      <!-- — -->
+      <!-- <a
         class="text-decoration-none on-surface"
         href="https://vuetifyjs.com/about/licensing/"
         rel="noopener noreferrer"
         target="_blank"
       >
         MIT License
-      </a>
+      </a> -->
     </div>
   </v-footer>
 </template>

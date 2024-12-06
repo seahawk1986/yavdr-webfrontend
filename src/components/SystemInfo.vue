@@ -4,7 +4,7 @@ const store = useBackendStore()
 </script>
 
 <template>
-  <h2><v-icon>mdi-information</v-icon>System Info</h2>
+  <h2><v-icon>mdi-information</v-icon>{{ $t('systeminfo.SystemInfo') }}</h2>
   <v-spacer />
 
   <v-table density="compact">
@@ -16,13 +16,13 @@ const store = useBackendStore()
         </td>
       </tr>
       <tr>
-        <td>Kernel:</td>
+        <td>Kernel</td>
         <td>
           {{ store.systemStatus?.kernel }}
         </td>
       </tr>
       <tr>
-        <td>Uptime:</td>
+        <td>Uptime</td>
         <td>
           {{ store.systemStatus?.uptime }}
         </td>

@@ -6,6 +6,7 @@ import { useLocalStorage } from '@vueuse/core'
 import router from '@/router'
 import type { SystemStatusInterface } from './interfaces/SystemStatusInterface'
 import type { VDRChannel } from './interfaces/VdrChannelInterface'
+import type { VDRTimerInterface } from './interfaces/VdrTimerInterface'
 
 interface OptionInterface {
   baseUrl: string
@@ -38,7 +39,8 @@ axios_instance.interceptors.response.use(
 
     if (status === 401) {
       // Handle unauthorized access
-      router.push('/login')
+      localStorage.setItem('jwToken', '')
+      // router.push('/login')
     } else if (status === 404) {
       // Handle not found errors
     } else {
@@ -53,6 +55,7 @@ export const useBackendStore = defineStore('backend', () => {
   const jwToken = useLocalStorage('jwToken', '')
   const hasToken = computed(() => jwToken.value.length > 0)
   // const refreshToken: Ref<string> = ref('')
+
   const listedPulseSinks = ref(new ListedPulseSinks())
   const pulseErrorMessage: Ref<string | null> = ref(null)
 
@@ -122,7 +125,7 @@ export const useBackendStore = defineStore('backend', () => {
     return await axios_instance
       .get(url)
       .then((result) => {
-        console.log(result.data, result.status, result.statusText)
+        console.log("get request for ", url, "returned:", result.data, result.status, result.statusText)
         return result.data
       })
       .catch((error) => {
@@ -201,6 +204,42 @@ export const useBackendStore = defineStore('backend', () => {
     isLoadingChannels.value = false
   }
 
+  const vdrTimers: Ref<Array<VDRTimerInterface>> = ref([])
+  const isLoadingTimers: Ref<boolean> = ref(false)
+
+  async function loadTimers() {
+    isLoadingTimers.value = true
+    const data = await getRequest('/vdr/timers')
+    if (Array.isArray(data)) {
+      // console.log(data)
+      vdrTimers.value = data
+      isLoadingTimers.value = false
+      console.log("got timers: ", data)
+      return data
+    } else {
+      throw new Error('Loading VDR timers failed')
+    }
+  }
+
+  const vdrRecordings: Ref<Array<VDRTimerInterface>> = ref([])
+  const isLoadingRecordings: Ref<boolean> = ref(false)
+
+  async function loadRecordings() {
+    isLoadingTimers.value = true
+    const data = await getRequest('/vdr/recordings')
+    if (Array.isArray(data)) {
+      // console.log(data)
+      vdrRecordings.value = data
+      isLoadingRecordings.value = false
+      console.log("got recordings: ", data)
+      return data
+    } else {
+      throw new Error('Loading VDR recordings failed')
+    }
+  }
+
+  const isOnMobile: Ref<boolean> = ref(false)
+
   // const channelIdSet = computed(() => {
   //   const _channelIdSet = ref(new Set())
   //   vdrChannels.value.map((channel) => {
@@ -209,6 +248,7 @@ export const useBackendStore = defineStore('backend', () => {
   //   return _channelIdSet
   // })
   return {
+    isOnMobile,
     login,
     logout,
     hasToken,
@@ -226,6 +266,8 @@ export const useBackendStore = defineStore('backend', () => {
     vdrChannels,
     isLoadingChannels,
     loadChannels,
-    saveChannels
+    saveChannels,
+    loadTimers,
+    loadRecordings,
   }
 })

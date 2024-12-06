@@ -19,6 +19,12 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
-    '/ChannelpediaEditor': RouteRecordInfo<'/ChannelpediaEditor', '/ChannelpediaEditor', Record<never, never>, Record<never, never>>,
+    '/DashBoard': RouteRecordInfo<'/DashBoard', '/DashBoard', Record<never, never>, Record<never, never>>,
+    '/RemoteSettings': RouteRecordInfo<'/RemoteSettings', '/RemoteSettings', Record<never, never>, Record<never, never>>,
+    '/System/AudioSettings': RouteRecordInfo<'/System/AudioSettings', '/System/AudioSettings', Record<never, never>, Record<never, never>>,
+    '/System/DisplaySettings': RouteRecordInfo<'/System/DisplaySettings', '/System/DisplaySettings', Record<never, never>, Record<never, never>>,
+    '/SystemSettings': RouteRecordInfo<'/SystemSettings', '/SystemSettings', Record<never, never>, Record<never, never>>,
+    '/VDR/ChannelpediaEditor': RouteRecordInfo<'/VDR/ChannelpediaEditor', '/VDR/ChannelpediaEditor', Record<never, never>, Record<never, never>>,
+    '/VDR/PluginSettings': RouteRecordInfo<'/VDR/PluginSettings', '/VDR/PluginSettings', Record<never, never>, Record<never, never>>,
   }
 }

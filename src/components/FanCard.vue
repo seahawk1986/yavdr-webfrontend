@@ -4,7 +4,7 @@ const store = useBackendStore()
 </script>
 
 <template>
-  <h2><v-icon>mdi-fan</v-icon>Fans</h2>
+  <h2><v-icon>mdi-fan</v-icon>{{ $t('systeminfo.Fans') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>
@@ -20,8 +20,11 @@ const store = useBackendStore()
         >
           Sensor
         </th>
-        <th class="text-left">
-          RPM
+        <th
+          class="text-middle"
+          width="40%"
+        >
+          {{ $t('systeminfo.RPM') }}
         </th>
       </tr>
     </thead>

@@ -85,9 +85,12 @@ onUnmounted(() => {
   <!-- </v-sheet> -->
 </template>
 
-<style>
+<style lang="scss">
 .v-sheet {
   min-width: 30ch;
   /* min-height: 20ch; */
+}
+.sensor-description {
+  width: 10ch
 }
 </style>

@@ -13,7 +13,7 @@ const gradients = [
 </script>
 
 <template>
-  <h2><v-icon>mdi-chip</v-icon>CPU</h2>
+  <h2><v-icon>mdi-chip</v-icon>{{ $t('systeminfo.CPU') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>
@@ -21,10 +21,10 @@ const gradients = [
           class="text-left"
           width="10ch"
         >
-          Core
+          {{ $t('systeminfo.Core') }}
         </th>
         <th class="text-middle">
-          Usage
+          {{ $t('systeminfo.Usage') }}
         </th>
       </tr>
     </thead>

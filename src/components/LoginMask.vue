@@ -37,6 +37,7 @@ async function login() {
             :rules="nameRules"
             label="Name"
             prepend-inner-icon="mdi-account"
+            autocomplete="username"
             tabindex="1"
             @keyup.enter="username.length > 0 && password.length > 0 && login()"
           />
@@ -46,6 +47,7 @@ async function login() {
             label="Password"
             prepend-inner-icon="mdi-key"
             type="password"
+            autocomplete="current-password"
             tabindex="2"
             @keyup.enter="username.length > 0 && password.length > 0 && login()"
           />

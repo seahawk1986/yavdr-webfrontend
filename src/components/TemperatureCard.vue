@@ -4,19 +4,18 @@ const store = useBackendStore()
 </script>
 
 <template>
-  <h2><v-icon>mdi-thermometer</v-icon>Temperatures</h2>
+  <h2><v-icon>mdi-thermometer</v-icon>{{ $t('systeminfo.Temperature', 2) }}</h2>
   <v-table density="compact">
     <thead>
       <tr>
         <!-- <th class="text-left" width="10%">Module</th> -->
         <th
-          class="text-left"
-          width="10%"
+          class="text-left sensor-description"
         >
           Sensor
         </th>
         <th class="text-middle">
-          Temperature
+          {{ $t('systeminfo.Temperature') }}
         </th>
       </tr>
     </thead>
@@ -29,9 +28,6 @@ const store = useBackendStore()
           v-for="(sensor, sensor_id) in sensorData"
           :key="sensor_id"
         >
-          <!-- <td>
-            {{ device_name }}
-          </td> -->
           <td>
             <v-tooltip
               :text="`${device_name}`"
@@ -69,3 +65,4 @@ const store = useBackendStore()
     </tbody>
   </v-table>
 </template>
+

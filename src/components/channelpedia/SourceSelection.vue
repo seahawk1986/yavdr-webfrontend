@@ -121,6 +121,8 @@
                 <ChannelCandidateList
                   :original-channel-candidates="subGroupItem.children as unknown as VDRChannel[]"
                   :channel-id-set="props.channelIdSet"
+                  @add-channel="(channel) => {$emit('addChannel', channel)}"
+                  @insert-channel="(channel, number) => {$emit('insertChannel', channel, number)}"
                 />
               </v-expansion-panel-text>
             </v-expansion-panel>
@@ -141,6 +143,12 @@ const store = useBackendStore()
 
 const props = defineProps<{
   channelIdSet: Ref<Set<string>>
+}>()
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const emit = defineEmits<{
+  (e: 'addChannel', channel: VDRChannel): void
+  (e: 'insertChannel', channel: VDRChannel, number: number): void
 }>()
 
 interface ChannelCategoryInterface {

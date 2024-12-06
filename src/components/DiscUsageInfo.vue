@@ -5,21 +5,21 @@ const cleanIDRegex = new RegExp('/', 'g')
 </script>
 
 <template>
-  <h2><v-icon>mdi-chart-donut</v-icon>Disk Usage</h2>
+  <h2><v-icon>mdi-chart-donut</v-icon>{{ $t('systeminfo.DiskUsage') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>
-        <th class="text-left">
-          Device
+        <th class="text-left sensor-description">
+          {{ $t('systeminfo.Device') }}
         </th>
         <th class="text-left">
-          Mount
+          {{ $t('systeminfo.Mount') }}
         </th>
         <th
           class="text-middle"
           width="40%"
         >
-          Usage
+          {{ $t('systeminfo.DiskUsage') }}
         </th>
       </tr>
     </thead>

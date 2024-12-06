@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AudioSettings from './AudioSettings.vue'
+import AudioSettings from './System/AudioSettings.vue'
 import LogoSelector from '@/components/LogoSelector.vue'
 </script>
 

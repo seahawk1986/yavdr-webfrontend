@@ -4,18 +4,17 @@ const store = useBackendStore()
 </script>
 
 <template>
-  <h2><v-icon>mdi-memory</v-icon>Memory</h2>
+  <h2><v-icon>mdi-memory</v-icon>{{ $t('systeminfo.Memory') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>
         <th
-          class="text-left"
-          width="10ch"
+          class="text-left sensor-description"
         >
-          Type
+          {{ $t('systeminfo.Type') }}
         </th>
         <th class="text-middle">
-          Usage
+          {{ $t('systeminfo.Usage') }}
         </th>
       </tr>
     </thead>
