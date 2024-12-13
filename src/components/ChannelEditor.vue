@@ -1,70 +1,29 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, type Ref } from "vue";
-import { useGoTo } from "vuetify";
-import { VNumberInput } from "vuetify/labs/VNumberInput";
-import { useDragAndDrop } from "@formkit/drag-and-drop/vue";
+import { computed, onMounted, ref, type Ref } from "vue"
+import { useGoTo } from "vuetify"
+import { useLayout } from "vuetify"
+import { useDragAndDrop } from "@formkit/drag-and-drop/vue"
 // import { animations, dropOrSwap, insert } from '@formkit/drag-and-drop'
 import { useBackendStore } from "@/stores/backend";
-import SourceSelection from "./channelpedia/SourceSelection.vue";
-import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface";
+import SourceSelection from "./channelpedia/SourceSelection.vue"
+import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface"
 
-import { useI18n } from "vue-i18n";
+import { useI18n } from "vue-i18n"
 const { t } = useI18n();
 
-const store = useBackendStore();
-const goTo = useGoTo();
+const layout = useLayout()
+const store = useBackendStore()
+const goTo = useGoTo()
 
-// const insertPointClasses = [
-//   "absolute",
-//   "bg-blue-500",
-//   "z-[1000]",
-//   "rounded-full",
-//   "duration-[5ms]",
-//   "before:block",
-//   'before:content-["Insert"]',
-//   "before:whitespace-nowrap",
-//   "before:block",
-//   "before:bg-blue-500",
-//   "before:py-1",
-//   "before:px-2",
-//   "before:rounded-full",
-//   "before:text-xs",
-//   "before:absolute",
-//   "before:top-1/2",
-//   "before:left-1/2",
-//   "before:-translate-y-1/2",
-//   "before:-translate-x-1/2",
-//   "before:text-white",
-//   "before:text-xs",
-// ];
 
 const [channelsConfRef, channelsConf] = useDragAndDrop([] as VDRChannel[], {
   group: "channels",
   multiDrag: true,
-  selectedClass: "bg-indigo-accent-4",
+  selectedClass: "bg-light-blue-darken-4",
   dragHandle: ".drag-handle",
   scrollBehavior: { x: 0.9, y: 0.9, scrollOutside: true },
 
-  plugins: [
-    // dropOrSwap({
-    //   shouldSwap: () => false,
-    // }),
-    // animations()
-    // multiDrag({
-    //   plugins: [
-    //     // selections({
-    //     //   selectedClass: 'bg-indigo-accent-4'
-    //     // })
-    //   ]
-    // })
-    // insert({
-    //   insertPoint: (parent) => {
-    //     const div = document.createElement("div");
-    //     for (const cls of insertPointClasses) div.classList.add(cls);
-    //     return div;
-    //   },
-    // }),
-  ],
+  plugins: [],
 });
 
 const channelIdSet = computed(() => {
@@ -122,19 +81,16 @@ function waitForElm(selector: string): Promise<Element | null> {
 }
 
 const showGroupAddDialog: Ref<boolean> = ref(false);
-const channelEditTitle: Ref<string> = ref(t("channels.createGroup"));
-const newChannelGroupName: Ref<string> = ref(t("channels.channelGroup"));
-const newChannelGroupNumber: Ref<number | null> = ref(null);
-const addChannelGroup = async function () {
-  // if (newChannelGroupName.value.length == 0) {
-  //   return
-  // }
+// const newChannelGroupName: Ref<string> = ref(t("channels.channelGroup"));
+// const newChannelGroupNumber: Ref<number | null> = ref(null);
+
+const addChannelGroup = async function (newName: string, newPosition: number|null, scrollToNewGroup: boolean) {
   showGroupAddDialog.value = false;
   console.log(
     "add channel group",
-    newChannelGroupName.value,
+    newName,
     "at position",
-    newChannelGroupNumber.value
+    newPosition
   );
   // get a (at least locally unique) id - we only need this for the channel list on the client
   let uuid = null;
@@ -150,23 +106,21 @@ const addChannelGroup = async function () {
       u.substring(16, 12),
     ].join("-");
   }
-  const channelId = `${newChannelGroupName.value}-${uuid}`;
+  const channelId = `${newName}-${uuid}`;
   const newGroup = {
     channel_id: channelId,
-    number: newChannelGroupNumber.value ? newChannelGroupNumber.value : -1,
-    channel_string: newChannelGroupName.value,
+    number: newPosition ? newPosition : -1,
+    channel_string: newName,
     is_group: true,
-    name: `${newChannelGroupName.value}`,
+    is_radio: false,
+    name: `${newName}`,
     provider: "",
     ca: "",
     source: "",
   };
   console.log("newGroup has number", newGroup.number);
   console.log("runningChannelNumbers", runningChannelNumbers.value);
-  if (
-    typeof newChannelGroupNumber.value !== "undefined" &&
-    newChannelGroupNumber.value !== null
-  ) {
+  if (newPosition !== null) {
     const currentChannelGrupNumber = newGroup.number;
     let position = runningChannelNumbers.value.findIndex((value) => {
       if (value > currentChannelGrupNumber) {
@@ -187,16 +141,18 @@ const addChannelGroup = async function () {
   } else {
     channelsConf.value.push(newGroup);
   }
-  console.log("Scroll to new channel Group");
-  const element = await waitForElm(`#${CSS.escape(channelId)}`);
-  if (element) {
-    console.log("Scroll to new channel Group Element:", element);
-    goTo(`#${CSS.escape(channelId)}`, scrollOptions.value);
+  if (scrollToNewGroup) {
+    console.log("Scroll to new channel Group");
+    const element = await waitForElm(`#${CSS.escape(channelId)}`);
+    if (element) {
+      console.log("Scroll to new channel Group Element:", element);
+      goTo(`#${CSS.escape(channelId)}`, scrollOptions.value);
+    }
   }
 
   // clear the inputs
-  newChannelGroupName.value = "";
-  newChannelGroupNumber.value = null;
+  // newChannelGroupName.value = "";
+  // newChannelGroupNumber.value = null;
 };
 
 async function scroll_to_channel_id(channelId: string) {
@@ -231,6 +187,12 @@ function getSourceIcon(source: string) {
   }
 }
 
+function isRadio(channel: VDRChannel): boolean {
+  const parts = channel.channel_string.split(':')
+  // console.log(channel.channel_string, '->', parts, ':', (Number(parts[5]) <= 1))
+  return Boolean(Number(parts[5]) <= 1)
+}
+
 const reloadChannels = async function () {
   try {
     channelsConf.value = await store.loadChannels();
@@ -239,16 +201,16 @@ const reloadChannels = async function () {
   }
 };
 
-const showChannelNumberInputDialogue: Ref<boolean> = ref(false);
-const inputChannelNumber: Ref<number> = ref(1);
+const showMoveChannelInputDialogue: Ref<boolean> = ref(false);
 const inputChannel: Ref<VDRChannel|null> = ref(null);
 
 function showInputChannelNumber(channel: VDRChannel) {
   inputChannel.value = channel
-  showChannelNumberInputDialogue.value = true;
+  showMoveChannelInputDialogue.value = true;
 }
 
-function insertChannel(channel: VDRChannel, number: number) {
+function insertChannel(channel: VDRChannel, number: number, scroll: boolean) {
+  showMoveChannelInputDialogue.value = false
   console.log("move channel", channel, "to position", number)
   if (channelIdSet.value.value.has(channel.channel_id)) {
     const old_idx = channelsConf.value.findIndex((element: VDRChannel) => {
@@ -272,7 +234,9 @@ function insertChannel(channel: VDRChannel, number: number) {
     }
     channelsConf.value.splice(position, 0, channel);
   }
-  scroll_to_channel_id(channel.channel_id);
+  if (scroll) {
+    scroll_to_channel_id(channel.channel_id);
+  }
 }
 
 const deleteChannel = function (channel_id: string, channel_idx: number) {
@@ -287,6 +251,8 @@ const deleteChannel = function (channel_id: string, channel_idx: number) {
 
 onMounted(async () => {
   await reloadChannels();
+  console.log("Main rect size", layout.mainRect.value)
+  console.log("row dimensions", layout.getLayoutItem('secondRow'))
 });
 </script>
 
@@ -296,9 +262,14 @@ onMounted(async () => {
     * Swap two channels
     * Add channelgroup above/below
     * Scratchpad to park subgroups of channels
+    * Upload/Download channels.conf
     -->
-  <v-container>
-    <v-row dense>
+  <v-container class="fill-height">
+    <v-row
+      id="secondRow"
+      dense
+      fill-height
+    >
       <v-col
         cols="12"
         sm="6"
@@ -311,14 +282,14 @@ onMounted(async () => {
               scroll_to_channel_id(channel.channel_id);
             }
           "
-          @insert-channel="(channel: VDRChannel, number: number) => {insertChannel(channel, number)}"
+          @insert-channel="(channel: VDRChannel, number: number, scroll: boolean) => {insertChannel(channel, number, scroll)}"
         />
       </v-col>
       <v-col
         cols="12"
         sm="6"
-      >
-        <v-card class="fill-height">
+      >   
+        <v-card>
           <v-card-title>
             channels.conf
             <v-divider
@@ -337,45 +308,13 @@ onMounted(async () => {
               v-model="showGroupAddDialog"
               max-width="500"
             >
-              <v-card :title="channelEditTitle">
-                <v-card-text>
-                  <v-text-field
-                    v-model="newChannelGroupName"
-                    label="Group Name"
-                    prepend-icon="mdi-tag"
-                    required
-                    autofocus
-                    @focus="$event.target.select()"
-                    @keyup.enter="addChannelGroup"
-                  />
-                  <v-number-input
-                    v-model="newChannelGroupNumber"
-                    :reverse="false"
-                    :min="1"
-                    control-variant="default"
-                    label="Minimum channel number for group"
-                    prepend-icon="mdi-at"
-                    :hide-input="false"
-                    :inset="false"
-                    @keyup.enter="addChannelGroup"
-                  />
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-spacer />
-
-                  <v-btn
-                    text="Cancel"
-                    @click="showGroupAddDialog = false"
-                  />
-                  <v-btn
-                    text="Add Channel Group"
-                    @click="addChannelGroup"
-                  />
-                </v-card-actions>
-              </v-card>
+              <CreateChannelGroupInput
+                :channel-group-edit-title="t('channels.createGroup')"
+                :input-channel="inputChannel"
+                @abort="showGroupAddDialog = false"
+                @add-channel-group="(name, position, scroll) => addChannelGroup(name, position, scroll)"
+              />
             </v-dialog>
-            <!-- <v-btn @click="addChannelGroupClicked" color="secondary">Add channel group</v-btn> -->
           </v-card-title>
           <v-card-text>
             <div>
@@ -385,14 +324,14 @@ onMounted(async () => {
                 ref="channelsConfRef"
                 density="compact"
                 class="overflow-y-auto"
-                max-height="75vh"
+                max-height="80vh"
               >
                 <v-list-item
                   v-for="(channel, channel_idx) in channelsConf"
                   :id="channel.channel_id"
                   :key="channel.channel_id"
-                  style="cursor: grab"
                   density="compact"
+                  :base-color="isRadio(channel) ? 'secondary' : ''"
                 >
                   <template #title>
                     {{
@@ -404,6 +343,7 @@ onMounted(async () => {
                     <v-icon
                       class="drag-handle"
                       icon="mdi-drag"
+                      style="cursor: grab"
                     />
                     <pre>{{
                       (!channel.is_group
@@ -415,7 +355,10 @@ onMounted(async () => {
                           }`
                       ).padStart(channelNumberPadding, " ") + " "
                     }}</pre>
-                    <v-icon :icon="getSourceIcon(channel.source)" />
+                    <v-icon
+                      :color="isRadio(channel) ? 'secondary' : ''"
+                      :icon="getSourceIcon(channel.source)"
+                    />
                   </template>
                   <template #append>
                     <v-btn
@@ -451,45 +394,16 @@ onMounted(async () => {
               @click="showGroupAddDialog = true"
             />
             <v-dialog
-              v-model="showChannelNumberInputDialogue"
+              v-model="showMoveChannelInputDialogue"
               max-width="500"
             >
-              <!-- move channel dialog -->
-              <v-card :title="t('channels.moveToPosition', { name: inputChannel?.name })">
-                <v-card-text>
-                  <v-number-input
-                    v-model="inputChannelNumber"
-                    :label="t('channels.channelNumber')"
-                    :min="1"
-                    prepend-icon="mdi-pound"
-                    autofocus
-                    @focus="$event.target.select()"
-                    @keyup.enter="{
-                      if (inputChannel) {
-                        insertChannel(inputChannel, inputChannelNumber);
-                        showChannelNumberInputDialogue = false
-                      }
-                    }"
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <!-- TODO: fix warning when opening dialogue -->
-                  <v-btn
-                    text="Cancel"
-                    @click="showChannelNumberInputDialogue = false"
-                  />
-                  <v-btn
-                    :text="t('channels.insertChannel')"
-                    @click="{
-                      if (inputChannel) {
-                        insertChannel(inputChannel, inputChannelNumber);
-                        showChannelNumberInputDialogue = false
-                      }
-                    }"
-                  />
-                </v-card-actions>
-              </v-card>
+              <MoveChannelInput
+                :channel-edit-title="t('channels.moveToPosition', { name: inputChannel?.name })"
+                :confirm-move-title="t('channels.moveChannel')"
+                :input-channel="inputChannel"
+                @abort="showMoveChannelInputDialogue = false"
+                @move-channel="(channel: VDRChannel, position: number, scroll: boolean) => insertChannel(channel, position, scroll)"
+              />
             </v-dialog>
             <v-btn
               color="primary"

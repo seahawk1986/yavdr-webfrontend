@@ -48,8 +48,8 @@
                   v-if="item.raw.title[2] === '_'"
                   #prepend
                 >
-                  {{ getFlagEmoji(item.raw.title.slice(0, 2))
-                  }}<v-divider
+                  {{ getFlagEmoji(item.raw.title.slice(0, 2)) }}
+                  <v-divider
                     vertical
                     thickness="10"
                     class="border-opacity-0"
@@ -69,8 +69,8 @@
                   v-if="item.raw.title[2] === '_'"
                   #prepend
                 >
-                  {{ getFlagEmoji(item.raw.title.slice(0, 2))
-                  }}<v-divider
+                  {{ getFlagEmoji(item.raw.title.slice(0, 2)) }}
+                  <v-divider
                     vertical
                     thickness="10"
                     class="border-opacity-0"
@@ -120,9 +120,9 @@
               <v-expansion-panel-text>
                 <ChannelCandidateList
                   :original-channel-candidates="subGroupItem.children as unknown as VDRChannel[]"
-                  :channel-id-set="props.channelIdSet"
+                  :channel-id-set="pprops.channelIdSet"
                   @add-channel="(channel) => {$emit('addChannel', channel)}"
-                  @insert-channel="(channel, number) => {$emit('insertChannel', channel, number)}"
+                  @insert-channel="(channel, number, scroll) => {$emit('insertChannel', channel, number, scroll)}"
                 />
               </v-expansion-panel-text>
             </v-expansion-panel>
@@ -133,7 +133,7 @@
   </v-card>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue'
 import { useBackendStore } from '@/stores/backend'
 import type { ChannelSubGroup, VDRChannel } from '@/stores/interfaces/VdrChannelInterface'
@@ -141,14 +141,14 @@ import ChannelCandidateList from './ChannelCandidateList.vue'
 
 const store = useBackendStore()
 
-const props = defineProps<{
+const pprops = defineProps<{
   channelIdSet: Ref<Set<string>>
 }>()
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emit = defineEmits<{
   (e: 'addChannel', channel: VDRChannel): void
-  (e: 'insertChannel', channel: VDRChannel, number: number): void
+  (e: 'insertChannel', channel: VDRChannel, number: number, scroll: boolean): void
 }>()
 
 interface ChannelCategoryInterface {

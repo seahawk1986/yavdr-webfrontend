@@ -23,8 +23,12 @@ declare module 'vue-router/auto-routes' {
     '/RemoteSettings': RouteRecordInfo<'/RemoteSettings', '/RemoteSettings', Record<never, never>, Record<never, never>>,
     '/System/AudioSettings': RouteRecordInfo<'/System/AudioSettings', '/System/AudioSettings', Record<never, never>, Record<never, never>>,
     '/System/DisplaySettings': RouteRecordInfo<'/System/DisplaySettings', '/System/DisplaySettings', Record<never, never>, Record<never, never>>,
+    '/System/LogViewer': RouteRecordInfo<'/System/LogViewer', '/System/LogViewer', Record<never, never>, Record<never, never>>,
+    '/System/UploadFile': RouteRecordInfo<'/System/UploadFile', '/System/UploadFile', Record<never, never>, Record<never, never>>,
     '/SystemSettings': RouteRecordInfo<'/SystemSettings', '/SystemSettings', Record<never, never>, Record<never, never>>,
     '/VDR/ChannelpediaEditor': RouteRecordInfo<'/VDR/ChannelpediaEditor', '/VDR/ChannelpediaEditor', Record<never, never>, Record<never, never>>,
+    '/VDR/ConfigFiles': RouteRecordInfo<'/VDR/ConfigFiles', '/VDR/ConfigFiles', Record<never, never>, Record<never, never>>,
     '/VDR/PluginSettings': RouteRecordInfo<'/VDR/PluginSettings', '/VDR/PluginSettings', Record<never, never>, Record<never, never>>,
+    '/VDR/SetupEditor': RouteRecordInfo<'/VDR/SetupEditor', '/VDR/SetupEditor', Record<never, never>, Record<never, never>>,
   }
 }

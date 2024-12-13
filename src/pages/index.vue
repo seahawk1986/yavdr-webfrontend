@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useBackendStore } from '@/stores/backend'
-import LoginMask from '@/components/LoginMask.vue'
 import DashBoard from '@/pages/DashBoard.vue'
-// import RemoteControl from '@/components/RemoteControl.vue'
 
-const store = useBackendStore()
 const tab = ref(null)
 </script>
 
 <template>
-  <LoginMask v-if="!store.hasToken" />
   <v-sheet
-    v-else
+    class="fill-height"
   >
     <v-tabs
       v-model="tab"

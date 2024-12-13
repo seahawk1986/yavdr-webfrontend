@@ -3,31 +3,13 @@
     v-model="showChannelNumberInputDialogue"
     max-width="500"
   >
-    <v-card :title="t('channels.moveToPosition', {name: inputChannel?.name})">
-      <v-card-text>
-        <v-number-input
-          v-model="inputChannelNumber"
-          :label="t('channels.channelNumber')"
-          :min="1"
-          prepend-icon="mdi-pound"
-          autofocus
-          @focus="$event.target.select()"
-          @keyup.enter="insertChannel"
-        />
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-
-        <v-btn
-          text="Cancel"
-          @click="showChannelNumberInputDialogue = false"
-        />
-        <v-btn
-          :text="t('channels.insertChannel')"
-          @click="insertChannel"
-        />
-      </v-card-actions>
-    </v-card>
+    <MoveChannelInput
+      :channel-edit-title="t('channels.moveToPosition', { name: inputChannel?.name })"
+      :confirm-move-title="t('channels.moveChannel')"
+      :input-channel="inputChannel"
+      @abort="showChannelNumberInputDialogue = false"
+      @move-channel="(channel: VDRChannel, position: number, scroll: boolean) => insertChannel(channel, position, scroll)"
+    />
   </v-dialog>
   <v-list ref="channelCandidatesRef">
     <v-list-item
@@ -36,6 +18,7 @@
       :title="`${channel.name} (${channel.provider})`"
       :disabled="channelIdSet.value.has(channel.channel_id) ? true : false"
       :class="'red'"
+      :base-color="isRadio(channel) ? 'secondary' : ''" 
     >
       <template #prepend>
         <v-icon
@@ -65,9 +48,7 @@
 <script setup lang="ts">
 import type { VDRChannel} from '@/stores/interfaces/VdrChannelInterface'
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
-// import { animations } from '@formkit/drag-and-drop'
 import { onMounted, watch, type Ref } from 'vue'
-import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -79,11 +60,10 @@ const props = defineProps<{
 
 const showChannelNumberInputDialogue: Ref<boolean> = ref(false)
 const inputChannel: Ref<VDRChannel|null> = ref(null)
-const inputChannelNumber: Ref<number> = ref(1)
 
 const emit = defineEmits<{
   (e: 'addChannel', channel: VDRChannel): void
-  (e: 'insertChannel', channel: VDRChannel, number: number): void
+  (e: 'insertChannel', channel: VDRChannel, number: number, scroll: boolean): void
 }>()
 
 const [channelCandidatesRef, channelCandidates] = useDragAndDrop([] as VDRChannel[], {
@@ -110,13 +90,19 @@ function showMoveChannelDialog(channel: VDRChannel) {
   inputChannel.value = channel
 }
 
-function insertChannel() {
-  if (inputChannel.value !== null && inputChannelNumber.value !== null) {
-    console.log("insert channel", inputChannel.value, "at position", inputChannelNumber.value)
-    emit('insertChannel', inputChannel.value, inputChannelNumber.value)
+function insertChannel(channel: VDRChannel, position: number, scroll: boolean) {
+  if (channel !== null && position !== null) {
+    console.log("insert channel", channel, "at position", position, "scroll:", scroll)
+    emit('insertChannel', channel, position, scroll)
     inputChannel.value = null
     showChannelNumberInputDialogue.value = false
   }
+}
+
+function isRadio(channel: VDRChannel): boolean {
+  const parts = channel.channel_string.split(':')
+  // console.log(channel.channel_string, '->', parts, ':', (Number(parts[5]) <= 1))
+  return Boolean(Number(parts[5]) <= 1)
 }
 
 onMounted(async () => {

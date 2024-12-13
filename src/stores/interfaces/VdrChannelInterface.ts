@@ -3,6 +3,7 @@ export interface VDRChannel {
   channel_id: string
   channel_string: string
   is_group: boolean
+  is_radio: boolean
   name: string
   provider: string
   ca: string

@@ -9,6 +9,20 @@ export default createI18n({
                 reload: 'reload',
                 loadingData: 'loading {what} ...',
                 openNavbar: 'toggle navigation menu',
+                close: 'close',
+                open: 'öffnen',
+                uploadLabel: 'upload file',
+                uploadSuccessful: 'Upload successful',
+                cancel: 'Cancel',
+                save: 'save',
+                commit: 'commit',
+                search: "search",
+                searchObj: "search {what}",
+                download: "download",
+                upload: "upload",
+                uploadSth: "upload {what}",
+                loadSth: "load {what}",
+
             },
             category: {
                 timer: 'Timer | Timers',
@@ -16,6 +30,8 @@ export default createI18n({
                 setup: 'Setup',
                 channels: 'Channels',
                 epg: 'EPG',
+                entry: 'Entry',
+                editor: "{what} Editor",
             },
             channels: {
                 channelGroup: "channel group",
@@ -24,7 +40,9 @@ export default createI18n({
                 moveToPosition: 'insert channel "{name}" on position',
                 appendChannel: "append to vdr channel list",
                 insertChannel: "insert channel",
+                moveChannel: "move channel",
                 channelNumber: "channel number",
+                scrollToNewPosition: "scroll to new position",
             },
             errors: {
                 loadingFailed: 'loading {what} failed'
@@ -63,22 +81,36 @@ export default createI18n({
                     unknown: 'unknown'
                 },
                 noTimers: 'no timers'
-            }
+            },
         },
         de: {
             actions: {
                 reload: 'neu laden',
                 loadingData: 'Lade {what} ...',
                 openNavbar: 'Navigationsmenü',
+                close: 'Schließen',
+                open: 'öffnen',
+                uploadSuccessful: 'Upload erfolgreich',
+                cancel: 'Abbrechen',
+                save: 'Speichern',
+                commit: 'Übernehmen',
+                search: "Suchen",
+                searchObj: "Suche {what}",
+                download: "Herunterladen",
+                upload: "Hochladen",
+                uploadSth: "{what} hochladen",
+                loadSth: "{what} laden",
             },
             channels: {
                 channelGroup: "Kanalgruppe",
                 createGroup: "Neue Kanalgruppe erstellen",
                 editGroup: "Kanalgruppe bearbeiten",
-                moveToPosition: 'Kanal "{name}" an Position einfügen',
+                moveToPosition: 'Kanal "{name}" verschieben',
                 appendChannel: "An Kanalliste des VDR anfügen",
                 insertChannel: "in Kanalliste einfügen",
+                moveChannel: "Kanal verschieben",
                 channelNumber: "Kanalnummer",
+                scrollToNewPosition: "An neue Position scrollen",
             },
             errors: {
                 loadingFailed: 'Laden der {what} fehlgeschlagen'
@@ -89,6 +121,8 @@ export default createI18n({
                 setup: 'Setup',
                 channels: 'Kanäle',
                 epg: 'EPG',
+                entry: 'Eintrag',
+                editor: "{what} Editor",
             },
             info: {
                 state: 'Status',
@@ -124,7 +158,7 @@ export default createI18n({
                     unknown: 'unbekannt'
                 },
                 noTimers: 'keine Timer'
-            }
+            },
         }
     }
 })

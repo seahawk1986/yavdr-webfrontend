@@ -7,6 +7,8 @@ import router from '@/router'
 import type { SystemStatusInterface } from './interfaces/SystemStatusInterface'
 import type { VDRChannel } from './interfaces/VdrChannelInterface'
 import type { VDRTimerInterface } from './interfaces/VdrTimerInterface'
+import { downloadBlob } from '@/services/download'
+
 
 interface OptionInterface {
   baseUrl: string
@@ -18,7 +20,7 @@ console.log('baseURL:', options.baseUrl)
 
 const axios_instance = axios.create({
   baseURL: options.baseUrl, // TODO: use '/api/' for production
-  timeout: 5000
+  timeout: 60000
 })
 
 axios_instance.interceptors.request.use((config) => {
@@ -143,6 +145,42 @@ export const useBackendStore = defineStore('backend', () => {
       .catch()
   }
 
+  async function downloadFile (url: string) {
+    try {
+      const result = await axios_instance.get(url, {responseType: 'blob'})
+      const headerContentDisp: string = result.headers["content-disposition"];
+      console.log("got content-disposition from header: ", headerContentDisp, typeof(headerContentDisp))
+      const parts =
+        headerContentDisp &&
+        headerContentDisp.split("filename*=utf-8")
+      const filename = parts.length > 1 && parts[1].replace(/["']/g, '') // TODO improve parsing
+      // const contentType = result.headers["content-type"];
+
+      console.log("downloaded file '", result.data, "' in browser")
+      downloadBlob(result.data, filename ? filename : null)
+    } catch (error) {
+      console.error("download for", url, "failed:", error)
+    }
+  }
+
+  async function uploadFile (url: string, file: File): Promise<[boolean, string]> {
+    // Replace 'http://your-server.com/upload' with your actual server endpoint
+    try {
+      const response = await axios_instance.postForm(url, {
+        file: file,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
+        }
+    })
+    console.log(response.data); // Handle successful upload response
+    return [true, "upload successful"]
+   } catch (error) {
+     console.error(error); // Handle upload errors
+     return [false, "upload failed"]
+   }
+  };
+
   async function deleteRequest(url: string) {
     return axios_instance
       .delete(url)
@@ -265,6 +303,8 @@ export const useBackendStore = defineStore('backend', () => {
     pulseErrorMessage,
     vdrChannels,
     isLoadingChannels,
+    uploadFile,
+    downloadFile,
     loadChannels,
     saveChannels,
     loadTimers,
