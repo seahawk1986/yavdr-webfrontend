@@ -28,6 +28,7 @@ declare module 'vue-router/auto-routes' {
     '/SystemSettings': RouteRecordInfo<'/SystemSettings', '/SystemSettings', Record<never, never>, Record<never, never>>,
     '/VDR/ChannelpediaEditor': RouteRecordInfo<'/VDR/ChannelpediaEditor', '/VDR/ChannelpediaEditor', Record<never, never>, Record<never, never>>,
     '/VDR/ConfigFiles': RouteRecordInfo<'/VDR/ConfigFiles', '/VDR/ConfigFiles', Record<never, never>, Record<never, never>>,
+    '/VDR/EPGViewer': RouteRecordInfo<'/VDR/EPGViewer', '/VDR/EPGViewer', Record<never, never>, Record<never, never>>,
     '/VDR/PluginSettings': RouteRecordInfo<'/VDR/PluginSettings', '/VDR/PluginSettings', Record<never, never>, Record<never, never>>,
     '/VDR/SetupEditor': RouteRecordInfo<'/VDR/SetupEditor', '/VDR/SetupEditor', Record<never, never>, Record<never, never>>,
   }

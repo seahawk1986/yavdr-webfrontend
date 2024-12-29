@@ -15,6 +15,7 @@ export default createI18n({
                 uploadSuccessful: 'Upload successful',
                 cancel: 'Cancel',
                 save: 'save',
+                saveChanges: 'save changes',
                 commit: 'commit',
                 search: "search",
                 searchObj: "search {what}",
@@ -36,6 +37,7 @@ export default createI18n({
             channels: {
                 channelGroup: "channel group",
                 createGroup: "New channel group",
+                createNewChannelGroup: "Create new channel group",
                 editGroup: "Edit channel group",
                 moveToPosition: 'insert channel "{name}" on position',
                 appendChannel: "append to vdr channel list",
@@ -43,6 +45,7 @@ export default createI18n({
                 moveChannel: "move channel",
                 channelNumber: "channel number",
                 scrollToNewPosition: "scroll to new position",
+                reloadVDRChannels: "reload VDR channels",
             },
             errors: {
                 loadingFailed: 'loading {what} failed'
@@ -93,6 +96,7 @@ export default createI18n({
                 uploadSuccessful: 'Upload erfolgreich',
                 cancel: 'Abbrechen',
                 save: 'Speichern',
+                saveChanges: 'Änderungen übernehmen',
                 commit: 'Übernehmen',
                 search: "Suchen",
                 searchObj: "Suche {what}",
@@ -103,7 +107,8 @@ export default createI18n({
             },
             channels: {
                 channelGroup: "Kanalgruppe",
-                createGroup: "Neue Kanalgruppe erstellen",
+                createGroup: "Kanalgruppe erstellen",
+                createNewChannelGroup: "Neue Kanalgruppe erstellen",
                 editGroup: "Kanalgruppe bearbeiten",
                 moveToPosition: 'Kanal "{name}" verschieben',
                 appendChannel: "An Kanalliste des VDR anfügen",
@@ -111,6 +116,7 @@ export default createI18n({
                 moveChannel: "Kanal verschieben",
                 channelNumber: "Kanalnummer",
                 scrollToNewPosition: "An neue Position scrollen",
+                reloadVDRChannels: "VDR Kanäle neu laden",
             },
             errors: {
                 loadingFailed: 'Laden der {what} fehlgeschlagen'

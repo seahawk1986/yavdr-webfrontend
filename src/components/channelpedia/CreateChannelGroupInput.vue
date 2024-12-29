@@ -31,11 +31,11 @@
       <v-spacer />
 
       <v-btn
-        text="Cancel"
+        :text="cancelButtonTitle"
         @click="abort"
       />
       <v-btn
-        text="Add Channel Group"
+        :text="confirmButtonTitle"
         @click="addChannelGroup"
       />
     </v-card-actions>
@@ -53,6 +53,8 @@ const scrollToNewChannelGroup: Ref<boolean> = ref(true)
 
 const props = defineProps<{
     channelGroupEditTitle: string
+    confirmButtonTitle: string
+    cancelButtonTitle: string
 }>()
 
 function abort() {
@@ -60,11 +62,11 @@ function abort() {
 }
 
 function addChannelGroup() {
-    emit('addChannelGroup', newChannelGroupName.value, newChannelGroupNumber.value, scrollToNewChannelGroup.value)
+    emit('confirmEdit', newChannelGroupName.value, newChannelGroupNumber.value, scrollToNewChannelGroup.value)
 }
 
 const emit = defineEmits<{
   (e: 'abort'): void
-  (e: 'addChannelGroup', name: string, position: number|null, scroll: boolean): void
+  (e: 'confirmEdit', name: string, position: number|null, scroll: boolean): void
 }>()
 </script>

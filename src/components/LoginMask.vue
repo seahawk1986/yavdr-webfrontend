@@ -15,6 +15,8 @@ async function login() {
   const result = await store.login(username.value, password.value)
   if (result) {
     console.log('Login successfull')
+    username.value = ''
+    password.value = ''
   } else {
     console.log('Login failed')
     loginFailedSnackbar.value = true

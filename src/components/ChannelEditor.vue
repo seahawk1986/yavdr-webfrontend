@@ -129,7 +129,7 @@ const addChannelGroup = async function (newName: string, newPosition: number|nul
     });
     if (position < 0) {
       console.log(
-        "all numbers are smaller than the group number, so wie append it at the end"
+        "all numbers are smaller than the group number, so we append it at the end"
       );
       position = channelsConf.value.length;
     } else {
@@ -299,7 +299,7 @@ onMounted(async () => {
             />
             <v-btn
               color="info"
-              text="Reload VDR channels"
+              :text="t('channels.reloadVDRChannels')"
               prepend-icon="mdi-reload"
               variant="flat"
               @click="reloadChannels"
@@ -311,8 +311,10 @@ onMounted(async () => {
               <CreateChannelGroupInput
                 :channel-group-edit-title="t('channels.createGroup')"
                 :input-channel="inputChannel"
+                :confirm-button-title="t('channels.createNewChannelGroup')"
+                :cancel-button-title="t('actions.cancel')"
                 @abort="showGroupAddDialog = false"
-                @add-channel-group="(name, position, scroll) => addChannelGroup(name, position, scroll)"
+                @confirm-edit="(name, position, scroll) => addChannelGroup(name, position, scroll)"
               />
             </v-dialog>
           </v-card-title>
@@ -388,7 +390,7 @@ onMounted(async () => {
           <v-card-actions>
             <v-btn
               color="secondary-darken-1"
-              text="Create Channel Group"
+              :text="t('channels.createGroup')"
               prepend-icon="mdi-plus"
               variant="flat"
               @click="showGroupAddDialog = true"
@@ -407,7 +409,7 @@ onMounted(async () => {
             </v-dialog>
             <v-btn
               color="primary"
-              text="Save changes"
+              :text="t('actions.saveChanges')"
               prepend-icon="mdi-send"
               variant="flat"
               @click="reloadChannels"

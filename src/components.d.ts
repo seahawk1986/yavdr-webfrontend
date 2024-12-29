@@ -21,7 +21,6 @@ declare module 'vue' {
     LoginMask: typeof import('./components/LoginMask.vue')['default']
     LogoSelector: typeof import('./components/LogoSelector.vue')['default']
     MemoryInfo: typeof import('./components/MemoryInfo.vue')['default']
-    MoveChannelDialog: typeof import('./components/channelpedia/MoveChannelDialog.vue')['default']
     MoveChannelInput: typeof import('./components/channelpedia/MoveChannelInput.vue')['default']
     RecordingsList: typeof import('./components/RecordingsList.vue')['default']
     RemoteControl: typeof import('./components/RemoteControl.vue')['default']

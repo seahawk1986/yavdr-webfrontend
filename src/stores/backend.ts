@@ -242,6 +242,16 @@ export const useBackendStore = defineStore('backend', () => {
     isLoadingChannels.value = false
   }
 
+  const isLoadingEPG = ref(false)
+  async function loadEPG(channelId: string) {
+    isLoadingEPG.value = true
+    const data = await getRequest(`/vdr/epg?channel_id=${encodeURIComponent(channelId)}`)
+    isLoadingEPG.value = false
+    if (data) {
+      return data
+    }
+  }
+
   const vdrTimers: Ref<Array<VDRTimerInterface>> = ref([])
   const isLoadingTimers: Ref<boolean> = ref(false)
 
@@ -307,6 +317,7 @@ export const useBackendStore = defineStore('backend', () => {
     downloadFile,
     loadChannels,
     saveChannels,
+    loadEPG,
     loadTimers,
     loadRecordings,
   }

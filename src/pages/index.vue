@@ -28,7 +28,7 @@ const tab = ref(null)
         <v-container style="max-height: 89vh">
           <v-row no-gutters>
             <v-col
-              sm="12"
+              cols="12"
               lg="6"
             >
               <v-card>
@@ -41,7 +41,7 @@ const tab = ref(null)
               </v-card>
             </v-col>
             <v-col
-              sm="12"
+              cols="12"
               lg="6"
             >
               <v-card>

@@ -136,9 +136,18 @@
       </v-list>
     </v-navigation-drawer>
     <v-main>
-      <LoginMask v-if="!store.hasToken" />
-      <RemoteControl v-else-if="showRemote" />
-      <router-view v-else />
+      <KeepAlive>
+        <LoginMask v-if="!store.hasToken" />
+        <RemoteControl v-else-if="showRemote" />
+        <router-view
+          v-else
+          v-slot="{ Component }"
+        >
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
+      </KeepAlive>
     </v-main>
   </v-app>
 </template>

@@ -5,7 +5,9 @@ import RemoteTextButton from '@/components/remote/RemoteTextButton.vue'
 
 <template>
   <!-- TODO: handle keyboard shortcuts for this view -->
-  <v-container align="center">
+  <v-container
+    align="center"
+  >
     <!-- Numpad and user buttons -->
     <div>
       <v-row>
