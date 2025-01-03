@@ -8,35 +8,28 @@
       flat
     >
       <v-toolbar-title>System Journal</v-toolbar-title>
-      <template 
-        v-if="$vuetify.display.mdAndUp"
-      >
-        <div
-          v-for="level in logLevelSelection.filter((element) => element.prio <= filterLogLevel)"
-          :key="level.prio"
-        >
-          <span :class="`${getBackgroundColorByPrio(level.prio)} pa-2 text-body-2`">{{ level.name }}</span>
-          <v-divider
-            thickness="1ch"
-            opacity="0"
-            vertical
-          />
-        </div>
-      </template>
+
       <v-tooltip
         location="top"
+        :text="t('log.autoscroll')"
       >
         <template #activator="{ props }">
           <v-btn
             aria-label="Scroll to show newest syslog entries"
+            :color="scrollToLastElement ? 'primary' : ''"
             size="small"
-            icon="mdi-play"
+            :icon="scrollToLastElement ? 'mdi-pause' : 'mdi-play'"
             v-bind="props"
             variant="tonal"
+            @click="scrollToLastElement = !scrollToLastElement"
           />
         </template>
-        <span>Autoscroll</span>
       </v-tooltip>
+      <v-divider
+        vertical
+        thickness="5"
+        opacity="0"
+      />
       <v-tooltip
         location="top"
       >
@@ -54,6 +47,21 @@
         </template>
         <span>Download Syslog</span>
       </v-tooltip>
+      <template 
+        v-if="$vuetify.display.mdAndUp"
+      >
+        <div
+          v-for="level in logLevelSelection.filter((element) => element.prio <= filterLogLevel)"
+          :key="level.prio"
+        >
+          <span :class="`${getBackgroundColorByPrio(level.prio)} pa-2 text-body-2`">{{ level.name }}</span>
+          <v-divider
+            thickness="1ch"
+            opacity="0"
+            vertical
+          />
+        </div>
+      </template>
       <v-divider
         thickness="2ch"
         opacity="0"
@@ -71,8 +79,9 @@
       />
     </v-toolbar>
     <v-infinite-scroll
+      id="goto-container"
       :items="logEntries"
-      :height="$vuetify.display.mobile ? '73vh' : '86vh'"
+      :height="$vuetify.display.mobile ? '73svh' : '86svh'"
       side="both"
       @load="load"
     >
@@ -88,7 +97,10 @@
         v-for="item in filteredLogEntries"
         :key="item.CURSOR"
       >
-        <div class="text-body-2`">
+        <div
+          :id="item.CURSOR"
+          class="text-body-2`"
+        >
           <!-- <span :class="getBackgroundColorByPrio(item.PRIORITY)"> -->
           {{ item.FORMATTED_TIMESTAMP }}
           <!-- </span> -->
@@ -108,7 +120,7 @@
               opacity="0"
             />
           </template>
-          {{ item.MESSAGE }}
+          <span lang="en">{{ item.MESSAGE }}</span>
         </div>
       </template>
     </v-infinite-scroll>
@@ -117,13 +129,18 @@
 
 <script lang="ts" setup>
 import { useBackendStore } from '@/stores/backend'
-import { useDate } from 'vuetify'
+import { useDate, useGoTo } from 'vuetify'
+import { useI18n } from 'vue-i18n';
 import { VInfiniteScroll } from 'vuetify/components';
 
+const { t } = useI18n()
 const date = useDate()
+const goTo = useGoTo()
 
 const store = useBackendStore()
 const logEntries: Ref<Array<logEntryInterface>> = ref([])
+const scrollToLastElement: Ref<boolean> = ref(true)
+
 
 
 function formatDate(element: logEntryInterface) {
@@ -183,6 +200,15 @@ async function downloadSyslog() {
   isDownloadingFile.value = false
 }
 
+const scrollOptions = computed(() => {
+  return {
+    container: "#goto-container",
+    duration: 100,
+    easing: "easeInOutCubic",
+    offset: 0,
+  };
+});
+
 // const darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)')
 const filterLogLevel: Ref<number> = ref(7)
 const filteredLogEntries = computed(() => {
@@ -233,14 +259,42 @@ async function load (this: VInfiniteScroll, { side, done }: {side: string, done:
             return element
           })
           logEntries.value.push(...entries)
+          if (scrollToLastElement.value) {
+            const lastEntry = entries[entries.length - 1]
+            const element = await waitForElm(`#${CSS.escape(lastEntry.CURSOR)}`);
+            if (element) {
+              console.log("Scroll to new channel Element:", element);
+              goTo(`#${CSS.escape(lastEntry.CURSOR)}`, scrollOptions.value);
+            }
+          }
         }
       }
-      //   const arr = this.createRange(halfVirtualLength, this.cards.at(-1) + 1)
-      //   this.cards = [...this.cards.slice(halfVirtualLength), ...arr]
     }
   }
 
   done('ok')
+}
+
+// https://stackoverflow.com/a/61511955
+function waitForElm(selector: string): Promise<Element | null> {
+  return new Promise((resolve) => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector));
+    }
+
+    const observer = new MutationObserver(() => {
+      if (document.querySelector(selector)) {
+        observer.disconnect();
+        resolve(document.querySelector(selector));
+      }
+    });
+
+    // If you get "parameter 1 is not of type 'Node'" error, see https://stackoverflow.com/a/77855838/492336
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  });
 }
 
 </script>

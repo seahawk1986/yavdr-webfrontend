@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, type Ref } from "vue"
+// import { useConfirmDialog } from '@vueuse/core'
 import { useGoTo } from "vuetify"
 import { useLayout } from "vuetify"
 import { useDragAndDrop } from "@formkit/drag-and-drop/vue"
@@ -8,12 +9,23 @@ import { useBackendStore } from "@/stores/backend";
 import SourceSelection from "./channelpedia/SourceSelection.vue"
 import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface"
 
-import { useI18n } from "vue-i18n"
-const { t } = useI18n();
+import { useI18n } from "vue-i18n";
+const { t } = useI18n()
 
 const layout = useLayout()
 const store = useBackendStore()
 const goTo = useGoTo()
+
+// const revealChannelGroupInput: Ref<boolean> = ref(false)
+// const ChannelGroupDialog = useConfirmDialog(revealChannelGroupInput)
+
+// async function openChannelGroupDialog(group: VDRChannel|undefined) {
+//   const {data, isCancelled }: {data: any, isCancelled: boolean} = await ChannelGroupDialog.reveal()
+//   if (!isCancelled) {
+//     console.log(data)
+//   }
+// }
+
 
 
 const [channelsConfRef, channelsConf] = useDragAndDrop([] as VDRChannel[], {
@@ -21,8 +33,6 @@ const [channelsConfRef, channelsConf] = useDragAndDrop([] as VDRChannel[], {
   multiDrag: true,
   selectedClass: "bg-light-blue-darken-4",
   dragHandle: ".drag-handle",
-  scrollBehavior: { x: 0.9, y: 0.9, scrollOutside: true },
-
   plugins: [],
 });
 
@@ -332,6 +342,8 @@ onMounted(async () => {
                   v-for="(channel, channel_idx) in channelsConf"
                   :id="channel.channel_id"
                   :key="channel.channel_id"
+                  role="listitem"
+                  :aria-label="t('channels.channelNumberN', {number: runningChannelNumbers[channel_idx]?.toString()}) + ', ' + channel.name"
                   density="compact"
                   :base-color="isRadio(channel) ? 'secondary' : ''"
                 >
@@ -343,6 +355,7 @@ onMounted(async () => {
                   </template>
                   <template #prepend>
                     <v-icon
+                      :aria-label="t('descriptions.draghandle', {name: channel.name})"
                       class="drag-handle"
                       icon="mdi-drag"
                       style="cursor: grab"
@@ -361,6 +374,15 @@ onMounted(async () => {
                       :color="isRadio(channel) ? 'secondary' : ''"
                       :icon="getSourceIcon(channel.source)"
                     />
+                    <v-divider
+                      vertical
+                      thickness="5"
+                      opacity="0"
+                    />
+                    <v-icon
+                      :color="isRadio(channel) ? 'secondary' : ''"
+                      :icon="channel.is_radio ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
+                    />
                   </template>
                   <template #append>
                     <v-btn
@@ -373,13 +395,13 @@ onMounted(async () => {
                       v-else
                       icon="mdi-dialpad"
                       size="small"
-                      aria-label="move to position"
+                      :aria-label="t('channels.changePosition', {name: channel.name})"
                       @click="showInputChannelNumber(channel)"
                     />
                     <v-btn
                       icon="mdi-close-circle"
                       size="small"
-                      aria-label="delete"
+                      :aria-label="t('channels.deleteChannel', {what: channel.name})"
                       @click="deleteChannel(channel.channel_id, channel_idx)"
                     />
                   </template>

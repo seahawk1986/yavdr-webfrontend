@@ -1,12 +1,34 @@
 <template>
   <v-sheet>
-    <h1>EPG Viewer</h1>
-    <v-select
-      v-model="selectedChannel"
-      :items="store.vdrChannels"
-      item-title="name"
-      item-value="channel_id"
-    />
+    <!-- <h1>EPG Viewer</h1> -->
+    <v-label
+      :text="`${t('channels.selection')}:`"
+    >
+      <v-divider
+        vertical
+        thickness="5"
+        opacity="0"
+      />
+      <v-select
+        id="channel-selection"
+        v-model="selectedChannel"
+        :items="store.vdrChannels"
+        item-title="name"
+        item-value="channel_id"
+        density="comfortable"
+        hide-details="auto"
+        :isloading="isLoading"
+      />
+    </v-label>
+    <v-tooltip :text="t('channels.switchto', {channel: selectedChannelName})">
+      <template #activator="{ props }">
+        <v-btn
+          v-bind="props"
+          :aria-label="t('channels.switchto', {channel: selectedChannelName})"
+          icon="mdi-television-classic"
+        />
+      </template>
+    </v-tooltip>
     <div v-if="isLoading">
       <v-progress-linear indeterminate />
     </div>
@@ -15,9 +37,11 @@
     </div> -->
     <v-virtual-scroll
       v-else
-      height="74svh"
+      height="84svh"
       :items="epgChannelList"
       density="compact"
+      aria-role="list"
+      item-height="48"
     >
       <template
         #default="{ item, index }"
@@ -25,7 +49,9 @@
         <v-list-item
           v-if="index === 0"
           :title="date.format(item.dtStart.toPlainDate.toString(), 'fullDateWithWeekday')"
-          variant="elevated"
+          variant="outlined"
+          aria-role="listitem"
+          slim
         >
           <template #prepend>
             <v-icon>mdi-calendar</v-icon>
@@ -42,12 +68,13 @@
           >
             <v-btn
               color="primary"
+              :aria-label="t('timer.createTimer', {entry: item.title, start: formatTime(item.dtStart), end: formatTime(item.dtEnd)})"
               icon="mdi-timer-plus-outline"
               size="x-small"
             />
             <v-list-item
               :title="formatTimespan(item.dtStart, item.dtEnd)"
-              :subtitle="`(${item.duration.minutes.toLocaleString()} Min.)`"
+              :subtitle="`(${item.duration.total('minute').toLocaleString()} min)`"
               lines="two"
               slim
             />
@@ -56,7 +83,8 @@
         <v-list-item
           v-if="item.crossDay"
           :title="date.format(item.dtEnd.toPlainDate.toString(), 'fullDateWithWeekday')"
-          variant="elevated"
+          slim
+          variant="outlined"
         />
         <!-- <v-divider v-else /> -->
       </template>
@@ -71,6 +99,8 @@
   import { useBackendStore } from "@/stores/backend"
   import { useDate } from "vuetify"; 
   import { Temporal } from "temporal-polyfill";
+  import { useI18n } from "vue-i18n";
+  const { t } = useI18n()
   const date = useDate()
   const store = useBackendStore()
 
@@ -98,12 +128,19 @@
   }
 
   const selectedChannel: Ref<string|null> = ref(null)
+  const selectedChannelName = computed(() => {
+    return store.vdrChannels.find(channel => channel.channel_id == selectedChannel.value)?.name
+  })
   const isLoading: Ref<boolean> = ref(true)
 
   const epgChannelList: Ref<epgListInterface[]> = ref([])
 
+  function formatTime(dtTime: Temporal.PlainDateTime): string {
+    return `${dtTime.hour.toString().padStart(2, '0')}:${dtTime.minute.toString().padStart(2, '0')}`
+  }
+
   function formatTimespan(dtStart: Temporal.PlainDateTime, dtEnd: Temporal.PlainDateTime) {
-    return `${dtStart.hour.toString().padStart(2, '0')}:${dtStart.minute.toString().padStart(2, '0')}–${dtEnd.hour.toString().padStart(2, '0')}:${dtEnd.minute.toString().padStart(2, '0')}`
+    return `${formatTime(dtStart)} - ${formatTime(dtEnd)}`
   }
 
   async function loadEpgData(channel_id: string|null) {

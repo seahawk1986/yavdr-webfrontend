@@ -18,10 +18,12 @@ declare module 'vue' {
     FileEditor: typeof import('./components/FileEditor.vue')['default']
     FileUpload: typeof import('./components/FileUpload.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    LanguageSwitcher: typeof import('./components/LanguageSwitcher.vue')['default']
     LoginMask: typeof import('./components/LoginMask.vue')['default']
     LogoSelector: typeof import('./components/LogoSelector.vue')['default']
     MemoryInfo: typeof import('./components/MemoryInfo.vue')['default']
     MoveChannelInput: typeof import('./components/channelpedia/MoveChannelInput.vue')['default']
+    NavBar: typeof import('./components/NavBar.vue')['default']
     RecordingsList: typeof import('./components/RecordingsList.vue')['default']
     RemoteControl: typeof import('./components/RemoteControl.vue')['default']
     RemoteIconButton: typeof import('./components/remote/RemoteIconButton.vue')['default']
@@ -32,5 +34,6 @@ declare module 'vue' {
     SystemInfo: typeof import('./components/SystemInfo.vue')['default']
     TemperatureCard: typeof import('./components/TemperatureCard.vue')['default']
     TimerList: typeof import('./components/TimerList.vue')['default']
+    TitleBar: typeof import('./components/TitleBar.vue')['default']
   }
 }

@@ -1,32 +1,34 @@
 <template>
   <v-card :title="props.channelGroupEditTitle">
     <v-card-text>
-      <v-text-field
-        v-model="newChannelGroupName"
-        label="Group Name"
-        prepend-icon="mdi-tag"
-        required
-        autofocus
-        @focus="$event.target.select()"
-        @keyup.enter="addChannelGroup"
-      />
-      <v-number-input
-        v-model="newChannelGroupNumber"
-        :reverse="false"
-        :in="1"
-        control-variant="default"
-        label="Minimum channel number for group"
-        prepend-icon="mdi-at"
-        :hide-input="false"
-        :inset="false"
-        @keyup.enter="addChannelGroup"
-      />
-      <v-checkbox
-        v-model="scrollToNewChannelGroup"
-        :label="t('channels.scrollToNewPosition')"
-      />
+      <v-form aria-label="channel group properties">
+        <v-text-field
+          v-model="newChannelGroupName"
+          label="Group Name"
+          prepend-icon="mdi-tag"
+          required
+          autofocus
+          @focus="$event.target.select()"
+          @keyup.enter="addChannelGroup"
+        />
+        <v-number-input
+          v-model="newChannelGroupNumber"
+          :reverse="false"
+          :in="1"
+          control-variant="default"
+          label="Minimum channel number for group"
+          prepend-icon="mdi-at"
+          :hide-input="false"
+          :inset="false"
+          @keyup.enter="addChannelGroup"
+        />
+        <v-checkbox
+          v-model="scrollToNewChannelGroup"
+          :label="t('channels.scrollToNewPosition')"
+        />
+      </v-form>
     </v-card-text>
-
+    
     <v-card-actions>
       <v-spacer />
 
@@ -36,6 +38,7 @@
       />
       <v-btn
         :text="confirmButtonTitle"
+        type="submit"
         @click="addChannelGroup"
       />
     </v-card-actions>

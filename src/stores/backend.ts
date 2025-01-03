@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { computed, ref, type Ref } from 'vue'
 import { ListedPulseSinks } from './Settings/audio'
-import { useLocalStorage } from '@vueuse/core'
+import { useLocalStorage} from '@vueuse/core'
 import router from '@/router'
 import type { SystemStatusInterface } from './interfaces/SystemStatusInterface'
 import type { VDRChannel } from './interfaces/VdrChannelInterface'
@@ -18,48 +18,48 @@ interface OptionInterface {
 const options: OptionInterface = { baseUrl: import.meta.env.VITE_API_BASE_URL }
 console.log('baseURL:', options.baseUrl)
 
-const axios_instance = axios.create({
-  baseURL: options.baseUrl, // TODO: use '/api/' for production
-  timeout: 60000
-})
-
-axios_instance.interceptors.request.use((config) => {
-  const authToken = localStorage.getItem('jwToken')
-  if (authToken && authToken.length > 0) {
-    config.headers.Authorization = `Bearer ${authToken}`
-    console.log('jwToken:', authToken) // TODO: remove for production
-  } else {
-    console.log('Warning: no token')
-  }
-  return config
-})
-
-axios_instance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response ? error.response.status : null
-
-    if (status === 401) {
-      // Handle unauthorized access
-      localStorage.setItem('jwToken', '')
-      // router.push('/login')
-    } else if (status === 404) {
-      // Handle not found errors
-    } else {
-      // Handle other errors
-    }
-
-    return Promise.reject(error)
-  }
-)
 
 export const useBackendStore = defineStore('backend', () => {
-  const jwToken = useLocalStorage('jwToken', '')
+  const ls = <T>(id: string, defaultValue: T): Ref<T> => useLocalStorage(id, defaultValue);
+  const jwToken = ls('jwToken', '')
+  const selectedLocale = ls('locale', '')
   const hasToken = computed(() => jwToken.value.length > 0)
   // const refreshToken: Ref<string> = ref('')
+  const showNavigation: Ref<boolean> = ref(false)
+  const showRemote: Ref<boolean> = ref(false)
 
   const listedPulseSinks = ref(new ListedPulseSinks())
   const pulseErrorMessage: Ref<string | null> = ref(null)
+
+  const axios_instance = axios.create({
+    baseURL: options.baseUrl, // TODO: use '/api/' for production
+    timeout: 60000
+  })
+  
+  axios_instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      const status = error.response ? error.response.status : null
+      if (status === 401) {
+        jwToken.value = ""
+      } else {
+        // show error
+        console.error("error")
+      }  
+      return Promise.reject(error)
+    }
+  )
+
+  axios_instance.interceptors.request.use((config) => {
+    const authToken = jwToken.value
+    if (authToken && authToken.length > 0) {
+      config.headers.Authorization = `Bearer ${authToken}`
+      // console.log('jwToken:', authToken) // TODO: remove for production
+    } else {
+      console.log('Warning: we have no valid token')
+    }
+    return config
+  })
 
   async function login(username: string, password: string): Promise<boolean> {
     jwToken.value = ''
@@ -297,6 +297,9 @@ export const useBackendStore = defineStore('backend', () => {
   // })
   return {
     isOnMobile,
+    showNavigation,
+    showRemote,
+    selectedLocale,
     login,
     logout,
     hasToken,

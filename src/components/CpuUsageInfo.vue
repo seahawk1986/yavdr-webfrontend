@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useBackendStore } from '@/stores/backend'
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n()
 const store = useBackendStore()
 
 const gradients = [
@@ -21,10 +23,10 @@ const gradients = [
           class="text-left"
           width="10ch"
         >
-          {{ $t('systeminfo.Core') }}
+          {{ t('systeminfo.Core') }}
         </th>
         <th class="text-middle">
-          {{ $t('systeminfo.Usage') }}
+          {{ t('systeminfo.Usage') }}
         </th>
       </tr>
     </thead>
