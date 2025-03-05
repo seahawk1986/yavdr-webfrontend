@@ -4,7 +4,6 @@ const store = useBackendStore()
 </script>
 
 <template>
-  <h2><v-icon>mdi-thermometer</v-icon>{{ $t('systeminfo.Temperature', 2) }}</h2>
   <v-table density="compact">
     <thead>
       <tr>

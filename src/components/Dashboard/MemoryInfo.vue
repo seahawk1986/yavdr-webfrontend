@@ -4,7 +4,6 @@ const store = useBackendStore()
 </script>
 
 <template>
-  <h2><v-icon>mdi-memory</v-icon>{{ $t('systeminfo.Memory') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>

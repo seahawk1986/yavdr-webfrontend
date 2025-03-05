@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useBackendStore } from '@/stores/backend'
+import { useI18n } from 'vue-i18n';
 const store = useBackendStore()
+const { t } = useI18n()
+
 </script>
 
 <template>
-  <h2><v-icon>mdi-fan</v-icon>{{ $t('systeminfo.Fans') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>
@@ -12,13 +14,13 @@ const store = useBackendStore()
           class="text-left"
           width="10%"
         >
-          Module
+          {{ t('systeminfo.Module') }}
         </th>
         <th
           class="text-left"
           width="10%"
         >
-          Sensor
+          {{ t('systeminfo.Sensor') }}
         </th>
         <th
           class="text-middle"
@@ -41,7 +43,7 @@ const store = useBackendStore()
             {{ device_name }}
           </td>
           <td>
-            {{ sensor.label ? sensor.label : `Fan&nbsp;${sensor_id}` }}
+            {{ sensor.label ? sensor.label : `${t('systeminfo.Fan')}&nbsp;${sensor_id}` }}
           </td>
           <td>
             <v-progress-linear

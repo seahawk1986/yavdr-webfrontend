@@ -1,9 +1,10 @@
 <template>
-  <v-sheet>
+  <v-sheet
+    class="scrollable-container overflow-auto"
+    :height="height - backend.titlebarHeight"
+  >
     <!-- <h1>EPG Viewer</h1> -->
-    <v-label
-      :text="`${t('channels.selection')}:`"
-    >
+    <v-label :text="`${t('channels.selection')}:`">
       <v-divider
         vertical
         thickness="5"
@@ -12,7 +13,7 @@
       <v-select
         id="channel-selection"
         v-model="selectedChannel"
-        :items="store.vdrChannels"
+        :items="vdr.vdrChannels"
         item-title="name"
         item-value="channel_id"
         density="comfortable"
@@ -20,12 +21,13 @@
         :isloading="isLoading"
       />
     </v-label>
-    <v-tooltip :text="t('channels.switchto', {channel: selectedChannelName})">
+    <v-tooltip :text="t('channels.switchto', { channel: selectedChannelName })">
       <template #activator="{ props }">
         <v-btn
           v-bind="props"
-          :aria-label="t('channels.switchto', {channel: selectedChannelName})"
+          :aria-label="t('channels.switchto', { channel: selectedChannelName })"
           icon="mdi-television-classic"
+          @click="switchChannel"
         />
       </template>
     </v-tooltip>
@@ -37,18 +39,21 @@
     </div> -->
     <v-virtual-scroll
       v-else
-      height="84svh"
+      :height="height - 120"
       :items="epgChannelList"
       density="compact"
       aria-role="list"
       item-height="48"
     >
-      <template
-        #default="{ item, index }"
-      >
+      <template #default="{ item, index }">
         <v-list-item
           v-if="index === 0"
-          :title="date.format(item.dtStart.toPlainDate.toString(), 'fullDateWithWeekday')"
+          :title="
+            date.format(
+              item.dtStart.toPlainDate.toString(),
+              'fullDateWithWeekday'
+            )
+          "
           variant="outlined"
           aria-role="listitem"
           slim
@@ -59,22 +64,34 @@
         </v-list-item>
         <v-list-item
           :title="item.title"
-          :subtitle="item.subtitle ? item.subtitle : (item.description ? item.description : '')"
+          :subtitle="
+            item.subtitle
+              ? item.subtitle
+              : item.description
+                ? item.description
+                : ''
+          "
           slim
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
         >
-          <template
-            #prepend
-          >
+          <template #prepend>
             <v-btn
               color="primary"
-              :aria-label="t('timer.createTimer', {entry: item.title, start: formatTime(item.dtStart), end: formatTime(item.dtEnd)})"
+              :aria-label="
+                t('timer.createTimer', {
+                  entry: item.title,
+                  start: formatTime(item.dtStart),
+                  end: formatTime(item.dtEnd),
+                })
+              "
               icon="mdi-timer-plus-outline"
               size="x-small"
             />
             <v-list-item
               :title="formatTimespan(item.dtStart, item.dtEnd)"
-              :subtitle="`(${item.duration.total('minute').toLocaleString()} min)`"
+              :subtitle="`(${item.duration
+                .total('minute')
+                .toLocaleString()} min)`"
               lines="two"
               slim
             />
@@ -82,7 +99,12 @@
         </v-list-item>
         <v-list-item
           v-if="item.crossDay"
-          :title="date.format(item.dtEnd.toPlainDate.toString(), 'fullDateWithWeekday')"
+          :title="
+            date.format(
+              item.dtEnd.toPlainDate.toString(),
+              'fullDateWithWeekday'
+            )
+          "
           slim
           variant="outlined"
         />
@@ -92,69 +114,83 @@
   </v-sheet>
 </template>
 
-<script
-  lang="ts"
-  setup
->
-  import { useBackendStore } from "@/stores/backend"
-  import { useDate } from "vuetify"; 
-  import { Temporal } from "temporal-polyfill";
-  import { useI18n } from "vue-i18n";
-  const { t } = useI18n()
-  const date = useDate()
-  const store = useBackendStore()
+<script lang="ts" setup>
+import { useBackendStore } from "@/stores/backend";
+import { useNotificationStore } from "@/stores/notifications";
+import { useVDRStore } from "@/stores/vdr";
+import { useDate } from "vuetify";
+import { Temporal } from "temporal-polyfill";
+import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
-  interface epgEntryInterface {
-    event_id: string
-    channel_id: string
+const { height } = useDisplay();
+const { t } = useI18n();
+const date = useDate();
+const backend = useBackendStore();
+const notifications = useNotificationStore();
+const vdr = useVDRStore();
 
-    title: string,
-    subtitle: string,
-    description: string,
-    start: string,
-    duration: string,
-  }
+interface epgEntryInterface {
+  event_id: string;
+  channel_id: string;
 
-  interface epgListInterface {
-    dtStart: Temporal.PlainDateTime
-    dtEnd: Temporal.PlainDateTime
-    duration: Temporal.Duration
-    title: string
-    subtitle: string|null
-    description: string|null
-    channelId: string|null
-    crossDay: boolean
-    // isSeparator: boolean
-  }
+  title: string;
+  subtitle: string;
+  description: string;
+  start: string;
+  duration: string;
+}
 
-  const selectedChannel: Ref<string|null> = ref(null)
-  const selectedChannelName = computed(() => {
-    return store.vdrChannels.find(channel => channel.channel_id == selectedChannel.value)?.name
-  })
-  const isLoading: Ref<boolean> = ref(true)
+interface epgListInterface {
+  dtStart: Temporal.PlainDateTime;
+  dtEnd: Temporal.PlainDateTime;
+  duration: Temporal.Duration;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  channelId: string | null;
+  crossDay: boolean;
+  // isSeparator: boolean
+}
 
-  const epgChannelList: Ref<epgListInterface[]> = ref([])
+const selectedChannel: Ref<string | null> = ref(null);
+const selectedChannelName = computed(() => {
+  return vdr.vdrChannels.find(
+    (channel: { channel_id: string | null }) =>
+      channel.channel_id == selectedChannel.value
+  )?.name;
+});
+const isLoading: Ref<boolean> = ref(true);
 
-  function formatTime(dtTime: Temporal.PlainDateTime): string {
-    return `${dtTime.hour.toString().padStart(2, '0')}:${dtTime.minute.toString().padStart(2, '0')}`
-  }
+const epgChannelList: Ref<epgListInterface[]> = ref([]);
 
-  function formatTimespan(dtStart: Temporal.PlainDateTime, dtEnd: Temporal.PlainDateTime) {
-    return `${formatTime(dtStart)} - ${formatTime(dtEnd)}`
-  }
+function formatTime(dtTime: Temporal.PlainDateTime): string {
+  return `${dtTime.hour.toString().padStart(2, "0")}:${dtTime.minute
+    .toString()
+    .padStart(2, "0")}`;
+}
 
-  async function loadEpgData(channel_id: string|null) {
-    isLoading.value = true
-    // get the EPG for this channel
-    if (channel_id) {
-      const data: epgEntryInterface[] = await store.loadEPG(channel_id)
-      epgChannelList.value = []
+function formatTimespan(
+  dtStart: Temporal.PlainDateTime,
+  dtEnd: Temporal.PlainDateTime
+) {
+  return `${formatTime(dtStart)} - ${formatTime(dtEnd)}`;
+}
+
+async function loadEpgData(channel_id: string | null) {
+  isLoading.value = true;
+  // get the EPG for this channel
+  if (channel_id) {
+    const response = await vdr.loadEPG(channel_id);
+    if (response?.data) {
+      const data: epgEntryInterface[] = response.data;
+      epgChannelList.value = [];
       if (data) {
-        const epgListData: epgListInterface[] = data.map(element => {
-          const dtStart = Temporal.PlainDateTime.from(element.start)
-          const duration = Temporal.Duration.from(element.duration)
-          const dtEnd = dtStart.add(duration)
-          const crossDay = (dtStart.day !== dtEnd.day) ? true : false
+        const epgListData: epgListInterface[] = data.map((element) => {
+          const dtStart = Temporal.PlainDateTime.from(element.start);
+          const duration = Temporal.Duration.from(element.duration);
+          const dtEnd = dtStart.add(duration);
+          const crossDay = dtStart.day !== dtEnd.day ? true : false;
 
           return {
             channelId: element.channel_id,
@@ -164,32 +200,64 @@
             crossDay: crossDay,
             title: element.title,
             subtitle: element.subtitle,
-            description: element.description
-          }          
-          });
-        epgChannelList.value = epgListData
+            description: element.description,
+          };
+        });
+        epgChannelList.value = epgListData;
       }
     }
-    isLoading.value = false    
   }
-  watch((selectedChannel), async (old_channel_id, channel_id) => {
-    isLoading.value = true
-    if (old_channel_id !== channel_id || old_channel_id === null) {
-      // epgChannelList.value = []
-      await loadEpgData(channel_id)
-    }
-  })
-  
+  isLoading.value = false;
+}
+watch(selectedChannel, async (old_channel_id, channel_id) => {
+  isLoading.value = true;
+  if (old_channel_id !== channel_id || old_channel_id === null) {
+    // epgChannelList.value = []
+    await loadEpgData(channel_id);
+  }
+});
 
-  onMounted (async () => {
-    // load the channels
-    await store.loadChannels()
-    const first = store.vdrChannels.find(Boolean)
-    if (first) {
-      selectedChannel.value = first.channel_id
-      await loadEpgData(selectedChannel.value)
+async function switchChannel() {
+  const channel = selectedChannel.value;
+  if (channel) {
+    const response = await backend.postRequest(
+      `/vdr/channel?channel=${encodeURIComponent(channel)}`,
+      {}
+    );
+    if (response?.data) {
+      const data = response.data
+      console.log(data);
+      if (data.startsWith("250 ")) {
+        const msg = data.slice(3);
+        console.log(data);
+        console.log("queued msg: ", msg);
+        notifications.messages.push({
+          text: data.slice(3),
+          timeout: 4000,
+          color: "primary",
+        });
+      } else {
+        notifications.messages.push({
+          text: data,
+          timeout: 1000,
+          color: "secondary",
+        });
+      }
+    } else {
+      console.error("no channel selected");
     }
-  })
+  }
+}
+
+onMounted(async () => {
+  // load the channels
+  await vdr.loadChannels();
+  const first = vdr.vdrChannels.find(Boolean);
+  if (first) {
+    selectedChannel.value = first.channel_id;
+    await loadEpgData(selectedChannel.value);
+  }
+});
 </script>
 
 <style lang="css" scoped>

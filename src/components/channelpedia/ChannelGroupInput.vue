@@ -33,10 +33,12 @@
       <v-spacer />
 
       <v-btn
+        prepend-icon="mdi-cancel"
         :text="cancelButtonTitle"
         @click="abort"
       />
       <v-btn
+        prepend-icon="mdi-send"
         :text="confirmButtonTitle"
         type="submit"
         @click="addChannelGroup"
@@ -48,28 +50,31 @@
 <script lang="ts" setup>
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import { useI18n } from "vue-i18n";
+import type { VDRChannel } from '@/stores/interfaces/VdrChannelInterface';
 const { t } = useI18n();
-
-const newChannelGroupName: Ref<string> = ref(t('channels.channelGroup'))
-const newChannelGroupNumber: Ref<number|null> = ref(null)
-const scrollToNewChannelGroup: Ref<boolean> = ref(true)
 
 const props = defineProps<{
     channelGroupEditTitle: string
+    oldChannelGroup: VDRChannel|null
     confirmButtonTitle: string
     cancelButtonTitle: string
 }>()
+
+const newChannelGroupName: Ref<string> = props.oldChannelGroup ? ref(props.oldChannelGroup.name) : ref(t('channels.channelGroup'))
+const newChannelGroupNumber: Ref<number|null> = props.oldChannelGroup ? (props.oldChannelGroup.number < 0 ? ref(null) : ref(props.oldChannelGroup.number)) : ref(null)
+const scrollToNewChannelGroup: Ref<boolean> = ref(true)
+
 
 function abort() {
   emit('abort')
 }
 
 function addChannelGroup() {
-    emit('confirmEdit', newChannelGroupName.value, newChannelGroupNumber.value, scrollToNewChannelGroup.value)
+    emit('confirm', newChannelGroupName.value, newChannelGroupNumber.value, scrollToNewChannelGroup.value)
 }
 
 const emit = defineEmits<{
   (e: 'abort'): void
-  (e: 'confirmEdit', name: string, position: number|null, scroll: boolean): void
+  (e: 'confirm', name: string, position: number|null, scroll: boolean): void
 }>()
 </script>

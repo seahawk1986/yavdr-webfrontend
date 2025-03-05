@@ -5,15 +5,18 @@ import { useGoTo } from "vuetify"
 import { useLayout } from "vuetify"
 import { useDragAndDrop } from "@formkit/drag-and-drop/vue"
 // import { animations, dropOrSwap, insert } from '@formkit/drag-and-drop'
-import { useBackendStore } from "@/stores/backend";
+// import { useBackendStore } from "@/stores/backend";
+import { useVDRStore } from "@/stores/vdr";
 import SourceSelection from "./channelpedia/SourceSelection.vue"
 import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface"
 
 import { useI18n } from "vue-i18n";
+import { downloadBlob } from "@/services/download";
 const { t } = useI18n()
 
 const layout = useLayout()
-const store = useBackendStore()
+// const backend = useBackendStore()
+const vdr = useVDRStore()
 const goTo = useGoTo()
 
 // const revealChannelGroupInput: Ref<boolean> = ref(false)
@@ -26,7 +29,10 @@ const goTo = useGoTo()
 //   }
 // }
 
-
+const showMoveChannelInputDialogue: Ref<boolean> = ref(false);
+const groupDialogTitle: Ref<string> = ref(t('channels.createGroup'))
+const confirmGroupDialogTitle: Ref<string> = ref(t('channels.createGroup'))
+const inputChannel: Ref<VDRChannel|null> = ref(null);
 
 const [channelsConfRef, channelsConf] = useDragAndDrop([] as VDRChannel[], {
   group: "channels",
@@ -94,21 +100,30 @@ const showGroupAddDialog: Ref<boolean> = ref(false);
 // const newChannelGroupName: Ref<string> = ref(t("channels.channelGroup"));
 // const newChannelGroupNumber: Ref<number | null> = ref(null);
 
-const addChannelGroup = async function (newName: string, newPosition: number|null, scrollToNewGroup: boolean) {
-  showGroupAddDialog.value = false;
-  console.log(
-    "add channel group",
-    newName,
-    "at position",
-    newPosition
-  );
+const editGroup = async function(group: VDRChannel) {
+  inputChannel.value = group
+  groupDialogTitle.value = t('channels.editGroup')
+  confirmGroupDialogTitle.value = t('channels.editGroup')
+  showGroupAddDialog.value = true
+}
+
+const addGroup = async function() {
+  inputChannel.value = null
+  groupDialogTitle.value = t('channels.createGroup')
+  confirmGroupDialogTitle.value = t('channels.createGroup')
+  showGroupAddDialog.value = true
+}
+
+const processChannelGroup = async function (newName: string, newPosition: number|null, scrollToNewGroup: boolean) {
+  const oldChannel = inputChannel.value
+  showGroupAddDialog.value = false
   // get a (at least locally unique) id - we only need this for the channel list on the client
   let uuid = null;
   if (window.isSecureContext) {
     uuid = self.crypto.randomUUID();
   } else {
     const u =
-      Date.now().toString(16) + Math.random().toString(16) + "0".repeat(16);
+    Date.now().toString(16) + Math.random().toString(16) + "0".repeat(16);
     uuid = [
       u.substring(0, 8),
       u.substring(8, 4),
@@ -117,6 +132,21 @@ const addChannelGroup = async function (newName: string, newPosition: number|nul
     ].join("-");
   }
   const channelId = `${newName}-${uuid}`;
+  if (oldChannel !== null) {
+    // update the old channel group
+    console.log("edit existing channel group")
+    const idx = channelsConf.value.findIndex((channel) => oldChannel.channel_id === channel.channel_id)
+    channelsConf.value[idx].name = newName
+    channelsConf.value[idx].number = newPosition ? newPosition : -1
+    channelsConf.value[idx].channel_id = channelId
+  } else {
+    console.log(
+      "add channel group",
+      newName,
+      "at position",
+      newPosition
+    )
+
   const newGroup = {
     channel_id: channelId,
     number: newPosition ? newPosition : -1,
@@ -150,6 +180,7 @@ const addChannelGroup = async function (newName: string, newPosition: number|nul
     channelsConf.value.splice(position, 0, newGroup);
   } else {
     channelsConf.value.push(newGroup);
+  }
   }
   if (scrollToNewGroup) {
     console.log("Scroll to new channel Group");
@@ -192,6 +223,10 @@ function getSourceIcon(source: string) {
       return "mdi-satellite-variant";
     case "C":
       return "mdi-audio-input-stereo-minijack";
+    case "I":
+      return "mdi-IP"
+    case "V":
+      return "mdi-video-input-component"
     default:
       return "mdi-tag";
   }
@@ -205,16 +240,31 @@ function isRadio(channel: VDRChannel): boolean {
 
 const reloadChannels = async function () {
   try {
-    channelsConf.value = await store.loadChannels();
+    channelsConf.value = await vdr.loadChannels()
   } catch (error) {
     console.log("could not load channelpedia sources", error);
   }
 };
 
-const showMoveChannelInputDialogue: Ref<boolean> = ref(false);
-const inputChannel: Ref<VDRChannel|null> = ref(null);
+function saveChanges() {
+  const newChannelsConfData = channelsConf.value.flatMap((entry) => {
+    if (!entry.name.length && entry.number < 0)
+    return []
+    if (entry.is_group) { // handle channel groups
+      if (entry.number > 0) {
+        return `:@${entry.number}${entry.name.length > 0 ? " " + entry.name : ""}`
+      } else {
+        return `:${entry.name}`
+      }
+    } else {
+      return entry.channel_string
+    }
+  })
+  const channelsConfFile = new Blob([newChannelsConfData.join('\n')])
+  downloadBlob(channelsConfFile, 'channels.conf')
+}
 
-function showInputChannelNumber(channel: VDRChannel) {
+function showChannelNumberInput(channel: VDRChannel) {
   inputChannel.value = channel
   showMoveChannelInputDialogue.value = true;
 }
@@ -317,14 +367,16 @@ onMounted(async () => {
             <v-dialog
               v-model="showGroupAddDialog"
               max-width="500"
+              persistent
             >
-              <CreateChannelGroupInput
+              <ChannelGroupInput
                 :channel-group-edit-title="t('channels.createGroup')"
-                :input-channel="inputChannel"
-                :confirm-button-title="t('channels.createNewChannelGroup')"
+                :old-channel-group="inputChannel"
+                :confirm-button-title="confirmGroupDialogTitle"
                 :cancel-button-title="t('actions.cancel')"
                 @abort="showGroupAddDialog = false"
-                @confirm-edit="(name, position, scroll) => addChannelGroup(name, position, scroll)"
+                @confirm="(name: string, position: number|null, scroll: boolean) => processChannelGroup(name, position, scroll)"
+                @keydown.esc="showGroupAddDialog = false"
               />
             </v-dialog>
           </v-card-title>
@@ -381,7 +433,7 @@ onMounted(async () => {
                     />
                     <v-icon
                       :color="isRadio(channel) ? 'secondary' : ''"
-                      :icon="channel.is_radio ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
+                      :icon="isRadio(channel) ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
                     />
                   </template>
                   <template #append>
@@ -390,13 +442,14 @@ onMounted(async () => {
                       icon="mdi-pencil"
                       size="small"
                       aria-label="edit"
+                      @click="editGroup(channel)"
                     />
                     <v-btn
                       v-else
                       icon="mdi-dialpad"
                       size="small"
                       :aria-label="t('channels.changePosition', {name: channel.name})"
-                      @click="showInputChannelNumber(channel)"
+                      @click="showChannelNumberInput(channel)"
                     />
                     <v-btn
                       icon="mdi-close-circle"
@@ -415,7 +468,7 @@ onMounted(async () => {
               :text="t('channels.createGroup')"
               prepend-icon="mdi-plus"
               variant="flat"
-              @click="showGroupAddDialog = true"
+              @click="addGroup"
             />
             <v-dialog
               v-model="showMoveChannelInputDialogue"
@@ -434,7 +487,7 @@ onMounted(async () => {
               :text="t('actions.saveChanges')"
               prepend-icon="mdi-send"
               variant="flat"
-              @click="reloadChannels"
+              @click="saveChanges"
             />
           </v-card-actions>
         </v-card>

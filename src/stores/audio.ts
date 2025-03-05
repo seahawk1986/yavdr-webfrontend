@@ -17,3 +17,34 @@ export class ListedPulseSinks implements ListedPulseSinksInterface {
   pulse_devices: PulseDeviceInterface[] = []
   default_sink: string = ''
 }
+
+import { defineStore } from "pinia";
+import { useBackendStore } from "./backend"
+
+const backend = useBackendStore()
+
+export const useAudioStore = defineStore("audio", () => {
+  const listedPulseSinks = ref(new ListedPulseSinks())
+  const pulseErrorMessage: Ref<string | null> = ref(null)
+
+  async function listPulseaudioSinks() {
+    console.log("called listPulseAudioSinks");
+    backend.getRequest("audio/list_pulseaudio_sinks")
+      .then((response) => {
+        if (response.status == 200) {
+          listedPulseSinks.value = response.data;
+          console.log("audio sinks:", response.data);
+          pulseErrorMessage.value = null;
+        }
+      }).catch((error) => {
+        console.log("listing sinks failed:", error.toJSON());
+        pulseErrorMessage.value = error.toJSON().message;
+      })
+    }
+
+  return {
+    listedPulseSinks,
+    pulseErrorMessage,
+    listPulseaudioSinks,
+  }
+})

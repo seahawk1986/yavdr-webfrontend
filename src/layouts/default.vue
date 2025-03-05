@@ -1,7 +1,8 @@
 <template>
   <v-app>
-    <TitleBar />
+    <TitleBar id="titlebar" />
     <NavBar />
+    <notification-queue-display />
     <v-main>
       <router-view v-slot="{ Component }">
         <keep-alive>
@@ -25,6 +26,14 @@
   // const { t } = useI18n();
   const store = useBackendStore()
   store.isOnMobile = useDisplay().mobile.value
+  
+  onMounted(() => {
+    //   consolse.log("App runs on a mobile device:", store.isOnMobile) // false
+    const titlebarHeight = document.getElementById('titlebar')?.clientHeight
+    if (titlebarHeight) {
+      store.titlebarHeight = titlebarHeight
+    }
+  })
 
  function getView(Component: globalThis.VNode<RendererNode, RendererElement, {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,8 +47,4 @@
       return Component
     }
   }
-
-  onMounted(() => {
-    console.log("App runs on a mobile device:", store.isOnMobile) // false
-  })
 </script>

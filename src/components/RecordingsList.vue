@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { useDate } from 'vuetify'
-import { useBackendStore } from '@/stores/backend';
+import { useVDRStore } from '@/stores/vdr';
 import type { VDRRecordingInterface } from '@/stores/interfaces/VdrRecordingInterface';
 import i18n from '@/plugins/i18n';
 
@@ -67,7 +67,7 @@ enum RequestState {
 }
 
 const date = useDate()
-const store = useBackendStore()
+const vdr = useVDRStore()
 
 const recordings: Ref<VDRRecordingInterface[]> = ref([])
 const isLoadingRecordings: Ref<boolean> = ref(false)
@@ -117,7 +117,7 @@ const reloadRecordings = async function () {
   isLoadingRecordings.value = true
   recordingsLoadingState.value = RequestState.Pending
   try {
-    recordings.value = await store.loadRecordings()
+    recordings.value = await vdr.loadRecordings()
     recordingsLoadingState.value = RequestState.Success
   } catch (error) {
     console.log('could not load recordings', error)

@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { useBackendStore } from '@/stores/backend'
 import { onMounted, onUnmounted } from 'vue'
-import MemoryInfo from '@/components/MemoryInfo.vue'
-import CpuUsageCard from '@/components/CpuUsageInfo.vue'
-import DiscUsageInfo from '@/components/DiscUsageInfo.vue'
-import TemperatureCard from '@/components/TemperatureCard.vue'
-import FanCard from '@/components/FanCard.vue'
-import SystemInfo from '@/components/SystemInfo.vue'
+import { useI18n } from 'vue-i18n'
 
 const store = useBackendStore()
+const {t} = useI18n()
 
 let scheduledUpdates = 0
 
@@ -31,64 +27,76 @@ onUnmounted(() => {
   <v-container>
     <v-row>
       <v-col class="xs-1 sm-1 lg-3">
-        <v-sheet
-          class="pa-2 ma-2"
+        <v-card
+          class="pa-2"
           rounded
+          prepend-icon="mdi-information"
+          :title="t('systeminfo.SystemInfo')"
         >
           <SystemInfo />
-        </v-sheet>
+        </v-card>
       </v-col>
       <v-col class="xs-1 sm-1 lg-3">
-        <v-sheet
-          class="pa-2 ma-2"
+        <v-card
+          class="pa-2"
           rounded
+          prepend-icon="mdi-memory"
+          :title="t('systeminfo.Memory')"
         >
           <MemoryInfo />
-        </v-sheet>
+        </v-card>
       </v-col>
       <v-col
         class="xs-1 sm-1 lg-3"
         rounded
       >
-        <v-sheet class="pa-2 ma-2">
-          <CpuUsageCard />
-        </v-sheet>
+        <v-card
+          class="pa-2"
+          :title="t('systeminfo.CPU')"
+          prepend-icon="mdi-chip"
+        >
+          <CpuUsageInfo />
+        </v-card>
       </v-col>
       <v-col
         class="xs-1 sm-1 lg-3"
         rounded
       >
-        <v-sheet class="pa-2 ma-2">
+        <v-card
+          class="pa-2"
+          :title="t('systeminfo.DiskUsage')"
+          prepend-icon="mdi-chart-donut"
+        >
           <DiscUsageInfo />
-        </v-sheet>
+        </v-card>
       </v-col>
       <!-- <v-responsive width="100%"></v-responsive> -->
       <v-col class="xs-1 sm-1 lg-3">
-        <v-sheet
-          class="pa-2 ma-2"
-          rounded
+        <v-card
+          class="pa-2"
+          :title="t('systeminfo.Fans')"
+          prepend-icon="mdi-fan"
         >
-          <FanCard />
-        </v-sheet>
+          <FanInfo />
+        </v-card>
       </v-col>
       <v-col class="xs-1 sm-1 lg-3">
-        <v-sheet
-          class="pa-2 ma-2"
-          rounded
+        <v-card
+          class="pa-2"
+          :title="t('systeminfo.Temperature')"
+          prepend-icon="mdi-thermometer"
         >
-          <TemperatureCard />
-        </v-sheet>
+          <TemperatureInfo />
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
-  <!-- <v-card>{{ store.systemStatus }} </v-card> -->
-  <!-- </v-sheet> -->
 </template>
 
 <style lang="scss">
-.v-sheet {
+.v-card {
   min-width: 30ch;
-  /* min-height: 20ch; */
+  min-height: 280px;
 }
 .sensor-description {
   width: 10ch

@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import i18n from '@/plugins/i18n';
-import { useBackendStore } from '@/stores/backend';
+import { useVDRStore } from '@/stores/vdr';
 import type { VDRTimerInterface } from '@/stores/interfaces/VdrTimerInterface';
 
 enum RequestState {
@@ -64,7 +64,7 @@ enum RequestState {
     Error
 }
 
-const store = useBackendStore()
+const vdr = useVDRStore()
 const timers: Ref<VDRTimerInterface[]> = ref([])
 const isLoadingTimers: Ref<boolean> = ref(true)
 const timerLoadingState: Ref<RequestState> = ref(RequestState.Unused)
@@ -73,7 +73,7 @@ const reloadTimers = async function () {
   isLoadingTimers.value = true
   timerLoadingState.value = RequestState.Pending
   try {
-    timers.value = await store.loadTimers()
+    timers.value = await vdr.loadTimers()
     timerLoadingState.value = RequestState.Success
   } catch (error) {
     console.log('could not load timers', error)

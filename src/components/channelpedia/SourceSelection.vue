@@ -199,10 +199,10 @@ async function getChannelsByGroup(groupName: ChannelCategoryInterface) {
       const [source, position, group] = groupName.id.split('|', 3)
       const url = `/channelpedia/get_group_channels/${source}/${position}/${group}`
       console.log('fetching data for ', url)
-      const result = await store.getRequest(url)
-      if (result) {
-        channelpediaSubGroupMap.value.set(groupName.id, result)
-        groupName.children = result
+      const response = await store.getRequest(url)
+      if (response.data) {
+        channelpediaSubGroupMap.value.set(groupName.id, response.data)
+        groupName.children = response.data
       } else {
         groupName.children = []
       }
@@ -240,7 +240,10 @@ const getFlagEmoji = (countryCode: string) => {
 onMounted(async () => {
   try {
     isLoadingMap.value.set('channelpediaMain', true)
-    channelpediaData.value = await store.getRequest('/channelpedia/get_categories')
+    const response =  await store.getRequest('/channelpedia/get_categories')
+    if (response.data) {
+      channelpediaData.value = response.data
+    }
     isLoadingMap.value.set('channelpediaMain', false)
     // console.log(channelpediaData.value)
     if (locationItems.value && locationItems.value.length > 0) {

@@ -56,8 +56,9 @@ import type { configFileInterface } from '@/components/FileEditor/interfaces';
 import { downloadBlob } from '@/services/download';
 import { useI18n } from 'vue-i18n';
 import { useBackendStore } from '@/stores/backend';
+import type { AxiosResponse } from 'axios';
 
-const store = useBackendStore()
+const backend = useBackendStore()
 
 const { t } = useI18n()
 
@@ -79,8 +80,10 @@ function createDownloadFile() {
 
 async function loadFileContent(config: configFileInterface) {
   try {
-    const data: string = await store.getRequest(`${config.url}?filename=${encodeURIComponent(config.filename)}`)
-    return data
+    const response: AxiosResponse = await backend.getRequest(
+      `${config.url}?filename=${encodeURIComponent(config.filename)}`
+    )
+    return response.data
   } catch (error) {
     console.error(error)
   }
@@ -99,7 +102,7 @@ async function saveFilecontent(content: string, config: configFileInterface) {
   console.log("save file", config.filename, ": ", content)
   const blob = new Blob([content], {type: "text/plain"})
   const file = new File([blob], config.filename);
-  const r = await store.uploadFile(encodeURI(`${config.url}/${config.filename}`), file)
+  const r = await backend.uploadFile(encodeURI(`${config.url}/${config.filename}`), file)
   console.log("file upload:", r)
   if (r) {
     emit('saved')

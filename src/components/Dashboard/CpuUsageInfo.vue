@@ -15,7 +15,6 @@ const gradients = [
 </script>
 
 <template>
-  <h2><v-icon>mdi-chip</v-icon>{{ $t('systeminfo.CPU') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>
@@ -64,6 +63,10 @@ const gradients = [
     stroke-linecap="round"
     type="trend"
     auto-draw
+    height="80px"
+    min="0"
+    :max="store.systemStatus?.cpu_num"
   />
+   <!-- {{ store.cpu_average_load[store.cpu_average_load.length - 1] }} -->
   <!-- CPU 10 minute average load: {{ store.systemStatus?.load_average.last_10_min.toFixed(1) }} % -->
 </template>

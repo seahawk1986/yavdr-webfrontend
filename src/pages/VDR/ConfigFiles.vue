@@ -1,6 +1,7 @@
 <template>
   <v-sheet
     fill-horizonal
+    :height="height - store.titlebarHeight"
   >
     <v-container
       fluid
@@ -50,7 +51,11 @@
 
 <script lang="ts" setup>
 import type { configFileInterface } from '@/components/FileEditor/interfaces';
+import { useBackendStore } from '@/stores/backend';
+import { useDisplay } from "vuetify";
 
+const store = useBackendStore()
+const {height} = useDisplay()
 // import { useI18n } from 'vue-i18n';
 // const { t } = useI18n()
 
@@ -104,6 +109,15 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     description: "VDR settings",
     icon: "mdi-cog",
     showEditor: false,
-  }
+  },
+  {
+    filename: "plugins/menuorg.xml",
+    url: "vdr/configfile",
+    title: "plugins/menuorg.xml",
+    description: "menuorg configuration",
+    icon: "mdi-list-box-outline",
+    showEditor: false,
+  },
+
 ])
 </script>

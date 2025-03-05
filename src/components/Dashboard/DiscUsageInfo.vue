@@ -5,7 +5,6 @@ const cleanIDRegex = new RegExp('/', 'g')
 </script>
 
 <template>
-  <h2><v-icon>mdi-chart-donut</v-icon>{{ $t('systeminfo.DiskUsage') }}</h2>
   <v-table density="compact">
     <thead>
       <tr>

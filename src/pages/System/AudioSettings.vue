@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useBackendStore } from '@/stores/backend'
+import { useAudioStore } from '@/stores/audio'
+import { useI18n } from 'vue-i18n'
 
-const store = useBackendStore()
+const backend = useBackendStore()
+const audio = useAudioStore()
+const {t} = useI18n()
 
 interface VdrAudioChannelInterface {
   number: number,
@@ -14,28 +18,28 @@ const VdrAudioChannels: Ref<Array<VdrAudioChannelInterface>> = ref([])
 const selectedVdrAudioChannel: Ref<number> = ref(1)
 
 onMounted(async () => {
-  store.listPulseaudioSinks()
+  audio.listPulseaudioSinks()
   await refreshVDRAudioChannels()
 })
 
 function submit() {
-  console.log('new sink selected:', store.listedPulseSinks.default_sink)
-  store.postRequest('/audio/set_default_pulseaudio_sink', {
-    sink: store.listedPulseSinks.default_sink,
+  console.log('new sink selected:', audio.listedPulseSinks.default_sink)
+  backend.postRequest('/audio/set_default_pulseaudio_sink', {
+    sink: audio.listedPulseSinks.default_sink,
     scopes: []
   })
 }
 function refresh() {
-  store.listPulseaudioSinks()
+  audio.listPulseaudioSinks()
 }
 
 async function refreshVDRAudioChannels() {
   try {
 
-    const data = await store.getRequest('/vdr/audiochannel')
-    if (data) {
-      VdrAudioChannels.value = data
-      selectedVdrAudioChannel.value = data.find((channel: VdrAudioChannelInterface) => channel.selected).number
+    const request = await backend.getRequest('/vdr/audiochannel')
+    if (request) {
+      VdrAudioChannels.value = request.data
+      selectedVdrAudioChannel.value = request.data.find((channel: VdrAudioChannelInterface) => channel.selected).number
     }
   } catch (error) {
     console.error("could not list VDR' audio channels", error)
@@ -45,7 +49,7 @@ async function refreshVDRAudioChannels() {
 async function setVDRAudioChannel() {
   const channel = selectedVdrAudioChannel.value
   console.log("set audio channel to", channel)
-  store.postRequest(`/vdr/audiochannel?channel=${channel}`, {
+  backend.postRequest(`/vdr/audiochannel?channel=${channel}`, {
     scopes: []
   })
 }
@@ -57,22 +61,24 @@ async function setVDRAudioChannel() {
   >
     <v-row no-gutters>
       <v-col
+        class="mx-auto"
         col="12"
         md="6"
       >
         <v-card
           class="ma-2 pa-2"
+          prepend-icon="mdi-speaker-multiple"
+          :title="t('audio.audioOutput') + ' (PulseAudio)'"
         >
-          <v-card-title>Audio Output</v-card-title>
           <v-card-text
-            v-if="store.pulseErrorMessage === null"
+            v-if="audio.pulseErrorMessage === null"
           >
             <v-radio-group
-              v-model="store.listedPulseSinks.default_sink"
+              v-model="audio.listedPulseSinks.default_sink"
               @update:model-value="submit"
             >
               <template
-                v-for="device in store.listedPulseSinks.pulse_devices"
+                v-for="device in audio.listedPulseSinks.pulse_devices"
                 :key="device.device"
               >
                 <v-radio
@@ -87,7 +93,7 @@ async function setVDRAudioChannel() {
             v-else
           >
             <h2>
-              {{ store.pulseErrorMessage }}
+              {{ audio.pulseErrorMessage }}
             </h2>
           </v-card-text>
           <v-card-actions>
@@ -96,7 +102,7 @@ async function setVDRAudioChannel() {
               prepend-icon="mdi-refresh"
               @click="refresh"
             >
-              refresh
+              {{ t('actions.reload') }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -104,8 +110,9 @@ async function setVDRAudioChannel() {
       <v-col>
         <v-card
           class="ma-2 pa-2"
+          prepend-icon="mdi-soundbar"
+          :title="t('audio.vdrAudioChannel')"
         >
-          <v-card-title>VDR Audio Channel Selection</v-card-title>
           <v-card-text>
             <v-radio-group
               v-model="selectedVdrAudioChannel"
@@ -129,7 +136,7 @@ async function setVDRAudioChannel() {
               prepend-icon="mdi-refresh"
               @click="refreshVDRAudioChannels"
             >
-              refresh
+              {{ t('actions.reload') }}
             </v-btn>
           </v-card-actions>
         </v-card>

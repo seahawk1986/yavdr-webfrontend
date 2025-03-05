@@ -79,6 +79,11 @@
         title="Plugins"
       />
       <v-list-item
+        prepend-icon="mdi-toy-brick"
+        to="/vdr/VDRStartArguments"
+        title="Start Arguments"
+      />
+      <v-list-item
         prepend-icon="mdi-list-box-outline"
         to="/System/LogViewer"
         title="Syslog"
