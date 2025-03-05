@@ -6,7 +6,7 @@
       close-text="Close"
       color="primary"
     >
-    <!-- how to place text? -->
+    <!-- TODO: currently invisible - how to place text? -->
     </v-snackbar-queue>
   </div>
 </template>
