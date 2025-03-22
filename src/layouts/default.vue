@@ -1,16 +1,19 @@
 <template>
-  <v-app>
-    <TitleBar id="titlebar" />
-    <NavBar />
-    <notification-queue-display />
-    <v-main>
-      <router-view v-slot="{ Component }">
-        <keep-alive>
-          <component :is="getView(Component)" />
-        </keep-alive>
-      </router-view>
-    </v-main>
-  </v-app>
+  <TitleBar id="titlebar" />
+  <NavBar />
+  <notification-queue-display />
+  <v-main>
+    <router-view
+      v-slot="{ Component }"
+    >
+      <keep-alive>
+        <component
+          :is="getView(Component)"
+          id="mainArea"
+        />
+      </keep-alive>
+    </router-view>
+  </v-main>
 </template>
 
 <script lang="ts" setup>
@@ -25,13 +28,16 @@
 
   // const { t } = useI18n();
   const store = useBackendStore()
-  store.isOnMobile = useDisplay().mobile.value
+  const { height, mobile } = useDisplay()
+  store.isOnMobile = mobile.value
+
   
-  onMounted(() => {
+  onMounted(async () => {
     //   consolse.log("App runs on a mobile device:", store.isOnMobile) // false
     const titlebarHeight = document.getElementById('titlebar')?.clientHeight
     if (titlebarHeight) {
       store.titlebarHeight = titlebarHeight
+      store.mainAreaHeight = height.value - titlebarHeight
     }
   })
 

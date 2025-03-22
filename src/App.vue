@@ -1,9 +1,5 @@
 <template>
-  <v-app>
+  <v-app id="root">
     <router-view />
   </v-app>
 </template>
-
-<script lang="ts" setup>
-  //
-</script>

@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AnsiblePlaybook: typeof import('./components/AnsiblePlaybook.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     ChannelCandidateList: typeof import('./components/channelpedia/ChannelCandidateList.vue')['default']
     ChannelEditor: typeof import('./components/ChannelEditor.vue')['default']

@@ -1,19 +1,24 @@
 <template>
   <v-card>
-    <v-card-title>{{ t('category.editor', {what: props.fileconfig.filename}) }}</v-card-title>
+    <v-card-title>
+      {{
+        t("category.editor", { what: props.fileconfig.filename })
+      }}
+    </v-card-title>
     <v-card-text>
       <v-textarea
         v-model="editableFileContent"
         autofocus
         auto-grow
         style="max-height: 100%"
+        spellcheck="false"
       />
     </v-card-text>
     <v-card-actions>
       <v-file-input
         v-model="fileToUpload"
         accept="*.conf"
-        :label="t('actions.uploadSth', {what: props.fileconfig.filename})"
+        :label="t('actions.uploadSth', { what: props.fileconfig.filename })"
         :loading="isUploading"
         prepend-icon="mdi-upload"
         :rules="[validateFileType]"
@@ -29,15 +34,16 @@
         variant="tonal"
         @click="emit('abort')"
       >
-        {{ t('actions.cancel') }}
+        {{ t("actions.cancel") }}
       </v-btn>
       <v-btn
+        :loading="isSaving"
         color="green"
         prepend-icon="mdi-floppy"
         variant="tonal"
         @click="saveFilecontent(editableFileContent, props.fileconfig)"
       >
-        {{ t('actions.save') }}
+        {{ t("actions.save") }}
       </v-btn>
       <v-btn
         color="secondary"
@@ -45,86 +51,90 @@
         variant="tonal"
         @click="createDownloadFile"
       >
-        {{ t('actions.download') }}
+        {{ t("actions.download") }}
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-import type { configFileInterface } from '@/components/FileEditor/interfaces';
-import { downloadBlob } from '@/services/download';
-import { useI18n } from 'vue-i18n';
-import { useBackendStore } from '@/stores/backend';
-import type { AxiosResponse } from 'axios';
+import type { configFileInterface } from "@/components/FileEditor/interfaces";
+import { downloadBlob } from "@/services/download";
+import { useI18n } from "vue-i18n";
+import { useBackendStore } from "@/stores/backend";
 
-const backend = useBackendStore()
+const backend = useBackendStore();
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const editableFileContent: Ref<string> = ref('')
+const editableFileContent: Ref<string> = ref("");
+const isSaving: Ref<boolean> = ref(false)
 
 const props = defineProps<{
-  fileconfig: configFileInterface
+  fileconfig: configFileInterface;
 }>();
 
 const emit = defineEmits<{
-  (e: 'abort'): void
-  (e: 'saved'): void
-}>()
+  (e: "abort"): void;
+  (e: "saved"): void;
+}>();
 
 function createDownloadFile() {
-  const blob = new Blob([editableFileContent.value], {type: "text/plain"})
-  downloadBlob(blob, props.fileconfig.filename)
+  const blob = new Blob([editableFileContent.value], { type: "text/plain" });
+  downloadBlob(blob, props.fileconfig.filename);
 }
 
 async function loadFileContent(config: configFileInterface) {
   try {
-    const response: AxiosResponse = await backend.getRequest(
+    const response = await backend.getRequest(
       `${config.url}?filename=${encodeURIComponent(config.filename)}`
-    )
-    return response.data
+    );
+    if (response?.data) editableFileContent.value = response.data;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
-  return ""
 }
 
 onMounted(async () => {
-    editableFileContent.value = await loadFileContent(props.fileconfig)
-})
+  await loadFileContent(props.fileconfig);
+});
 
-const isUploading: Ref<boolean> = ref(false)
-const uploadDisabled: Ref<boolean> = ref(false)
-const fileToUpload: Ref<File|null> = ref(null)
+const isUploading: Ref<boolean> = ref(false);
+const uploadDisabled: Ref<boolean> = ref(false);
+const fileToUpload: Ref<File | null> = ref(null);
 
 async function saveFilecontent(content: string, config: configFileInterface) {
-  console.log("save file", config.filename, ": ", content)
-  const blob = new Blob([content], {type: "text/plain"})
+  isSaving.value = true
+  console.log("save file", config.filename, ": ", content);
+  const blob = new Blob([content], { type: "text/plain" });
   const file = new File([blob], config.filename);
-  const r = await backend.uploadFile(encodeURI(`${config.url}/${config.filename}`), file)
-  console.log("file upload:", r)
+  const r = await backend.uploadFileWithStreamingResponseTC(
+    `${encodeURI(`${config.url}/${config.filename}`)}`,
+    file, (data) => {console.log(data)},
+  );
+  console.log("file upload:", r);
   if (r) {
-    emit('saved')
+    await loadFileContent(props.fileconfig)
+    isSaving.value = false
+    emit("saved");
   }
 }
 
 async function uploadFile() {
-  isUploading.value = true
+  isUploading.value = true;
   if (fileToUpload.value) {
-    editableFileContent.value = await fileToUpload.value?.text()
+    editableFileContent.value = await fileToUpload.value?.text();
   }
-  isUploading.value = false
+  isUploading.value = false;
 }
 
 async function validateFileType() {
-  if (fileToUpload.value == null || fileToUpload.value?.type == 'text/plain') {
-    uploadDisabled.value = true
-    return false
+  if (fileToUpload.value == null || fileToUpload.value?.type == "text/plain") {
+    uploadDisabled.value = true;
+    return false;
   } else {
-    uploadDisabled.value = false
-    return true
+    uploadDisabled.value = false;
+    return true;
   }
 }
-
 </script>

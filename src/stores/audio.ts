@@ -31,7 +31,7 @@ export const useAudioStore = defineStore("audio", () => {
     console.log("called listPulseAudioSinks");
     backend.getRequest("audio/list_pulseaudio_sinks")
       .then((response) => {
-        if (response.status == 200) {
+        if (response?.status && response.status == 200 && response?.data != null) {
           listedPulseSinks.value = response.data;
           console.log("audio sinks:", response.data);
           pulseErrorMessage.value = null;

@@ -1,5 +1,6 @@
 <template>
   <v-app-bar
+    id="appbar"
     :elevation="2"
     scrim
     :location="$vuetify.display.mobile ? 'bottom' : undefined"
@@ -50,7 +51,9 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
 import { useBackendStore } from '@/stores/backend';
+
 const { t } = useI18n()
 const store = useBackendStore()
+
 
 </script>

@@ -1,9 +1,8 @@
 <template>
   <v-card
-    class="scrollable-container overflow-auto"
-    :height="height - store.titlebarHeight"
+    class="scrollable-container overflow-auto h-100"
   >
-    <v-card-title>
+    <v-card-title id="innerTitle">
       <h2>
         VDR Setup
         <v-btn
@@ -20,143 +19,148 @@
             cols="8"
             md="6"
             lg="4"
-          >
-            <v-text-field
-              v-model="searchText"
-              prepend-icon="mdi-magnify"
-              :label="t('actions.searchObj', {what: t('category.entry')})"
-              :aria-label="t('actions.searchObj', {what: t('category.entry')})"
-              variant="outlined"
-              clearable
-            />
-          </v-col>
+          />
         </v-row>
       </v-container>
     </v-card-title>
-    <v-card-text>
-      <!-- TODO: fix virtual scroll when searching for entries -->
-      <v-virtual-scroll
-        :items="visibleEntries"
-        aria-label="Setup Entries"
-        :height="height - store.titlebarHeight - 200"
+
+    <v-card-text class="pb-0">
+      <v-text-field
+        id="searchbar"
+        v-model="searchText"
+        prepend-inner-icon="mdi-magnify"
+        :label="t('actions.searchObj', {what: t('category.entry')})"
+        :aria-label="t('actions.searchObj', {what: t('category.entry')})"
+        variant="outlined"
+        clearable
+        hide-details
+        single-line
+      />
+      <v-data-table-virtual
+        :headers="[
+          {title: 'Name', value:'name'},
+          {title: 'Setting', value:'value', sortable: false},
+          {title: 'Action', sortable: false, width:'20vW'},
+          // {title: 'MinValue', value:'min_value'},
+          // {title: 'MaxValue', value:'max_value'},
+        ]"
+        :items="vdrSetupEntries"
+        :loading="isLoading"
+        :filter-keys="['name']"
+        :search="searchText"
+        :custom-filter="(text, searchTerm) => {
+          return text?.toLowerCase().includes(searchTerm.toLowerCase())
+        }"
+        :height="listHeight"
+        width="50vW"
+        item-value="name"
       >
-        <template #default="{ item }: { item: VDRSetupInterface }">
-          <v-list-item
-            density="compact"
-            class="py-0"
-            height="64"
-          >
-            <v-container>
-              <v-row no-gutters>
-                <!-- {{ item.name }} -->
-                <v-col
-                  v-if="
-                    !item.max_value
-                      &&
-                      !item.min_value"
-                  cols="8"
-                  md="6"
-                  lg="4"
-                >
-                  <!-- int64 value -->
-                  <v-number-input
-                    class="my-2"
-                    :model-value="Number(item.value)"
-                    :label="item.name"
-                    :hide-spin-buttons="mobile"
-                    :min="0"
-                    :max="9007199254740991"
-                    variant="outlined"
-                    hide-details
-                    density="compact"
-                    :aria-label="item.name"
-                  />
-                </v-col>
-                <v-col
-                  v-else-if="item.min_value == 0 && item.max_value == 1"
-                  cols="8"
-                  md="6"
-                  lg="4"
-                  align-self="end"
-                >
-                  <v-switch 
-                    v-model="item.value"
-                    :label="item.name"
-                    class="mb-3"
-                    color="primary"
-                    density="compact"
-                    :true-value="1"
-                    :false-value="0"
-                    :aria-label="item.name"
-                    inset
-                    hide-details
-                  />
-                </v-col>
-                <v-col
-                  v-else-if="!item.min_value && item.max_value"
-                  cols="8"
-                  md="6"
-                  lg="4"
-                >
-                  <!-- String and max len -->
-                  <v-text-field
-                    v-model="item.value"
-                    :label="item.name"
-                    :aria-label="item.name"
-                    class="mt-2 mb-n4"
-                    variant="outlined"
-                    density="compact"
-                  />
-                </v-col>
-                <v-col
-                  v-else-if="item.min_value && item.max_value"
-                  cols="8"
-                  md="6"
-                  lg="4"
-                >
-                  <v-number-input
-                    :model-value="Number(item.value)"
-                    :label="item.name"
-                    class="my-2"
-                    :min="item.min_value"
-                    :max="item.max_value"
-                    variant="outlined"
-                    hide-details
-                    density="compact"
-                  />
-                </v-col>
-                <v-col
-                  cols="4"
-                  md="6"
-                  lg="2"
-                  class="md-3 mt-2 mb-2"
-                  align="start"
-                  justify="bottom"
-                >
-                  <v-btn
-                    icon="mdi-reload"
-                    color="secondary"
-                    size="small"
-                    class="ml-2"
-                    @click="reloadValue(item.name)"
-                  />
-                  <v-divider
-                    thickness="10"
-                    vertical
-                  />
-                  <v-btn
-                    color="primary"
-                    icon="mdi-floppy"
-                    size="small"
-                    @click="sendValue(item.name, item.value)"
-                  />
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-list-item>
-          <v-divider />
+        <template #item="{ item }">
+          <tr>
+            <td>
+              <v-btn
+                icon="mdi-reload"
+                color="secondary"
+                size="small"
+                class="ml-2"
+                :aria-label="t('actions.updateSth', {what: t('category.entry') + ' ' + item.name})"
+                @click="reloadValue(item.name)"
+              />
+              <v-divider
+                thickness="10"
+                vertical
+              />
+              {{ item.name }}
+            </td>
+            <td>
+              <!-- boolean value -->
+              <v-switch 
+                v-if="item.min_value == 0 && item.max_value == 1"
+                v-model="item.value"
+                class="mb-3"
+                color="primary"
+                density="compact"
+                :inline="true"
+                :true-value="1"
+                :false-value="0"
+                :aria-label="item.name"
+                inset
+                hide-details="auto"
+                :center-affix="true"
+              />
+              <!-- most likely a string value with a given maximum length-->
+              <v-text-field
+                v-else-if="(item.min_value == null) && (item.max_value !==null)"
+                v-model="item.value"
+                :aria-label="item.name"
+                class="mt-2 mb-n4"
+                variant="outlined"
+                density="compact"
+                :rules="[
+                  ((value: string) => {
+                    if (item.max_value && item.max_value > 0) {
+                      if (value.length > item.max_value) return `Value longer than ${item.max_value}`
+                    }
+                    return false
+                  }),
+                ]"
+              />
+              <v-number-input
+                v-else-if="
+                  !(item.max_value == null)
+                    &&
+                    !(item.min_value == null)"
+                class="my-2"
+                :model-value="Number(item.value)"
+                :hide-spin-buttons="mobile"
+                :min="0"
+                :max="9007199254740991"
+                variant="outlined"
+                hide-details
+                density="compact"
+                :aria-label="item.name"
+              />
+              <v-number-input
+                v-else-if="(item.min_value !== null) && (item.max_value !== null)"
+                :model-value="Number(item.value)"
+                class="my-2"
+                :min="item.min_value"
+                :max="item.max_value"
+                variant="outlined"
+                hide-details
+                density="compact"
+              />
+            </td>
+            <td>
+              <!-- <v-btn
+                icon="mdi-reload"
+                color="secondary"
+                size="small"
+                class="ml-2"
+                @click="reloadValue(item.name)"
+              /> -->
+
+              <v-btn
+                color="primary"
+                icon="mdi-floppy"
+                size="small"
+                @click="sendValue(item.name, item.value)"
+              />
+              <!-- <v-col
+                cols="4"
+                md="6"
+                lg="2"
+                class="md-3 mt-2 mb-2"
+                align="start"
+                justify="bottom"
+              >
+              </v-col> -->
+            </td>
+            <!-- <td>{{ item.min_value }}</td>
+            <td>{{ item.max_value }}</td> -->
+          </tr>
         </template>
-      </v-virtual-scroll>
+      </v-data-table-virtual>
     </v-card-text>
   </v-card>
 </template>
@@ -168,7 +172,7 @@ import { useBackendStore } from '@/stores/backend';
 import { useI18n } from 'vue-i18n';
 import { downloadBlob } from '@/services/download';
 
-const { height, mobile } = useDisplay()
+const { mobile } = useDisplay()
 const { t } = useI18n();
 const store = useBackendStore()
 
@@ -182,25 +186,16 @@ interface VDRSetupInterface {
   min_value: number|null
 }
 
-const setupEntries: Ref<VDRSetupInterface[]> = ref([])
+const listHeight = ref(0)
 
-const visibleEntries = computed(()=> {
-  console.log("recalculate VisibleEntries")
-  if (searchText.value?.length > 0) {
-    return setupEntries.value.filter((entry) => entry.name.toLowerCase().includes(searchText.value.toLowerCase()))
-  } else {
-    return setupEntries.value
-  }
-})
-
-
+const vdrSetupEntries: Ref<VDRSetupInterface[]> = ref([])
 
 async function loadVDRSetup() {
   isLoading.value = true
   try {
     const response = await store.getRequest('/vdr/setup')
     if (response?.data) {
-      setupEntries.value = response.data
+      vdrSetupEntries.value = response.data
     }
   } catch (error) {
     console.error("could not load setup from vdr:", error)
@@ -213,8 +208,8 @@ async function reloadValue(name: string) {
   try {
     const response = await store.getRequest(`/vdr/setup?key=${encodeURIComponent(name)}`)
     if (response?.data) {
-      const idx = setupEntries.value.findIndex((element) => element.name === name)
-      setupEntries.value[idx].value = response.data
+      const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
+      vdrSetupEntries.value[idx].value = response.data
       // const idx2 = visibleEntries.value.findIndex((element) => element.name === name)
       // visibleEntries.value[idx2].value = value
       console.log("updated value for: ", name, ': ', response.data, 'at index', idx)
@@ -226,8 +221,8 @@ async function reloadValue(name: string) {
 }
 
 async function sendValue(name: string, value: string|number) {
-  const idx = setupEntries.value.findIndex((element) => element.name === name)
-  setupEntries.value[idx].value = value
+  const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
+  vdrSetupEntries.value[idx].value = value
   console.log("saved value for: ", name, ': ', value, 'at index', idx)
   try {
     await store.postRequest(`/vdr/setup?key=${encodeURIComponent(name)}&value=${encodeURIComponent(value)}`, {})
@@ -239,7 +234,7 @@ async function sendValue(name: string, value: string|number) {
 
 async function offerSetupConf() {
   const setupConfList: string[] = []
-  setupEntries.value.forEach((entry) => {
+  vdrSetupEntries.value.forEach((entry) => {
     setupConfList.push(`${entry.name} = ${entry.value}\n`)
   })
   const blob = new Blob(setupConfList, {type: "text/plain"})
@@ -248,5 +243,19 @@ async function offerSetupConf() {
 
 onMounted(async () => {
   await loadVDRSetup()
+  const titleElement = (await store.waitForElm('#innerTitle'))
+  const searchbarElement = (await store.waitForElm('#searchbar'))
+  if (searchbarElement && titleElement) {
+    console.log("title height:", titleElement.clientHeight)
+    console.log("searchbar height:", searchbarElement.clientHeight)
+    listHeight.value = (
+      store.mainAreaHeight
+       - titleElement.clientHeight
+       - searchbarElement.clientHeight
+      )
+    console.log("listHeight:", listHeight.value)
+  } else {
+    listHeight.value = store.mainAreaHeight - 128
+  }
 })
 </script>

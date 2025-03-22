@@ -200,7 +200,7 @@ async function getChannelsByGroup(groupName: ChannelCategoryInterface) {
       const url = `/channelpedia/get_group_channels/${source}/${position}/${group}`
       console.log('fetching data for ', url)
       const response = await store.getRequest(url)
-      if (response.data) {
+      if (response?.data) {
         channelpediaSubGroupMap.value.set(groupName.id, response.data)
         groupName.children = response.data
       } else {
@@ -241,7 +241,7 @@ onMounted(async () => {
   try {
     isLoadingMap.value.set('channelpediaMain', true)
     const response =  await store.getRequest('/channelpedia/get_categories')
-    if (response.data) {
+    if (response?.data) {
       channelpediaData.value = response.data
     }
     isLoadingMap.value.set('channelpediaMain', false)

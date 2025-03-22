@@ -44,13 +44,13 @@ const vdrPluginConfig: Ref<PluginConfig[]> = ref([]);
 async function loadPlugins() {
   {
     const response = await store.getRequest("/vdr/plugins");
-    if (response?.data) {
+    if (response) {
       console.log(response.data);
       vdrPlugins.value = response.data;
     }
   }
   const response = await store.getRequest("/vdr/plugin_config");
-  if (response.data) {
+  if (response) {
     const config = response.data;
     config.map((item: PluginConfig) => {
       originalArgs.set(item.name, item.arguments);

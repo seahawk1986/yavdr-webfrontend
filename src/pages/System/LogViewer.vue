@@ -1,15 +1,17 @@
 <template>
   <v-card
-    class="ma-0"
-    :height="height - store.titlebarHeight"
+    ref="mainCard"
+    class="ps-2 h-100"
   >
     <v-toolbar
+      id="innerToolbar"
+      name="innerToolbar"
       color="grey-darken-4"
       dark
       flat
     >
       <v-toolbar-title>System Journal</v-toolbar-title>
-
+        
       <v-tooltip
         location="top"
         :text="t('log.autoscroll')"
@@ -79,13 +81,11 @@
         density="compact"
       />
     </v-toolbar>
-    <v-card-text>
+    <v-card-text class="ma-0 pa-0">
       <v-infinite-scroll
         id="goto-container"
         :items="logEntries"
-        :height="
-          $vuetify.display.mobile ? '73svh' : height - store.titlebarHeight - 80
-        "
+        :height="computedHeight"
         side="both"
         @load="load"
       >
@@ -133,21 +133,21 @@
 </template>
 
 <script lang="ts" setup>
-import { useBackendStore } from "@/stores/backend";
-import { useDate, useGoTo } from "vuetify";
-import { useI18n } from "vue-i18n";
-import { VInfiniteScroll } from "vuetify/components";
-import { useDisplay } from "vuetify";
+import { useBackendStore } from "@/stores/backend"
+import { useDate, useGoTo } from "vuetify"
+import { useI18n } from "vue-i18n"
+import { VInfiniteScroll } from "vuetify/components"
 
-const { height } = useDisplay();
+const { t } = useI18n()
+const date = useDate()
+const goTo = useGoTo()
 
-const { t } = useI18n();
-const date = useDate();
-const goTo = useGoTo();
 
 const store = useBackendStore();
 const logEntries: Ref<Array<logEntryInterface>> = ref([]);
 const scrollToLastElement: Ref<boolean> = ref(true);
+  
+const innerToolbarHeight = ref(0)
 
 function formatDate(element: logEntryInterface) {
   return `${date.format(element.REALTIME_TIMESTAMP, "shortDate")} ${date.format(
@@ -157,6 +157,11 @@ function formatDate(element: logEntryInterface) {
 }
 
 onMounted(async () => {
+  const toolbarHeight = document.getElementById('innerToolbar')?.clientHeight
+  if (toolbarHeight) {
+    innerToolbarHeight.value = toolbarHeight
+    console.log("innerToolbarHeight:", innerToolbarHeight.value, "mainAreaHeight:", store.mainAreaHeight)
+  }
   const response = await store.getRequest(
     "/logs/?start=now&n_entries=200&direction=forward"
   )
@@ -223,6 +228,11 @@ const scrollOptions = computed(() => {
   };
 });
 
+const computedHeight = computed(() => {
+  console.log("computing main height:", store.mainAreaHeight, innerToolbarHeight.value)
+  return (store.mainAreaHeight - innerToolbarHeight.value)
+})
+
 // const darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)')
 const filterLogLevel: Ref<number> = ref(7);
 const filteredLogEntries = computed(() => {
@@ -287,7 +297,7 @@ async function load(
             logEntries.value.push(...entries);
             if (scrollToLastElement.value) {
               const lastEntry = entries[entries.length - 1];
-              const element = await waitForElm(
+              const element = await store.waitForElm(
                 `#${CSS.escape(lastEntry.CURSOR)}`
               );
               if (element) {
@@ -302,27 +312,5 @@ async function load(
   }
 
   done("ok");
-}
-
-// https://stackoverflow.com/a/61511955
-function waitForElm(selector: string): Promise<Element | null> {
-  return new Promise((resolve) => {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector));
-    }
-
-    const observer = new MutationObserver(() => {
-      if (document.querySelector(selector)) {
-        observer.disconnect();
-        resolve(document.querySelector(selector));
-      }
-    });
-
-    // If you get "parameter 1 is not of type 'Node'" error, see https://stackoverflow.com/a/77855838/492336
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-  });
 }
 </script>

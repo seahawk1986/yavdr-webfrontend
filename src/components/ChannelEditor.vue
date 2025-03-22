@@ -215,7 +215,7 @@ const scrollOptions = computed(() => {
 });
 
 function getSourceIcon(source: string) {
-  if (!source) return "mdi-tag"
+  if (source.length == 0) return "mdi-tag"
   switch (source.slice(0, 1)) {
     case "T":
       return "mdi-antenna";
@@ -318,7 +318,6 @@ onMounted(async () => {
 
 <template>
   <!-- TODO: Channel Editor capabilities: 
-    * Move channel to position number x
     * Swap two channels
     * Add channelgroup above/below
     * Scratchpad to park subgroups of channels

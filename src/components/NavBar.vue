@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer
+    id="navbar"
     v-model:model-value="store.showNavigation"
   >
     <v-list>

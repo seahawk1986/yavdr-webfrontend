@@ -25,6 +25,7 @@ export default createI18n({
                 searchObj: "search {what}",
                 shutdown: "Poweroff",
                 update: "update",
+                updateSth: "update {what}",
                 upload: "upload",
                 uploadLabel: 'upload file',
                 uploadSth: "upload {what}",
@@ -45,6 +46,7 @@ export default createI18n({
                 epg: 'EPG',
                 entry: 'Entry',
                 editor: "{what} Editor",
+                vdrArguments: "VDR Arguments",
             },
             channels: {
                 channelNumberN: "channel number {number}",
@@ -134,6 +136,8 @@ export default createI18n({
                 search: "Suchen",
                 searchObj: "Suche {what}",
                 download: "Herunterladen",
+                update: "Aktualisieren",
+                updateSth: "{what} aktualisieren",
                 upload: "Hochladen",
                 uploadSth: "{what} hochladen",
                 loadSth: "{what} laden",
@@ -183,6 +187,7 @@ export default createI18n({
                 epg: 'EPG',
                 entry: 'Eintrag',
                 editor: "{what} Editor",
+                vdrArguments: "VDR Startargumente",
             },
             info: {
                 state: 'Status',

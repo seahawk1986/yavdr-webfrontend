@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import { computed, ref, type Ref } from "vue";
 import { until, useLocalStorage } from "@vueuse/core";
 import router from "@/router";
@@ -21,6 +21,7 @@ export const useBackendStore = defineStore("backend", () => {
   const jwToken = ls("jwToken", "");
   const selectedLocale = ls("locale", "");
   const titlebarHeight: Ref<number> = ref(0);
+  const mainAreaHeight: Ref<number> = ref(0);
   const hasToken = computed(() => jwToken.value.length > 0);
   // const refreshToken: Ref<string> = ref('')
   const showNavigation: Ref<boolean> = ref(false);
@@ -48,9 +49,9 @@ export const useBackendStore = defineStore("backend", () => {
 
         // if the login fails we have an old token, so let's throw it away
         // this causes the login mask to be shown
-        invalidateToken()
+        invalidateToken();
       } else {
-        console.error("Request failed: ", error.response.status, error.response.statusText);
+        console.error("Request failed: ", error);
       }
       return Promise.reject(error);
     }
@@ -79,14 +80,13 @@ export const useBackendStore = defineStore("backend", () => {
     }
   }
 
-  const sseClients: Ref<EventSourceController[]> = ref([])
+  const sseClients: Ref<EventSourceController[]> = ref([]);
   async function getSSEClient(url: string) {
     const client = new EventSourcePlus(url, {
-        headers: getHeaders(),
-      });
-    return client
+      headers: getHeaders(),
+    });
+    return client;
   }
-
 
   async function login(username: string, password: string): Promise<boolean> {
     jwToken.value = "";
@@ -116,9 +116,9 @@ export const useBackendStore = defineStore("backend", () => {
     if (jwToken.value.length > 0) {
       console.log("logout");
       sseClients.value.map((client) => {
-        client.abort()
-      })
-      invalidateToken()
+        client.abort();
+      });
+      invalidateToken();
       router.push("/");
     } else {
       console.log("already logged out");
@@ -133,7 +133,12 @@ export const useBackendStore = defineStore("backend", () => {
         console.log("successfully sent key:", response.data.toJSON);
       })
       .catch((error) => {
-        console.log("sending key press for '", keyname, "' failed: ", error.toJSON);
+        console.log(
+          "sending key press for '",
+          keyname,
+          "' failed: ",
+          error.toJSON
+        );
       });
   }
 
@@ -156,50 +161,67 @@ export const useBackendStore = defineStore("backend", () => {
     }
   }
 
-  async function getRequest(url: string) {
-    let final_result = null
+  async function doOrRepepeatAfterReauthentication(
+    axiosRequestPromise: Promise<AxiosResponse>
+  ): Promise<AxiosResponse | undefined> {
+    let final_result = null;
     do {
-      final_result = await axios_instance
-      .get(url)
-      .then((result) => {
-        console.log(
-          "get request for ",
-          url,
-          "returned:",
-          result.data,
-          result.status,
-          result.statusText
-        );
-        return result;
-      })
-      .catch(async (error) => {
-        console.error(error.toJSON());
-        return undefined;
-      });
-
+      final_result = await axiosRequestPromise
+        .then((result: AxiosResponse) => {
+          // console.log(
+          //   result.request.responseUrl,
+          //   "returned:",
+          //   result.data,
+          //   result.status,
+          //   result.statusText
+          // );
+          return result;
+        })
+        .catch(async (error) => {
+          console.error(error.toJSON());
+          return null;
+        });
       if (jwToken.value.length === 0) {
-        console.log("waiting for the jwToken to be set")
-        await until(jwToken).changed()
+        console.log("waiting for the jwToken to be set");
+        await until(jwToken).changed();
+        console.log("retrying request ...");
       }
+    } while (final_result === null);
+    return final_result;
+  }
 
-    } while (!final_result)
-    return final_result
+  async function getRequest(url: string): Promise<AxiosResponse | undefined> {
+    return doOrRepepeatAfterReauthentication(axios_instance.get(url));
   }
 
   async function postRequest(url: string, payload: unknown) {
-    return axios_instance
-      .post(url, payload)
+    return axios_instance.post(url, payload).then((response) => {
+      return response;
+    });
+  }
+
+  async function postRequestWithStreamingResponse(
+    url: string,
+    payload: unknown,
+    onData: (chunk: unknown) => void,
+    onEnd: (chunk: unknown) => void
+  ) {
+    axios_instance
+      .post(url, payload, { responseType: "stream" })
       .then((response) => {
-        return response;
-      })
+        response.data.on("data", (chunk: unknown) => {
+          onData(chunk);
+        });
+        response.data.on("end", (chunk: unknown) => {
+          onEnd(chunk);
+        });
+      });
   }
 
   async function putRequest(url: string, payload: unknown) {
-    return axios_instance
-      .post(url, payload)
-      .then((response) => {
-        return response;
-      })
+    return axios_instance.post(url, payload).then((response) => {
+      return response;
+    });
   }
 
   async function downloadFile(url: string) {
@@ -242,6 +264,125 @@ export const useBackendStore = defineStore("backend", () => {
       console.error(error); // Handle upload errors
       return [false, "upload failed"];
     }
+  }
+
+  async function uploadFileWithStreamingResponse(
+    url: string,
+    file: File,
+    onData: (chunk: unknown) => void,
+    onEnd: (chunk: unknown) => void
+  ): Promise<void> {
+    // Replace 'http://your-server.com/upload' with your actual server endpoint
+    axios_instance
+      .postForm(
+        url,
+        {
+          file: file,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        },
+        {
+          responseType: "stream",
+        }
+      )
+      .then((response) => {
+        console.log(response.data); // Handle successful upload response
+        response.data.on("data", (chunk: unknown) => {
+          onData(chunk);
+        });
+        response.data.on("end", (chunk: unknown) => {
+          onEnd(chunk);
+        });
+      })
+      .catch((error) => {
+        console.error(error); // Handle upload errors
+      });
+  }
+
+  async function uploadFileWithStreamingResponseTC(
+    url: string,
+    uploaded_file: File,
+    onData: (chunk: unknown) => void
+  ): Promise<boolean> {
+    // TODO: why does this fail?
+    let returnStatus = false;
+    try {
+      // Replace 'http://your-server.com/upload' with your actual server endpoint
+      const response = await axios_instance.postForm(
+        url,
+        {
+          uploaded_file: uploaded_file,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        },
+        {
+          responseType: "stream",
+          adapter: "fetch",
+          timeout: 60 * 60 * 1000,
+        }
+      );
+      const reader = (response.data as ReadableStream).getReader();
+      const decoder = new TextDecoder();
+
+      console.log("Streaming JSONL response:");
+
+      let buffer = "";
+      while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          console.log("got raw value: '", value ,"'")
+          
+          buffer += decoder.decode(value, { stream: true });
+          console.log("buffer:", buffer)
+
+          // Process complete JSON lines
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || ""; // Keep incomplete line for next iteration
+          
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              // remove 'data:'
+              const clean_line = line.replace(/^data:\s*/, '')
+              console.log("got line:", line)
+              try {
+                      const jsonData = JSON.parse(clean_line);
+                      console.log("Received JSON:", jsonData);
+                      if (jsonData.state === "done") {
+                      returnStatus = true
+                      // await reader.cancel()
+                      }
+                        
+                  } catch (error) {
+                      console.error("Failed to parse JSON:", error);
+                  }
+              }
+            else {
+              console.log("ignoring line:", line)
+            }
+          }
+      }
+
+      console.log("Streaming complete");
+    } catch (error) {
+        console.error("Error uploading file or processing response:", error);
+    }
+
+    //   // console.log("response data:", response); // Handle successful upload response
+    //   response.data.on("data", (chunk: unknown) => {
+    //     onData(chunk);
+    //   });
+    //   response.data.on("end", () => {
+    //     returnStatus = true;
+    //   });
+    // } catch (error) {
+    //   console.error("got an error:", error); // Handle upload errors
+    //   returnStatus = false;
+    // }
+    return returnStatus;
   }
 
   async function deleteRequest(url: string) {
@@ -288,12 +429,35 @@ export const useBackendStore = defineStore("backend", () => {
   //   })
   //   return _channelIdSet
   // })
+
+  // https://stackoverflow.com/a/61511955
+  function waitForElm(selector: string): Promise<Element | null> {
+    return new Promise((resolve) => {
+      if (document.querySelector(selector)) {
+        return resolve(document.querySelector(selector));
+      }
+
+      const observer = new MutationObserver(() => {
+        if (document.querySelector(selector)) {
+          observer.disconnect();
+          resolve(document.querySelector(selector));
+        }
+      });
+
+      // If you get "parameter 1 is not of type 'Node'" error, see https://stackoverflow.com/a/77855838/492336
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    });
+  }
   return {
     isOnMobile,
     showNavigation,
     showRemote,
     selectedLocale,
     titlebarHeight,
+    mainAreaHeight,
     login,
     logout,
     hasToken,
@@ -303,6 +467,7 @@ export const useBackendStore = defineStore("backend", () => {
     FatalError,
     getRequest,
     postRequest,
+    postRequestWithStreamingResponse,
     putRequest,
     deleteRequest,
     getSystemStatus,
@@ -310,7 +475,10 @@ export const useBackendStore = defineStore("backend", () => {
     cpu_average_load,
     systemStatus,
     uploadFile,
+    uploadFileWithStreamingResponse,
+    uploadFileWithStreamingResponseTC,
     downloadFile,
     sseClients,
+    waitForElm,
   };
 });

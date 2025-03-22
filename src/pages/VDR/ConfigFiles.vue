@@ -111,7 +111,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     showEditor: false,
   },
   {
-    filename: "plugins/menuorg.xml",
+    filename: "menuorg.xml",
     url: "vdr/configfile",
     title: "plugins/menuorg.xml",
     description: "menuorg configuration",
