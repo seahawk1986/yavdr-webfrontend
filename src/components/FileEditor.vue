@@ -114,7 +114,6 @@ async function saveFilecontent(content: string, config: configFileInterface) {
   );
   console.log("file upload:", r);
   if (r) {
-    await loadFileContent(props.fileconfig)
     isSaving.value = false
     emit("saved");
   }

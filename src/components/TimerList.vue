@@ -34,7 +34,13 @@
           /> 
         </td>
         <td>
-          {{ $d(item.day * 1000 /* JS uses milliseconds */) + ' ' }}<div style="white-space: nowrap">
+          <div v-if="item.start > 0">
+            {{ $d(item.start * 1000 /* JS uses milliseconds */) + ' ' }}
+          </div>
+          <div v-else>
+            {{ item.day }}
+          </div>
+          <div style="white-space: nowrap">
             {{ item.time }}
           </div>
         </td>

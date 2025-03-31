@@ -37,6 +37,7 @@ export const useBackendStore = defineStore("backend", () => {
 
   function invalidateToken() {
     // TODO: can the backend manage tokens resp. secret parts?
+    console.log("request failed with permission denied, invalidate token ...")
     jwToken.value = "";
   }
 
@@ -166,6 +167,11 @@ export const useBackendStore = defineStore("backend", () => {
   ): Promise<AxiosResponse | undefined> {
     let final_result = null;
     do {
+      if (jwToken.value.length === 0) {
+        console.log("waiting for the jwToken to be set");
+        await until(jwToken.value).changed();
+        console.log("retrying request ...");
+      }
       final_result = await axiosRequestPromise
         .then((result: AxiosResponse) => {
           // console.log(
@@ -178,14 +184,10 @@ export const useBackendStore = defineStore("backend", () => {
           return result;
         })
         .catch(async (error) => {
+          if (error.status != 401) return undefined;
           console.error(error.toJSON());
           return null;
         });
-      if (jwToken.value.length === 0) {
-        console.log("waiting for the jwToken to be set");
-        await until(jwToken).changed();
-        console.log("retrying request ...");
-      }
     } while (final_result === null);
     return final_result;
   }
@@ -206,16 +208,59 @@ export const useBackendStore = defineStore("backend", () => {
     onData: (chunk: unknown) => void,
     onEnd: (chunk: unknown) => void
   ) {
-    axios_instance
-      .post(url, payload, { responseType: "stream" })
-      .then((response) => {
-        response.data.on("data", (chunk: unknown) => {
-          onData(chunk);
-        });
-        response.data.on("end", (chunk: unknown) => {
-          onEnd(chunk);
-        });
+    console.log("Streaming JSONL response:");
+    let returnStatus = false;
+    try {
+      // Replace 'http://your-server.com/upload' with your actual server endpoint
+      const response = await axios_instance.post(url, payload, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+        responseType: "stream",
+        adapter: "fetch",
+        timeout: 60 * 60 * 1000,
       });
+      const reader = (response.data as ReadableStream).getReader();
+      const decoder = new TextDecoder();
+
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        // console.log("got raw value: '", value, "'");
+
+        buffer += decoder.decode(value, { stream: true });
+        // console.log("buffer:", buffer);
+
+        // Process complete JSON lines
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || ""; // Keep incomplete line for next iteration
+
+        for (const line of lines) {
+          if (line.startsWith("data:")) {
+            // remove 'data:'
+            const clean_line = line.replace(/^data:\s*/, "");
+            // console.log("got line:", line);
+            try {
+              const jsonData = JSON.parse(clean_line);
+              console.log("Received JSON:", jsonData);
+              if (jsonData.state === "done") {
+                returnStatus = true;
+                // await reader.cancel()
+              }
+            } catch (error) {
+              console.error("Failed to parse JSON:", error);
+            }
+          } else {
+            // console.log("ignoring line:", line);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading file or processing response:", error);
+    }
+    return returnStatus;
   }
 
   async function putRequest(url: string, payload: unknown) {
@@ -304,7 +349,7 @@ export const useBackendStore = defineStore("backend", () => {
   async function uploadFileWithStreamingResponseTC(
     url: string,
     uploaded_file: File,
-    onData: (chunk: unknown) => void
+    onData: (chunk: unknown) => void // TODO: use this method to show progress im the client
   ): Promise<boolean> {
     // TODO: why does this fail?
     let returnStatus = false;
@@ -332,56 +377,42 @@ export const useBackendStore = defineStore("backend", () => {
 
       let buffer = "";
       while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          console.log("got raw value: '", value ,"'")
-          
-          buffer += decoder.decode(value, { stream: true });
-          console.log("buffer:", buffer)
+        const { done, value } = await reader.read();
+        if (done) break;
+        console.log("got raw value: '", value, "'");
 
-          // Process complete JSON lines
-          const lines = buffer.split("\n");
-          buffer = lines.pop() || ""; // Keep incomplete line for next iteration
-          
-          for (const line of lines) {
-            if (line.startsWith('data:')) {
-              // remove 'data:'
-              const clean_line = line.replace(/^data:\s*/, '')
-              console.log("got line:", line)
-              try {
-                      const jsonData = JSON.parse(clean_line);
-                      console.log("Received JSON:", jsonData);
-                      if (jsonData.state === "done") {
-                      returnStatus = true
-                      // await reader.cancel()
-                      }
-                        
-                  } catch (error) {
-                      console.error("Failed to parse JSON:", error);
-                  }
+        buffer += decoder.decode(value, { stream: true });
+        console.log("buffer:", buffer);
+
+        // Process complete JSON lines
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || ""; // Keep incomplete line for next iteration
+
+        for (const line of lines) {
+          if (line.startsWith("data:")) {
+            // remove 'data:'
+            const clean_line = line.replace(/^data:\s*/, "");
+            console.log("got line:", line);
+            try {
+              const jsonData = JSON.parse(clean_line);
+              console.log("Received JSON:", jsonData);
+              if (jsonData.state === "done") {
+                returnStatus = true;
+                // await reader.cancel()
               }
-            else {
-              console.log("ignoring line:", line)
+            } catch (error) {
+              console.error("Failed to parse JSON:", error);
             }
+          } else {
+            console.log("ignoring line:", line);
           }
+        }
       }
 
       console.log("Streaming complete");
     } catch (error) {
-        console.error("Error uploading file or processing response:", error);
+      console.error("Error uploading file or processing response:", error);
     }
-
-    //   // console.log("response data:", response); // Handle successful upload response
-    //   response.data.on("data", (chunk: unknown) => {
-    //     onData(chunk);
-    //   });
-    //   response.data.on("end", () => {
-    //     returnStatus = true;
-    //   });
-    // } catch (error) {
-    //   console.error("got an error:", error); // Handle upload errors
-    //   returnStatus = false;
-    // }
     return returnStatus;
   }
 
@@ -394,41 +425,7 @@ export const useBackendStore = defineStore("backend", () => {
       .catch();
   }
 
-  // function listPulseaudioSinks() {
-  //   console.log("called listPulseAudioSinks");
-  //   axios_instance
-  //     .get("audio/list_pulseaudio_sinks")
-  //     .then((response) => {
-  //       if (response.status == 200) {
-  //         listedPulseSinks.value = response.data;
-  //         console.log("audio sinks:", response.data);
-  //         pulseErrorMessage.value = null;
-  //       } else {
-  //         pulseErrorMessage.value = response.statusText;
-  //         console.error(
-  //           "got status code:",
-  //           response.status,
-  //           "error:",
-  //           response.statusText,
-  //           response.data
-  //         );
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log("listing sinks failed:", error.toJSON());
-  //       pulseErrorMessage.value = error.toJSON().message;
-  //     });
-  // }
-
   const isOnMobile: Ref<boolean> = ref(false);
-
-  // const channelIdSet = computed(() => {
-  //   const _channelIdSet = ref(new Set())
-  //   vdrChannels.value.map((channel) => {
-  //     _channelIdSet.value.add(channel.channel_id)
-  //   })
-  //   return _channelIdSet
-  // })
 
   // https://stackoverflow.com/a/61511955
   function waitForElm(selector: string): Promise<Element | null> {

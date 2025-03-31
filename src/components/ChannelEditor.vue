@@ -9,10 +9,13 @@ import { useDragAndDrop } from "@formkit/drag-and-drop/vue"
 import { useVDRStore } from "@/stores/vdr";
 import SourceSelection from "./channelpedia/SourceSelection.vue"
 import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface"
-
+import { useBackendStore } from "@/stores/backend";
 import { useI18n } from "vue-i18n";
-import { downloadBlob } from "@/services/download";
+
+// import { downloadBlob } from "@/services/download";
 const { t } = useI18n()
+
+const backend = useBackendStore();
 
 const layout = useLayout()
 // const backend = useBackendStore()
@@ -33,6 +36,7 @@ const showMoveChannelInputDialogue: Ref<boolean> = ref(false);
 const groupDialogTitle: Ref<string> = ref(t('channels.createGroup'))
 const confirmGroupDialogTitle: Ref<string> = ref(t('channels.createGroup'))
 const inputChannel: Ref<VDRChannel|null> = ref(null);
+const isSaving = ref(false)
 
 const [channelsConfRef, channelsConf] = useDragAndDrop([] as VDRChannel[], {
   group: "channels",
@@ -246,7 +250,8 @@ const reloadChannels = async function () {
   }
 };
 
-function saveChanges() {
+async function saveChanges() {
+  isSaving.value = true
   const newChannelsConfData = channelsConf.value.flatMap((entry) => {
     if (!entry.name.length && entry.number < 0)
     return []
@@ -260,8 +265,18 @@ function saveChanges() {
       return entry.channel_string
     }
   })
-  const channelsConfFile = new Blob([newChannelsConfData.join('\n')])
-  downloadBlob(channelsConfFile, 'channels.conf')
+  const blob = new Blob([newChannelsConfData.join('\n')], { type: "text/plain" });
+  const file = new File([blob], 'channels.conf');
+  const r = await backend.uploadFileWithStreamingResponseTC(
+    `${encodeURI('vdr/configfile/channels.conf')}`,
+    file, (data) => {console.log(data)},
+  );
+  console.log("file upload:", r);
+  if (r) {
+    // emit("saved");
+  }
+  // downloadBlob(channelsConfFile, 'channels.conf')
+  isSaving.value = false
 }
 
 function showChannelNumberInput(channel: VDRChannel) {
@@ -482,6 +497,7 @@ onMounted(async () => {
               />
             </v-dialog>
             <v-btn
+              :loading="isSaving"
               color="primary"
               :text="t('actions.saveChanges')"
               prepend-icon="mdi-send"

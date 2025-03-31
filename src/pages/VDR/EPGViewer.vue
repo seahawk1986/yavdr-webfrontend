@@ -13,7 +13,7 @@
       <v-select
         id="channel-selection"
         v-model="selectedChannel"
-        :items="vdr.vdrChannels"
+        :items="selectable_channels"
         item-title="name"
         item-value="channel_id"
         density="comfortable"
@@ -76,6 +76,7 @@
         >
           <template #prepend>
             <v-btn
+              v-if="!item.has_timer"
               color="primary"
               :aria-label="
                 t('timer.createTimer', {
@@ -86,6 +87,21 @@
               "
               icon="mdi-timer-plus-outline"
               size="x-small"
+              @click="createTimer(item)"
+            />
+            <v-btn
+              v-else
+              color="red"
+              :aria-label="
+                t('timer.createTimer', {
+                  entry: item.title,
+                  start: formatTime(item.dtStart),
+                  end: formatTime(item.dtEnd),
+                })
+              "
+              icon="mdi-timer-edit-outline"
+              size="x-small"
+              @click="editTimer(item)"
             />
             <v-list-item
               :title="formatTimespan(item.dtStart, item.dtEnd)"
@@ -122,6 +138,7 @@ import { useDate } from "vuetify";
 import { Temporal } from "temporal-polyfill";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
+import type { VDRTimerInterface } from "@/stores/interfaces/VdrTimerInterface";
 
 const { height } = useDisplay();
 const { t } = useI18n();
@@ -138,6 +155,7 @@ interface epgEntryInterface {
   subtitle: string;
   description: string;
   start: string;
+  start_ts: number;
   duration: string;
 }
 
@@ -150,6 +168,7 @@ interface epgListInterface {
   description: string | null;
   channelId: string | null;
   crossDay: boolean;
+  has_timer: boolean;
   // isSeparator: boolean
 }
 
@@ -163,6 +182,10 @@ const selectedChannelName = computed(() => {
 const isLoading: Ref<boolean> = ref(true);
 
 const epgChannelList: Ref<epgListInterface[]> = ref([]);
+
+const selectable_channels = computed(() => {
+  return vdr.vdrChannels.filter((channel) => !channel.is_group)
+})
 
 function formatTime(dtTime: Temporal.PlainDateTime): string {
   return `${dtTime.hour.toString().padStart(2, "0")}:${dtTime.minute
@@ -179,6 +202,8 @@ function formatTimespan(
 
 async function loadEpgData(channel_id: string | null) {
   isLoading.value = true;
+  const channelTimers = (await vdr.loadTimers()).filter(t => t.channel === channel_id)
+
   // get the EPG for this channel
   if (channel_id) {
     const response = await vdr.loadEPG(channel_id);
@@ -192,6 +217,12 @@ async function loadEpgData(channel_id: string | null) {
           const dtEnd = dtStart.add(duration);
           const crossDay = dtStart.day !== dtEnd.day ? true : false;
 
+          function hasTimer(timer: VDRTimerInterface) {
+            return (timer.start <= element.start_ts && timer.stop >= (element.start_ts + duration.total('seconds')))
+          }
+
+          const has_timer = channelTimers.some(hasTimer)
+
           return {
             channelId: element.channel_id,
             dtStart: dtStart,
@@ -201,6 +232,7 @@ async function loadEpgData(channel_id: string | null) {
             title: element.title,
             subtitle: element.subtitle,
             description: element.description,
+            has_timer: has_timer
           };
         });
         epgChannelList.value = epgListData;
@@ -249,10 +281,26 @@ async function switchChannel() {
   }
 }
 
+async function createTimer(epgEntry: epgListInterface) {
+  await backend.postRequest("/vdr/newt", {
+    channel_id: epgEntry.channelId,
+    dt_start: epgEntry.dtStart,
+    dt_end: epgEntry.dtEnd,
+    title: epgEntry.title,
+
+  })
+}
+
+async function editTimer(epgEntry: epgListInterface) {
+  console.log("edit timer for:", epgEntry)
+  // TODO: find the matching timer
+  // TODO: Implement a Timer editor dialog
+}
+
 onMounted(async () => {
   // load the channels
   await vdr.loadChannels();
-  const first = vdr.vdrChannels.find(Boolean);
+  const first = selectable_channels.value.find(() => true);
   if (first) {
     selectedChannel.value = first.channel_id;
     await loadEpgData(selectedChannel.value);
