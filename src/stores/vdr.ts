@@ -98,5 +98,6 @@ export const useVDRStore = defineStore("vdr", () => {
         loadEPG,
         loadRecordings,
         loadTimers,
+        vdrTimers,
     }
 })
