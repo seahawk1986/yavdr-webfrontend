@@ -86,7 +86,6 @@
 </template>
 
 <script lang="ts" setup>
-import { VNumberInput } from "vuetify/labs/VNumberInput";
 import type { ArgumentFileInterface, ArgumentSaveInterface } from "@/pages/VDR/VDRStartArgumentInterface";
 import { useBackendStore } from "@/stores/backend";
 

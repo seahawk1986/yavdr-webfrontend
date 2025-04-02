@@ -166,7 +166,6 @@
 </template>
 
 <script lang="ts" setup>
-import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import { useDisplay } from 'vuetify'
 import { useBackendStore } from '@/stores/backend';
 import { useI18n } from 'vue-i18n';
