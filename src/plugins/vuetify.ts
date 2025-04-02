@@ -12,13 +12,10 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import { en, de } from 'vuetify/locale'
-import { VSnackbarQueue } from 'vuetify/labs/VSnackbarQueue'
-
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   components: {
-    VSnackbarQueue,
   },
   icons: {
     defaultSet: 'mdi',
