@@ -34,6 +34,8 @@ export default createI18n({
             audio: {
                 audioOutput: "Audio Output",
                 vdrAudioChannel: "VDR Audio Channel",
+                sink: "Output",
+                profile: "Profile",
             },
             category: {
                 SystemInfo: 'System Info',
@@ -147,8 +149,10 @@ export default createI18n({
                 reset: "Zurücksetzen",
             },
             audio: {
-                audioOutput: "Audio Ausgang",
+                audioOutput: "Audio Ausgabe",
                 vdrAudioChannel: "VDR Audiokanal",
+                sink: "Ausgang",
+                profile: "Profil",
             },
             channels: {
                 channelNumberN: "Kanalnummer {number}",
