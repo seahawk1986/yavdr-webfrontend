@@ -1,6 +1,7 @@
 <template>
   <v-card
     class="scrollable-container overflow-auto h-100"
+    style="min-width: 80%"
   >
     <v-card-title id="innerTitle">
       <h2>
@@ -38,9 +39,9 @@
       />
       <v-data-table-virtual
         :headers="[
-          {title: 'Name', value:'name'},
-          {title: 'Setting', value:'value', sortable: false},
-          {title: 'Action', sortable: false, width:'20vW'},
+          {title: 'Name', key: 'name', value: 'name', align: 'start'},
+          {title: 'Setting', key: 'setting', value: 'value', sortable: false},
+          {title: 'Action', key: 'action', sortable: false, width:'20vW'},
           // {title: 'MinValue', value:'min_value'},
           // {title: 'MaxValue', value:'max_value'},
         ]"
@@ -56,9 +57,9 @@
         item-value="name"
       >
         <template #item="{ item }">
-          <tr>
+          <tr class="text-no-wrap">
             <td>
-              <v-btn
+              <v-icon-btn
                 icon="mdi-reload"
                 color="secondary"
                 size="small"
@@ -74,10 +75,9 @@
             </td>
             <td>
               <!-- boolean value -->
-              <v-switch 
+              <v-switch
                 v-if="item.min_value == 0 && item.max_value == 1"
                 v-model="item.value"
-                class="mb-3"
                 color="primary"
                 density="compact"
                 :inline="true"
@@ -140,7 +140,7 @@
                 @click="reloadValue(item.name)"
               /> -->
 
-              <v-btn
+              <v-icon-btn
                 color="primary"
                 icon="mdi-floppy"
                 size="small"
@@ -200,7 +200,7 @@ async function loadVDRSetup() {
     console.error("could not load setup from vdr:", error)
   }
   isLoading.value = false
-  
+
 }
 
 async function reloadValue(name: string) {
