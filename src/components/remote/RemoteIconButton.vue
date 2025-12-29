@@ -11,7 +11,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <v-btn
+  <v-icon-btn
     class="remote-icon-btn mx-2"
     icon=""
     :aria-label="props.name"
@@ -20,6 +20,7 @@ const props = defineProps<{
     <v-tooltip
       location="bottom"
       :text="tooltip"
+      :close-on-content-click="true"
       activator="parent"
     >
       {{ props.tooltip }}
@@ -28,5 +29,5 @@ const props = defineProps<{
       :icon="props.iconName"
       :color="props.iconColor"
     />
-  </v-btn>
+  </v-icon-btn>
 </template>
