@@ -18,7 +18,7 @@
       :title="`${channel.name} (${channel.provider})`"
       :disabled="channelIdSet.value.has(channel.channel_id) ? true : false"
       :class="'red'"
-      :base-color="isRadio(channel) ? 'secondary' : ''" 
+      :base-color="isRadio(channel) ? 'secondary' : ''"
     >
       <template #prepend>
         <v-icon
@@ -28,13 +28,20 @@
         />
       </template>
       <template #append>
-        <v-btn
+        <v-icon-btn
           aria-label="move to position"
           icon="mdi-dialpad"
           size="small"
+          density="comfortable"
           @click="showMoveChannelDialog(channel)"
         />
-        <v-btn
+        <v-divider
+          vertical
+          opacity="0.0"
+          thickness="5"
+        />
+        <v-icon-btn
+          v-ripple
           :aria-label="t('channels.appendChannel')"
           icon="mdi-plus"
           size="small"

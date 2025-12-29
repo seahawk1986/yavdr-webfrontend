@@ -1,3 +1,192 @@
+
+<template>
+  <!-- TODO: Channel Editor capabilities:
+    * Swap two channels
+    * Add channelgroup above/below
+    * Scratchpad to park subgroups of channels
+    * Upload/Download channels.conf
+    -->
+  <v-container class="fill-height">
+    <v-row
+      id="secondRow"
+      dense
+      fill-height
+    >
+      <v-col
+        cols="12"
+        sm="6"
+      >
+        <SourceSelection
+          :channel-id-set="channelIdSet"
+          @add-channel="
+            (channel) => {
+              channelsConf.push(channel);
+              scroll_to_channel_id(channel.channel_id);
+            }
+          "
+          @insert-channel="(channel: VDRChannel, number: number, scroll: boolean) => {insertChannel(channel, number, scroll)}"
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        sm="6"
+      >
+        <v-card>
+          <v-card-title>
+            channels.conf
+            <v-divider
+              class="ms-3"
+              inset
+              vertical
+            />
+            <v-btn
+              color="info"
+              :text="t('channels.reloadVDRChannels')"
+              prepend-icon="mdi-reload"
+              variant="flat"
+              @click="reloadChannels"
+            />
+            <v-dialog
+              v-model="showGroupAddDialog"
+              max-width="500"
+              persistent
+            >
+              <ChannelGroupInput
+                :channel-group-edit-title="t('channels.createGroup')"
+                :old-channel-group="inputChannel"
+                :confirm-button-title="confirmGroupDialogTitle"
+                :cancel-button-title="t('actions.cancel')"
+                @abort="showGroupAddDialog = false"
+                @confirm="(name: string, position: number|null, scroll: boolean) => processChannelGroup(name, position, scroll)"
+                @keydown.esc="showGroupAddDialog = false"
+              />
+            </v-dialog>
+          </v-card-title>
+          <v-card-text>
+            <div>
+              <!-- TODO: how to use drag and drop in a vuetifyjs VirtualScroll Element? -->
+              <v-list
+                id="goto-container"
+                ref="channelsConfRef"
+                density="compact"
+                class="overflow-y-auto"
+                max-height="80vh"
+              >
+                <v-list-item
+                  v-for="(channel, channel_idx) in channelsConf"
+                  :id="channel.channel_id"
+                  :key="channel.channel_id"
+                  role="listitem"
+                  :aria-label="t('channels.channelNumberN', {number: runningChannelNumbers[channel_idx]?.toString()}) + ', ' + channel.name"
+                  density="compact"
+                  :base-color="isRadio(channel) ? 'secondary' : ''"
+                >
+                  <template #title>
+                    {{
+                      channel.name +
+                        (channel.is_group ? "" : ` (${channel.provider})`)
+                    }}
+                  </template>
+                  <template #prepend>
+                    <v-icon
+                      :aria-label="t('descriptions.draghandle', {name: channel.name})"
+                      class="drag-handle"
+                      icon="mdi-drag"
+                      style="cursor: grab"
+                    />
+                    <pre>{{
+                      (!channel.is_group
+                        ? runningChannelNumbers[channel_idx]?.toString()
+                        : `${
+                            channel.number > 0
+                              ? `@${channel.number.toString()}`
+                              : ""
+                          }`
+                      ).padStart(channelNumberPadding, " ") + " "
+                    }}</pre>
+                    <v-icon
+                      :color="isRadio(channel) ? 'secondary' : ''"
+                      :icon="getSourceIcon(channel.source)"
+                    />
+                    <v-divider
+                      vertical
+                      thickness="5"
+                      opacity="0"
+                    />
+                    <v-icon
+                      :color="isRadio(channel) ? 'secondary' : ''"
+                      :icon="isRadio(channel) ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
+                    />
+                  </template>
+                  <template #append>
+                    <v-icon-btn
+                      v-if="channel.is_group"
+                      icon="mdi-pencil"
+                      size="small"
+                      density="comfortable"
+                      aria-label="edit"
+                      @click="editGroup(channel)"
+                    />
+                    <v-icon-btn
+                      v-else
+                      icon="mdi-dialpad"
+                      size="small"
+                      density="comfortable"
+                      :aria-label="t('channels.changePosition', {name: channel.name})"
+                      @click="showChannelNumberInput(channel)"
+                    />
+                    <v-divider
+                      vertical
+                      opacity="0.0"
+                      thickness="5"
+                    />
+                    <v-icon-btn
+                      icon="mdi-close-circle"
+                      size="small"
+                      density="comfortable"
+                      :aria-label="t('channels.deleteChannel', {what: channel.name})"
+                      @click="deleteChannel(channel.channel_id, channel_idx)"
+                    />
+                  </template>
+                </v-list-item>
+              </v-list>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="secondary-darken-1"
+              :text="t('channels.createGroup')"
+              prepend-icon="mdi-plus"
+              variant="flat"
+              @click="addGroup"
+            />
+            <v-dialog
+              v-model="showMoveChannelInputDialogue"
+              max-width="500"
+            >
+              <MoveChannelInput
+                :channel-edit-title="t('channels.moveToPosition', { name: inputChannel?.name })"
+                :confirm-move-title="t('channels.moveChannel')"
+                :input-channel="inputChannel"
+                @abort="showMoveChannelInputDialogue = false"
+                @move-channel="(channel: VDRChannel, position: number, scroll: boolean) => insertChannel(channel, position, scroll)"
+              />
+            </v-dialog>
+            <v-btn
+              :loading="isSaving"
+              color="primary"
+              :text="t('actions.saveChanges')"
+              prepend-icon="mdi-send"
+              variant="flat"
+              @click="saveChanges"
+            />
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
 <script setup lang="ts">
 import { computed, onMounted, ref, type Ref } from "vue"
 // import { useConfirmDialog } from '@vueuse/core'
@@ -38,11 +227,12 @@ const confirmGroupDialogTitle: Ref<string> = ref(t('channels.createGroup'))
 const inputChannel: Ref<VDRChannel|null> = ref(null);
 const isSaving = ref(false)
 
+
 const [channelsConfRef, channelsConf] = useDragAndDrop([] as VDRChannel[], {
   group: "channels",
-  multiDrag: true,
   selectedClass: "bg-light-blue-darken-4",
   dragHandle: ".drag-handle",
+  multiDrag: true,
   plugins: [],
 });
 
@@ -330,187 +520,3 @@ onMounted(async () => {
   console.log("row dimensions", layout.getLayoutItem('secondRow'))
 });
 </script>
-
-<template>
-  <!-- TODO: Channel Editor capabilities: 
-    * Swap two channels
-    * Add channelgroup above/below
-    * Scratchpad to park subgroups of channels
-    * Upload/Download channels.conf
-    -->
-  <v-container class="fill-height">
-    <v-row
-      id="secondRow"
-      dense
-      fill-height
-    >
-      <v-col
-        cols="12"
-        sm="6"
-      >
-        <SourceSelection
-          :channel-id-set="channelIdSet"
-          @add-channel="
-            (channel) => {
-              channelsConf.push(channel);
-              scroll_to_channel_id(channel.channel_id);
-            }
-          "
-          @insert-channel="(channel: VDRChannel, number: number, scroll: boolean) => {insertChannel(channel, number, scroll)}"
-        />
-      </v-col>
-      <v-col
-        cols="12"
-        sm="6"
-      >   
-        <v-card>
-          <v-card-title>
-            channels.conf
-            <v-divider
-              class="ms-3"
-              inset
-              vertical
-            />
-            <v-btn
-              color="info"
-              :text="t('channels.reloadVDRChannels')"
-              prepend-icon="mdi-reload"
-              variant="flat"
-              @click="reloadChannels"
-            />
-            <v-dialog
-              v-model="showGroupAddDialog"
-              max-width="500"
-              persistent
-            >
-              <ChannelGroupInput
-                :channel-group-edit-title="t('channels.createGroup')"
-                :old-channel-group="inputChannel"
-                :confirm-button-title="confirmGroupDialogTitle"
-                :cancel-button-title="t('actions.cancel')"
-                @abort="showGroupAddDialog = false"
-                @confirm="(name: string, position: number|null, scroll: boolean) => processChannelGroup(name, position, scroll)"
-                @keydown.esc="showGroupAddDialog = false"
-              />
-            </v-dialog>
-          </v-card-title>
-          <v-card-text>
-            <div>
-              <!-- TODO: how to use drag and drop in a vuetifyjs VirtualScroll Element? -->
-              <v-list
-                id="goto-container"
-                ref="channelsConfRef"
-                density="compact"
-                class="overflow-y-auto"
-                max-height="80vh"
-              >
-                <v-list-item
-                  v-for="(channel, channel_idx) in channelsConf"
-                  :id="channel.channel_id"
-                  :key="channel.channel_id"
-                  role="listitem"
-                  :aria-label="t('channels.channelNumberN', {number: runningChannelNumbers[channel_idx]?.toString()}) + ', ' + channel.name"
-                  density="compact"
-                  :base-color="isRadio(channel) ? 'secondary' : ''"
-                >
-                  <template #title>
-                    {{
-                      channel.name +
-                        (channel.is_group ? "" : ` (${channel.provider})`)
-                    }}
-                  </template>
-                  <template #prepend>
-                    <v-icon
-                      :aria-label="t('descriptions.draghandle', {name: channel.name})"
-                      class="drag-handle"
-                      icon="mdi-drag"
-                      style="cursor: grab"
-                    />
-                    <pre>{{
-                      (!channel.is_group
-                        ? runningChannelNumbers[channel_idx]?.toString()
-                        : `${
-                            channel.number > 0
-                              ? `@${channel.number.toString()}`
-                              : ""
-                          }`
-                      ).padStart(channelNumberPadding, " ") + " "
-                    }}</pre>
-                    <v-icon
-                      :color="isRadio(channel) ? 'secondary' : ''"
-                      :icon="getSourceIcon(channel.source)"
-                    />
-                    <v-divider
-                      vertical
-                      thickness="5"
-                      opacity="0"
-                    />
-                    <v-icon
-                      :color="isRadio(channel) ? 'secondary' : ''"
-                      :icon="isRadio(channel) ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
-                    />
-                  </template>
-                  <template #append>
-                    <v-btn
-                      v-if="channel.is_group"
-                      icon="mdi-pencil"
-                      size="small"
-                      aria-label="edit"
-                      @click="editGroup(channel)"
-                    />
-                    <v-btn
-                      v-else
-                      icon="mdi-dialpad"
-                      size="small"
-                      :aria-label="t('channels.changePosition', {name: channel.name})"
-                      @click="showChannelNumberInput(channel)"
-                    />
-                    <v-btn
-                      icon="mdi-close-circle"
-                      size="small"
-                      :aria-label="t('channels.deleteChannel', {what: channel.name})"
-                      @click="deleteChannel(channel.channel_id, channel_idx)"
-                    />
-                  </template>
-                </v-list-item>
-              </v-list>
-            </div>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              color="secondary-darken-1"
-              :text="t('channels.createGroup')"
-              prepend-icon="mdi-plus"
-              variant="flat"
-              @click="addGroup"
-            />
-            <v-dialog
-              v-model="showMoveChannelInputDialogue"
-              max-width="500"
-            >
-              <MoveChannelInput
-                :channel-edit-title="t('channels.moveToPosition', { name: inputChannel?.name })"
-                :confirm-move-title="t('channels.moveChannel')"
-                :input-channel="inputChannel"
-                @abort="showMoveChannelInputDialogue = false"
-                @move-channel="(channel: VDRChannel, position: number, scroll: boolean) => insertChannel(channel, position, scroll)"
-              />
-            </v-dialog>
-            <v-btn
-              :loading="isSaving"
-              color="primary"
-              :text="t('actions.saveChanges')"
-              prepend-icon="mdi-send"
-              variant="flat"
-              @click="saveChanges"
-            />
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
-</template>
-
-<i18n>
-
-</i18n>

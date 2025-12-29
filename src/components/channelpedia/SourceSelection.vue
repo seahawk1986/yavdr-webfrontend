@@ -81,32 +81,36 @@
           density="comfortable"
         />
       </v-sheet>
-      <v-expansion-panels
-        v-if="subGroupItems"
-        variant="accordion"
-        style="height: 70vh"
+      <v-sheet
         class="overflow-y-auto"
-        max-height="90vh"
+        max-height="75vh"
       >
-        <template
-          v-for="subGroupItem in subGroupItems"
-          :key="subGroupItem.id"
+        <v-expansion-panels
+          v-if="subGroupItems"
+          variant="accordion"
+          class="overflow-y-auto"
+          max-height="90vh"
         >
-          <v-expansion-panel
-            v-if="subGroupItem"
-            :title="subGroupItem.title"
+          <template
+            v-for="subGroupItem in subGroupItems"
+            :key="subGroupItem.id"
           >
-            <v-expansion-panel-text>
-              <ChannelCandidateList
-                :original-channel-candidates="subGroupItem.children as unknown as VDRChannel[]"
-                :channel-id-set="pprops.channelIdSet"
-                @add-channel="(channel) => {$emit('addChannel', channel)}"
-                @insert-channel="(channel, number, scroll) => {$emit('insertChannel', channel, number, scroll)}"
-              />
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </template>
-      </v-expansion-panels>
+            <v-expansion-panel
+              v-if="subGroupItem"
+              :title="subGroupItem.title"
+            >
+              <v-expansion-panel-text>
+                <ChannelCandidateList
+                  :original-channel-candidates="subGroupItem.children as unknown as VDRChannel[]"
+                  :channel-id-set="pprops.channelIdSet"
+                  @add-channel="(channel) => {$emit('addChannel', channel)}"
+                  @insert-channel="(channel, number, scroll) => {$emit('insertChannel', channel, number, scroll)}"
+                />
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </template>
+        </v-expansion-panels>
+      </v-sheet>
     </v-sheet>
   </v-card>
 </template>
