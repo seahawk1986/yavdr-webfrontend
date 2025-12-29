@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AnsiblePlaybook: typeof import('./components/AnsiblePlaybook.vue')['default']
     AppFooter: typeof import('./components/AppFooter.vue')['default']
+    ArrayField: typeof import('./components/ArrayField.vue')['default']
     ChannelCandidateList: typeof import('./components/channelpedia/ChannelCandidateList.vue')['default']
     ChannelEditor: typeof import('./components/ChannelEditor.vue')['default']
     ChannelGroupDialogue: typeof import('./components/ChannelGroupDialogue.vue')['default']
@@ -28,6 +29,7 @@ declare module 'vue' {
     MoveChannelInput: typeof import('./components/channelpedia/MoveChannelInput.vue')['default']
     NavBar: typeof import('./components/NavBar.vue')['default']
     NotificationQueueDisplay: typeof import('./components/NotificationQueueDisplay.vue')['default']
+    Old_SchemaField: typeof import('./components/old_SchemaField.vue')['default']
     PluginSettingsCard: typeof import('./components/PluginSettingsCard.vue')['default']
     RecordingsList: typeof import('./components/RecordingsList.vue')['default']
     RemoteControl: typeof import('./components/RemoteControl.vue')['default']
@@ -35,6 +37,7 @@ declare module 'vue' {
     RemoteTextButton: typeof import('./components/remote/RemoteTextButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SchemaField: typeof import('./components/SchemaField.vue')['default']
     SourceSelection: typeof import('./components/channelpedia/SourceSelection.vue')['default']
     StartArgumentDialog: typeof import('./components/StartArgumentDialog.vue')['default']
     SystemInfo: typeof import('./components/Dashboard/SystemInfo.vue')['default']
