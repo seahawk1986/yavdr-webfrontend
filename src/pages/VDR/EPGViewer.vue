@@ -2,6 +2,7 @@
   <v-sheet
     class="scrollable-container overflow-auto"
     :height="height - backend.titlebarHeight"
+    style="min-width: 80%"
   >
     <!-- <h1>EPG Viewer</h1> -->
     <v-label :text="`${t('channels.selection')}:`">
@@ -45,6 +46,7 @@
       aria-role="list"
       item-height="48"
     >
+    <!-- TODO set constant width -->
       <template #default="{ item, index }">
         <v-list-item
           v-if="index === 0"
@@ -63,12 +65,13 @@
           </template>
         </v-list-item>
         <v-list-item
+          class="text-truncate"
           :title="item.title"
           :subtitle="
             item.subtitle
               ? item.subtitle
               : item.description
-                ? item.description
+                ? truncate(item.description, 80)
                 : ''
           "
           slim
@@ -112,18 +115,32 @@
               slim
             />
           </template>
+          <template #append>
+            <v-tooltip
+              location="top"
+              :text="item.description ? item.description : ''"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  icon="mdi-information"
+                  v-bind="props"
+                />
+              </template>
+            </v-tooltip>
+          </template>
         </v-list-item>
         <v-list-item
           v-if="item.crossDay"
           :title="
             date.format(
-              item.dtEnd.toPlainDate.toString(),
+              item.dtEnd.toPlainDate().toString(),
               'fullDateWithWeekday'
             )
           "
           slim
           variant="outlined"
         />
+
         <!-- <v-divider v-else /> -->
       </template>
     </v-virtual-scroll>
@@ -171,6 +188,11 @@ interface epgListInterface {
   has_timer: boolean;
   // isSeparator: boolean
 }
+
+function truncate(s: string, n: number){
+          return s.substring(0,n-1)+(s.length>n?'…':'');
+      };
+
 
 const selectedChannel: Ref<string | null> = ref(null);
 const selectedChannelName = computed(() => {
