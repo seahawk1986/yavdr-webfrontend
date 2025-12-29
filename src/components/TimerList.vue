@@ -26,12 +26,20 @@
     <template #item="{ item }">
       <tr>
         <td>
-          <v-icon
-            :color="timerStatusColor(item.status)"
-            icon="mdi-record"
-            :aria-label="timerStatusLabel(item.status)"
-            size="x-large"
-          /> 
+          <v-tooltip
+            location="start"
+            :text="timerStatusLabel(item.status_flags)"
+          >
+            <template #activator="{ props }">
+              <v-icon
+                v-bind="props"
+                :color="timerStatusColor(item.status_flags)"
+                icon="mdi-record"
+                :aria-label="timerStatusLabel(item.status_flags)"
+                size="x-large"
+              />
+            </template>
+          </v-tooltip>
         </td>
         <td>
           <div v-if="item.start > 0">
@@ -41,20 +49,25 @@
             {{ item.day }}
           </div>
           <div style="white-space: nowrap">
-            {{ item.time }}
+            {{ item.time_span }}
           </div>
         </td>
         <td>
           {{ item.filename }}
         </td>
         <td>
-          {{ (item.stop - item.start) / 60 }} Min.
+          {{ item.duration / 60 }} Min.
         </td>
         <td>
-          {{ item.channelname }}
+          {{ item.channel_name }}
         </td>
       </tr>
     </template>
+    <!-- <template #top>
+      <v-icon style="position: absolute">
+        mdi-refresh
+      </v-icon>
+    </template> -->
   </v-data-table-virtual>
 </template>
 
@@ -62,6 +75,8 @@
 import i18n from '@/plugins/i18n';
 import { useVDRStore } from '@/stores/vdr';
 import type { VDRTimerInterface } from '@/stores/interfaces/VdrTimerInterface';
+import { Temporal } from "temporal-polyfill";
+
 
 enum RequestState {
     Unused,
@@ -163,6 +178,17 @@ const timerStatusLabel = function(status: number) {
     case RecStatus.unknown: return i18n.global.t('timer.status.unknown')
   }
 }
+
+// const timerDuration = function(item: VDRTimerInterface) {
+//   const d_start = new Temporal.PlainDateTime(item.)
+//   const d_end = new Temporal.PlainTime(end)
+//   if (d_start >= d_end) {
+//     return d_end.since(d_start)
+//   } else {
+//     const midnight = new Temporal.PlainDate
+//   } // ((d_end.hour * 60 + d_end.minute) - (d_start.hour * 60 + d_start.minute)).}
+
+
 
 onMounted (async () => {
     reloadTimers()
