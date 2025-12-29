@@ -78,8 +78,6 @@ async function upload() {
       }
       showChannelUploadSnackbar.value = true
   }
-  // await sleep(5000)
-  // TODO: upload file
   isUploading.value = false
 }
 
