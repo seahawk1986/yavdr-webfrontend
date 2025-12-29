@@ -12,6 +12,7 @@
         auto-grow
         style="max-height: 100%"
         spellcheck="false"
+        variant="outlined"
       />
     </v-card-text>
     <v-card-actions>
@@ -137,3 +138,7 @@ async function validateFileType() {
   }
 }
 </script>
+
+<style lang="css" scoped>
+.v-textarea {font-family: "Monospace"}
+</style>
