@@ -1,73 +1,3 @@
-<script setup lang="ts">
-import { useBackendStore } from "@/stores/backend";
-import { onMounted, ref, type Ref } from "vue";
-import { useDisplay } from "vuetify";
-
-const { height } = useDisplay();
-
-const store = useBackendStore();
-
-interface VDRPlugin {
-  name: string;
-  version: string;
-  // priority: number
-  // config: string
-  // config_file: string
-  // isEnabled: boolean
-}
-
-interface argumentFile {
-  filename: string;
-  arguments: string;
-}
-
-interface vdrPluginConfig {
-  pluginName: string;
-  enable: boolean;
-  static: boolean;
-  argumentFiles: argumentFile[];
-}
-
-interface PluginConfig {
-  name: string;
-  enabled: boolean;
-  prio: number;
-  arguments: string;
-  help: string;
-}
-
-const originalArgs = new Map();
-
-const vdrPlugins: Ref<Array<VDRPlugin>> = ref([]);
-const vdrPluginConfig: Ref<PluginConfig[]> = ref([]);
-
-async function loadPlugins() {
-  {
-    const response = await store.getRequest("/vdr/plugins");
-    if (response) {
-      console.log(response.data);
-      vdrPlugins.value = response.data;
-    }
-  }
-  const response = await store.getRequest("/vdr/plugin_config");
-  if (response) {
-    const config = response.data;
-    config.map((item: PluginConfig) => {
-      originalArgs.set(item.name, item.arguments);
-    });
-    vdrPluginConfig.value = config;
-  }
-}
-
-const sortedPluginConfig = computed(() => {
-  return vdrPluginConfig.value.sort((a, b) => a.name.localeCompare(b.name));
-});
-
-onMounted(() => {
-  loadPlugins();
-});
-</script>
-
 <template>
   <v-card
     class="scrollable-container overflow-auto"
@@ -99,9 +29,7 @@ onMounted(() => {
             :aria-label="plugin.name"
             class="my-0 py-0"
           >
-            <v-btn prepend-icon="pencil">
-              Edit
-            </v-btn>
+            <!-- <v-btn prepend-icon="mdi-pencil" text="edit"/> -->
             <v-switch
               v-model="plugin.enabled"
               :aria-label="
@@ -197,6 +125,79 @@ onMounted(() => {
     </v-card-text>
   </v-card>
 </template>
+
+<script setup lang="ts">
+import { useBackendStore } from "@/stores/backend";
+import { onMounted, ref, type Ref } from "vue";
+import { useDisplay } from "vuetify";
+
+const { height } = useDisplay();
+
+const store = useBackendStore();
+
+interface VDRPlugin {
+  name: string;
+  version: string;
+  // priority: number
+  // config: string
+  // config_file: string
+  // isEnabled: boolean
+}
+
+interface argumentFile {
+  filename: string;
+  arguments: string;
+}
+
+interface vdrPluginConfig {
+  pluginName: string;
+  enable: boolean;
+  static: boolean;
+  argumentFiles: argumentFile[];
+}
+
+interface PluginConfig {
+  name: string;
+  enabled: boolean;
+  prio: number;
+  arguments: string;
+  help: string;
+}
+
+const originalArgs = new Map();
+
+const vdrPlugins: Ref<Array<VDRPlugin>> = ref([]);
+const vdrPluginConfig: Ref<PluginConfig[]> = ref([]);
+
+async function loadPlugins() {
+  {
+    const response = await store.getRequest("/vdr/plugins");
+    if (response) {
+      console.log("Plugins:", response.data);
+      vdrPlugins.value = response.data;
+    }
+  }
+  const response = await store.getRequest("/vdr/plugin_config");
+  if (response) {
+    const config = response.data;
+    console.log("Plugin Config:", response.data);
+
+    config.map((item: PluginConfig) => {
+      originalArgs.set(item.name, item.arguments);
+    });
+    vdrPluginConfig.value = config;
+  }
+}
+
+const sortedPluginConfig = computed(() => {
+  return vdrPluginConfig.value.sort((a, b) => a.name.localeCompare(b.name));
+});
+
+onMounted(() => {
+  loadPlugins();
+});
+</script>
+
 
 <style scoped>
 .monospace {
