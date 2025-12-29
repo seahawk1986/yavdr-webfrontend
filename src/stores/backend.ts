@@ -38,7 +38,7 @@ export const useBackendStore = defineStore("backend", () => {
   function invalidateToken() {
     // TODO: can the backend manage tokens resp. secret parts?
     console.log("request failed with permission denied, invalidate token ...")
-    jwToken.value = "";
+    jwToken.value = ""
   }
 
   axios_instance.interceptors.response.use(
@@ -66,8 +66,8 @@ export const useBackendStore = defineStore("backend", () => {
     return config;
   });
 
-  class RetriableError extends Error {}
-  class FatalError extends Error {}
+  class RetriableError extends Error { }
+  class FatalError extends Error { }
 
   // async function syntax //
   function getHeaders() {
@@ -131,7 +131,7 @@ export const useBackendStore = defineStore("backend", () => {
     axios_instance
       .post("/hitkey", { key: keyname })
       .then((response) => {
-        console.log("successfully sent key:", response.data.toJSON);
+        console.log("successfully sent key:", response.data);
       })
       .catch((error) => {
         console.log(
@@ -162,38 +162,50 @@ export const useBackendStore = defineStore("backend", () => {
     }
   }
 
-  async function doOrRepepeatAfterReauthentication(
-    axiosRequestPromise: Promise<AxiosResponse>
-  ): Promise<AxiosResponse | undefined> {
+  // async function doOrRepepeatAfterReauthentication(
+  //   fn: CallableFunction,
+  //   url: string
+  // ): Promise<AxiosResponse | undefined> {
+  //   let final_result = null;
+  //   do {
+  //     final_result = await fn(url)
+  //       .then((result: AxiosResponse) => {
+  //         return result;
+  //       })
+  //       .catch(
+  //         async (error: {
+  //           status: number;
+  //           toJSON: () => unknown;
+  //           response: { config: { headers: { [x: string]: string } } };
+  //         }) => {
+  //           if (error.status != 401) return undefined;
+  //           console.error(error.toJSON());
+  //           await until(jwToken).toBeTruthy();
+  //           const result = await fn(url);
+  //           return result;
+  //         }
+  //       );
+  //   } while (final_result === null);
+  //   return final_result;
+  // }
+
+  async function getRequest(url: string): Promise<AxiosResponse | undefined> {
     let final_result = null;
     do {
-      if (jwToken.value.length === 0) {
-        console.log("waiting for the jwToken to be set");
-        await until(jwToken.value).changed();
-        console.log("retrying request ...");
-      }
-      final_result = await axiosRequestPromise
+      final_result = await axios_instance
+        .get(url)
         .then((result: AxiosResponse) => {
-          // console.log(
-          //   result.request.responseUrl,
-          //   "returned:",
-          //   result.data,
-          //   result.status,
-          //   result.statusText
-          // );
           return result;
         })
         .catch(async (error) => {
           if (error.status != 401) return undefined;
-          console.error(error.toJSON());
-          return null;
+          console.error(error);
+          await until(jwToken).toBeTruthy();
+          const result = await axios_instance.get(url);
+          return result;
         });
     } while (final_result === null);
     return final_result;
-  }
-
-  async function getRequest(url: string): Promise<AxiosResponse | undefined> {
-    return doOrRepepeatAfterReauthentication(axios_instance.get(url));
   }
 
   async function postRequest(url: string, payload: unknown) {
@@ -215,7 +227,7 @@ export const useBackendStore = defineStore("backend", () => {
       const response = await axios_instance.post(url, payload, {
         headers: {
           Accept: "application/json",
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
         responseType: "stream",
         adapter: "fetch",
@@ -241,11 +253,16 @@ export const useBackendStore = defineStore("backend", () => {
           if (line.startsWith("data:")) {
             // remove 'data:'
             const clean_line = line.replace(/^data:\s*/, "");
-            // console.log("got line:", line);
+            // console.log("got line:", clean_line);
             try {
               const jsonData = JSON.parse(clean_line);
               console.log("Received JSON:", jsonData);
-              if (jsonData.state === "done") {
+              if (
+                jsonData.status &&
+                (jsonData.status.status === "successful" ||
+                  jsonData.status === "done")
+              ) {
+                // this is the playbook result
                 returnStatus = true;
                 // await reader.cancel()
               }
