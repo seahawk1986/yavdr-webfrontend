@@ -1,0 +1,758 @@
+{
+  "$defs": {
+    "AnsibleConnection": {
+      "enum": [
+        "local",
+        "ssh"
+      ],
+      "title": "AnsibleConnection",
+      "type": "string"
+    },
+    "GrubConfig": {
+      "properties": {
+        "timeout": {
+          "default": 0,
+          "description": "Grub menu timeout. Set 0 to disable",
+          "minimum": 0,
+          "title": "Timeout",
+          "type": "integer"
+        },
+        "boot_options": {
+          "default": "quiet splash",
+          "title": "Boot Options",
+          "type": "string"
+        }
+      },
+      "title": "GrubConfig",
+      "type": "object"
+    },
+    "NFSConfig": {
+      "properties": {
+        "insecure": {
+          "default": false,
+          "description": "Set NFS option 'insecure' - needed for MacOS",
+          "title": "Insecure",
+          "type": "boolean"
+        }
+      },
+      "title": "NFSConfig",
+      "type": "object"
+    },
+    "SambaConfig": {
+      "properties": {
+        "workgroup": {
+          "default": "YAVDR",
+          "description": "Name of the SAMBA Workgroup",
+          "minLength": 1,
+          "title": "Workgroup",
+          "type": "string"
+        },
+        "windows_compatible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Translate file and folder names to make then windows-compatible",
+          "title": "Windows Compatible"
+        }
+      },
+      "title": "SambaConfig",
+      "type": "object"
+    },
+    "StreamdevConfig": {
+      "properties": {
+        "client_remote_ip": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "format": "ipvanyaddress",
+              "type": "string"
+            },
+            {
+              "maxLength": 0,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Client Remote Ip"
+        },
+        "client_remote_port": {
+          "default": 2004,
+          "description": "Port for streamdev",
+          "minimum": 0,
+          "title": "Client Remote Port",
+          "type": "integer"
+        },
+        "client_num_provided_systems": {
+          "default": 1,
+          "description": "number of parallel connections created for streamdev-client",
+          "minimum": 0,
+          "title": "Client Num Provided Systems",
+          "type": "integer"
+        }
+      },
+      "title": "StreamdevConfig",
+      "type": "object"
+    },
+    "SupportedFrontends": {
+      "enum": [
+        "vdr"
+      ],
+      "title": "SupportedFrontends",
+      "type": "string"
+    },
+    "VDRConfig": {
+      "properties": {
+        "user": {
+          "default": "vdr",
+          "description": "Username of the VDR user",
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "User",
+          "type": "string"
+        },
+        "group": {
+          "default": "vdr",
+          "description": "Group name for the VDR user",
+          "maxLength": 32,
+          "minLength": 1,
+          "title": "Group",
+          "type": "string"
+        },
+        "uid": {
+          "default": 666,
+          "description": "User-ID of the VDR user",
+          "minimum": 0,
+          "title": "Uid",
+          "type": "integer"
+        },
+        "gid": {
+          "default": 666,
+          "description": "Group-ID of the VDR user",
+          "minimum": 0,
+          "title": "Gid",
+          "type": "integer"
+        },
+        "home": {
+          "default": "/home/vdr",
+          "description": "Home directory of the VDR user",
+          "format": "path",
+          "title": "Home",
+          "type": "string"
+        },
+        "etc_confdir": {
+          "default": "/etc/vdr",
+          "description": "Config dir for VDR used by packages",
+          "format": "path",
+          "title": "Etc Confdir",
+          "type": "string"
+        },
+        "confdir": {
+          "default": "/var/lib/vdr",
+          "description": "CONFDIR of VDR",
+          "format": "path",
+          "title": "Confdir",
+          "type": "string"
+        },
+        "recdir": {
+          "default": "/srv/vdr/video",
+          "description": "RECDIR of VDR",
+          "format": "path",
+          "title": "Recdir",
+          "type": "string"
+        },
+        "hide_first_recording_level": {
+          "default": false,
+          "description": "Enable the firstrecordinglevel patch functionality",
+          "title": "Hide First Recording Level",
+          "type": "boolean"
+        },
+        "safe_dirnames": {
+          "default": false,
+          "description": "Use escape characters in directory names (useful for windows clients and FAT/NTFS file systems)",
+          "title": "Safe Dirnames",
+          "type": "boolean"
+        },
+        "override_vdr_charset": {
+          "default": "",
+          "description": "Set the desired charset, e.g. 'ISO-8859-9'",
+          "title": "Override Vdr Charset",
+          "type": "string"
+        },
+        "instance_id": {
+          "default": 0,
+          "description": "Instance ID of the VDR '-i' in man 1 vdr",
+          "minimum": 0,
+          "title": "Instance Id",
+          "type": "integer"
+        }
+      },
+      "title": "VDRConfig",
+      "type": "object"
+    },
+    "WakeupEnum": {
+      "enum": [
+        "acpiwakeup",
+        "st32wakeup"
+      ],
+      "title": "WakeupEnum",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "ansible_host": {
+      "default": "localhost",
+      "title": "Ansible Host",
+      "type": "string"
+    },
+    "ansible_connection": {
+      "$ref": "#/$defs/AnsibleConnection",
+      "default": "local",
+      "description": "Connection mode, should be 'local' for regular use"
+    },
+    "repositories": {
+      "default": [
+        "ppa:seahawk1986-hotmail/resolute-main",
+        "ppa:seahawk1986-hotmail/vdr-2.7.7"
+      ],
+      "description": "PPAs to add",
+      "items": {
+        "type": "string"
+      },
+      "title": "Repositories",
+      "type": "array"
+    },
+    "timezone": {
+      "default": "Europe/Berlin",
+      "description": "Timezone for System, e.g. 'Europe/Berlin'",
+      "title": "Timezone",
+      "type": "string"
+    },
+    "default_locale": {
+      "default": "de_DE.UTF-8",
+      "description": "Default Locale, e.g. 'de_DE.UTF-8'",
+      "title": "Default Locale",
+      "type": "string"
+    },
+    "generate_locales": {
+      "default": [
+        "de_DE.UTF-8",
+        "en_US.UTF-8"
+      ],
+      "description": "Locales to generate",
+      "items": {
+        "type": "string"
+      },
+      "title": "Generate Locales",
+      "type": "array"
+    },
+    "language_packs": {
+      "default": [
+        "language-pack-de",
+        "language-pack-en"
+      ],
+      "description": "Language support packages to install",
+      "items": {
+        "type": "string"
+      },
+      "title": "Language Packs",
+      "type": "array"
+    },
+    "vdr": {
+      "$ref": "#/$defs/VDRConfig",
+      "default": {
+        "user": "vdr",
+        "group": "vdr",
+        "uid": 666,
+        "gid": 666,
+        "home": "/home/vdr",
+        "etc_confdir": "/etc/vdr",
+        "confdir": "/var/lib/vdr",
+        "recdir": "/srv/vdr/video",
+        "hide_first_recording_level": false,
+        "safe_dirnames": false,
+        "override_vdr_charset": "",
+        "instance_id": 0
+      },
+      "description": "VDR Configuration"
+    },
+    "vdr_channels_conf": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "channels.conf file to import if VDR has none, use a http(s)://, ftp:// or file:// URL or a path",
+      "title": "Vdr Channels Conf"
+    },
+    "wait_for_dvb_devices": {
+      "default": [],
+      "description": "Indices of DVB Devices to wait for",
+      "items": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "maxItems": 16,
+      "title": "Wait For Dvb Devices",
+      "type": "array"
+    },
+    "streamdev": {
+      "$ref": "#/$defs/StreamdevConfig",
+      "default": {
+        "client_remote_ip": null,
+        "client_remote_port": 2004,
+        "client_num_provided_systems": 1
+      },
+      "description": "vdr-plugin-streamdev-client configuration"
+    },
+    "vdr_plugins": {
+      "default": [
+        "vdr-plugin-devstatus",
+        "vdr-plugin-markad-ng",
+        "vdr-plugin-live"
+      ],
+      "description": "VDR Plugins to install",
+      "items": {
+        "type": "string"
+      },
+      "title": "Vdr Plugins",
+      "type": "array"
+    },
+    "selectedFrontend": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Set the vdr frontend, e.g. 'softhddevice'",
+      "title": "Selectedfrontend"
+    },
+    "vdr_output_plugin": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Set vdr output plugin",
+      "title": "Vdr Output Plugin"
+    },
+    "vdr_allowed_hosts": {
+      "default": [],
+      "description": "List of allowed TCP clients - IP addresses or ranges",
+      "items": {
+        "anyOf": [
+          {
+            "format": "ipvanynetwork",
+            "type": "string"
+          },
+          {
+            "format": "ipvanyaddress",
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Vdr Allowed Hosts",
+      "type": "array"
+    },
+    "vdr_svdrphosts": {
+      "anyOf": [
+        {
+          "items": {
+            "anyOf": [
+              {
+                "format": "ipvanynetwork",
+                "type": "string"
+              },
+              {
+                "format": "ipvanyaddress",
+                "type": "string"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of allowed SVDRP TCP clients - IP addresses or ranges",
+      "title": "Vdr Svdrphosts"
+    },
+    "xineliboutput_allowed_hosts": {
+      "anyOf": [
+        {
+          "items": {
+            "anyOf": [
+              {
+                "format": "ipvanynetwork",
+                "type": "string"
+              },
+              {
+                "format": "ipvanyaddress",
+                "type": "string"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of allowed xineliboutput TCP clients - IP addresses or ranges",
+      "title": "Xineliboutput Allowed Hosts"
+    },
+    "vnsiserver_allowed_hosts": {
+      "anyOf": [
+        {
+          "items": {
+            "anyOf": [
+              {
+                "format": "ipvanynetwork",
+                "type": "string"
+              },
+              {
+                "format": "ipvanyaddress",
+                "type": "string"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of allowed vnsiserver TCP clients - IP addresses or ranges",
+      "title": "Vnsiserver Allowed Hosts"
+    },
+    "streamdev_server_allowed_hosts": {
+      "anyOf": [
+        {
+          "items": {
+            "anyOf": [
+              {
+                "format": "ipvanynetwork",
+                "type": "string"
+              },
+              {
+                "format": "ipvanyaddress",
+                "type": "string"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of allowed streamdev TCP clients - IP addresses or ranges",
+      "title": "Streamdev Server Allowed Hosts"
+    },
+    "media_dirs": {
+      "additionalProperties": {
+        "format": "path",
+        "type": "string"
+      },
+      "default": {},
+      "description": "Media directories",
+      "title": "Media Dirs",
+      "type": "object"
+    },
+    "nfs": {
+      "$ref": "#/$defs/NFSConfig",
+      "default": {
+        "insecure": false
+      },
+      "description": "NFS configuration"
+    },
+    "samba": {
+      "$ref": "#/$defs/SambaConfig",
+      "default": {
+        "workgroup": "YAVDR",
+        "windows_compatible": null
+      },
+      "description": "SMB configuration"
+    },
+    "firefox_as_deb": {
+      "default": true,
+      "description": "Install firefox from Mozilla repo",
+      "title": "Firefox As Deb",
+      "type": "boolean"
+    },
+    "kodi_as_flatpak": {
+      "default": true,
+      "description": "Install KODI as flatpak",
+      "title": "Kodi As Flatpak",
+      "type": "boolean"
+    },
+    "extra_packages": {
+      "default": [
+        "htop",
+        "tree",
+        "vim",
+        "w-scan",
+        "t2scan",
+        "vdrpbd"
+      ],
+      "description": "Packages to install on the system",
+      "items": {
+        "type": "string"
+      },
+      "title": "Extra Packages",
+      "type": "array"
+    },
+    "channellogos_languages": {
+      "default": [],
+      "description": "Languages for channellogos",
+      "items": {
+        "type": "string"
+      },
+      "title": "Channellogos Languages",
+      "type": "array"
+    },
+    "frontend": {
+      "$ref": "#/$defs/SupportedFrontends",
+      "default": "vdr",
+      "description": "Frontend to use (currently only 'vdr')"
+    },
+    "vdr_shutdown_command": {
+      "default": "poweroff",
+      "description": "Shutdown Command",
+      "title": "Vdr Shutdown Command",
+      "type": "string"
+    },
+    "nvidia_force_dpi": {
+      "default": 96,
+      "description": "Set dpi for nvidia Xorg configuration",
+      "minimum": 0,
+      "title": "Nvidia Force Dpi",
+      "type": "integer"
+    },
+    "wakup_method": {
+      "$ref": "#/$defs/WakeupEnum",
+      "default": "acpiwakeup",
+      "description": "Wakeup method for the system"
+    },
+    "wakeup_start_ahead": {
+      "default": 5,
+      "exclusiveMinimum": 0,
+      "title": "Wakeup Start Ahead",
+      "description": "Minutes to wakeup early",
+      "type": "integer"
+    },
+    "wakeup_days": {
+      "default": "",
+      "title": "Wakeup Days",
+      "type": "string"
+    },
+    "wakeup_time": {
+      "default": "",
+      "title": "Wakeup Time",
+      "type": "string"
+    },
+    "wakeup_max_margin_hours": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Wakeup maximum margin in hours. Ensure that the machine is woken up next time after this amount if next wakeup time is not within the margin.",
+      "title": "Wakeup Max Margin Hours"
+    },
+    "kms_set_boot_edid": {
+      "default": false,
+      "title": "Kms Set Boot Edid",
+      "type": "boolean"
+    },
+    "preferred_outputs": {
+      "default": [
+        "HDMI",
+        "DP",
+        "DVI",
+        "VGA",
+        "TV"
+      ],
+      "description": "list of preferred outputs",
+      "items": {
+        "type": "string"
+      },
+      "title": "Preferred Outputs",
+      "type": "array"
+    },
+    "preferred_resolutions": {
+      "default": [
+        "7680x4320",
+        "3840x2160",
+        "1920x1080",
+        "1280x720",
+        "720x576"
+      ],
+      "description": "list of preferred resolutions",
+      "items": {
+        "type": "string"
+      },
+      "title": "Preferred Resolutions",
+      "type": "array"
+    },
+    "preferred_refreshrates": {
+      "default": [
+        100,
+        50,
+        60
+      ],
+      "description": "list of preferred refresh rates",
+      "items": {
+        "type": "integer"
+      },
+      "title": "Preferred Refreshrates",
+      "type": "array"
+    },
+    "softhddevice_intel_output_method": {
+      "default": "va-api-egl",
+      "description": "output method for vdr-plugin-softhddevice",
+      "title": "Softhddevice Intel Output Method",
+      "type": "string"
+    },
+    "grub": {
+      "$ref": "#/$defs/GrubConfig",
+      "default": {
+        "timeout": 0,
+        "boot_options": "quiet splash"
+      }
+    },
+    "standby_reload_dvb": {
+      "default": true,
+      "description": "unload and reload dvb driver modules during resume",
+      "title": "Standby Reload Dvb",
+      "type": "boolean"
+    },
+    "lifeguard_enable_nfs": {
+      "default": true,
+      "description": "Block shutdown on active NFS clients",
+      "title": "Lifeguard Enable Nfs",
+      "type": "boolean"
+    },
+    "lifeguard_enable_samba": {
+      "default": true,
+      "description": "Block shutdown on active SMB clients",
+      "title": "Lifeguard Enable Samba",
+      "type": "boolean"
+    },
+    "lifeguard_enable_ssh": {
+      "default": true,
+      "description": "Block shutdown on active SSH clients",
+      "title": "Lifeguard Enable Ssh",
+      "type": "boolean"
+    },
+    "lifeguard_hosts": {
+      "default": [],
+      "description": "list of hostnames resp. IP addresses of active devices on the network that should block shutdown",
+      "items": {
+        "type": "string"
+      },
+      "title": "Lifeguard Hosts",
+      "type": "array"
+    },
+    "lifeguard_users": {
+      "default": [
+        "root"
+      ],
+      "description": "List of users that block shutdown when logged in",
+      "items": {
+        "type": "string"
+      },
+      "title": "Lifeguard Users",
+      "type": "array"
+    },
+    "lifeguard_processes": {
+      "default": [
+        "ansible-playbook",
+        "ansible",
+        "apt-get",
+        "apt",
+        "emacs",
+        "flatpak",
+        "nano",
+        "snap",
+        "vim"
+      ],
+      "description": "List of process names that should block shutdown",
+      "items": {
+        "type": "string"
+      },
+      "title": "Lifeguard Processes",
+      "type": "array"
+    },
+    "lifeguard_tcp": {
+      "additionalProperties": {
+        "items": {
+          "type": "integer"
+        },
+        "type": "array"
+      },
+      "default": {
+        "vdr": [
+          3000,
+          6419,
+          8008,
+          34890
+        ]
+      },
+      "description": "Mapping of process names and connections of given ports",
+      "title": "Lifeguard Tcp",
+      "type": "object"
+    },
+    "serial_ir_device": {
+      "default": "ttyS0",
+      "title": "Serial Ir Device",
+      "type": "string"
+    },
+    "ansible_managed": {
+      "default": "*** ANSIBLE MANAGED FILE ***\n template: {file}",
+      "title": "Ansible Managed",
+      "type": "string"
+    }
+  },
+  "title": "yaVDRConfig",
+  "type": "object"
+}
