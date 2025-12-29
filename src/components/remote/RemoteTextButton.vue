@@ -8,7 +8,7 @@ export interface Props {
   color?: string
 }
 const props = withDefaults(defineProps<Props>(), {
-  color: undefined
+  color: ""
 })
 </script>
 
