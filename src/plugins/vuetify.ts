@@ -7,15 +7,21 @@
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
+import { md3 } from 'vuetify/blueprints'
+
 
 // Composables
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import { en, de } from 'vuetify/locale'
 
+import { VIconBtn } from 'vuetify/labs/VIconBtn'
+
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  blueprint: md3,
   components: {
+    VIconBtn,
   },
   icons: {
     defaultSet: 'mdi',
