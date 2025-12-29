@@ -1,19 +1,21 @@
 <template>
-  <TitleBar id="titlebar" />
-  <NavBar />
-  <notification-queue-display />
-  <v-main>
-    <router-view
-      v-slot="{ Component }"
-    >
-      <keep-alive>
-        <component
-          :is="getView(Component)"
-          id="mainArea"
-        />
-      </keep-alive>
-    </router-view>
-  </v-main>
+  <v-app id="root" class="rounded rounded-md border">
+    <TitleBar id="titlebar" />
+    <NavBar />
+    <notification-queue-display />
+    <v-main  class="d-flex align-center justify-center">
+      <router-view
+        v-slot="{ Component }"
+      >
+        <keep-alive>
+          <component
+            :is="getView(Component)"
+            id="mainArea"
+          />
+        </keep-alive>
+      </router-view>
+    </v-main>
+  </v-app>
 </template>
 
 <script lang="ts" setup>
@@ -31,7 +33,7 @@
   const { height, mobile } = useDisplay()
   store.isOnMobile = mobile.value
 
-  
+
   onMounted(async () => {
     //   consolse.log("App runs on a mobile device:", store.isOnMobile) // false
     const titlebarHeight = document.getElementById('titlebar')?.clientHeight
