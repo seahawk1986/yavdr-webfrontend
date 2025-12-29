@@ -1,6 +1,96 @@
 <script setup lang="ts">
 import RemoteIconButton from '@/components/remote/RemoteIconButton.vue'
 import RemoteTextButton from '@/components/remote/RemoteTextButton.vue'
+
+import { useBackendStore } from '@/stores/backend';
+const backend = useBackendStore()
+
+const keymap: Record<string, string> = {
+  0: "KEY_0",
+  1: "KEY_1",
+  2: "KEY_2",
+  3: "KEY_3",
+  4: "KEY_4",
+  5: "KEY_5",
+  6: "KEY_6",
+  7: "KEY_7",
+  8: "KEY_8",
+  9: "KEY_9",
+  // : "KEY_BACK",
+  // : "KEY_BLUE",
+  // : "KEY_CHANNEL",
+  // : "KEY_CHANNELDOWN",
+  // : "KEY_CHANNELUP",
+  // : "KEY_DOWN",
+  // : "KEY_EPG",
+  // : "KEY_ESC",
+  // : "KEY_FASTFORWARD",
+  // : "KEY_FAVORITES",
+  // : "KEY_FN",
+  // : "KEY_GREEN",
+  // : "KEY_HOME",
+  // : "KEY_INFO",
+  // : "KEY_LEFT",
+  // : "KEY_M",
+  // : "KEY_MODE",
+  // : "KEY_MUTE",
+  // : "KEY_NEXT",
+  // : "KEY_OK",
+  // : "KEY_PAUSE",
+  // : "KEY_PLAY",
+  // : "KEY_PROG1",
+  // : "KEY_PROG2",
+  // : "KEY_PROG3",
+  // : "KEY_PROG4",
+  // : "KEY_PVR",
+  // : "KEY_RECORD",
+  // : "KEY_RED",
+  // : "KEY_REWIND",
+  // : "KEY_RIGHT",
+  // : "KEY_SETUP",
+  // : "KEY_STOP",
+  // : "KEY_SUBTITLE",
+  // : "KEY_TEXT",
+  // : "KEY_TIME",
+  // : "KEY_UP",
+  // : "KEY_VOLUMEDOWN",
+  // : "KEY_VOLUMEUP",
+  // : "KEY_YELLOW",
+}
+
+onMounted(() => {
+  document.addEventListener(
+    "keypress",
+    (event) => {
+      if (backend.showRemote) {
+
+        const keyName = event.key
+        console.log("got keyName:", keyName)
+        
+        try {
+          const key = keymap[keyName]
+          console.log("got key", key, "from keytable")
+          if (key) {
+            backend.onKeypress(key)
+            console.log("pressed", key)
+          }
+        } catch {
+          console.log("unhandled keyname:", keyName)
+        }
+      }
+    })
+  })
+//   window.addEventListener("keypress", onKey)
+//   console.log("Add event listener keypress")
+// onUnmounted(() => {
+//   window.removeEventListener("keypress", onKey)
+//   console.log("remove event listener keypress")
+// })
+
+// function onKey(event: Event) {
+//   const key = String.fromCharCode(event.keyCode)
+//   console.log("got key event:", key)
+// }
 </script>
 
 <template>
