@@ -66,7 +66,7 @@ onMounted(() => {
 
         const keyName = event.key
         console.log("got keyName:", keyName)
-        
+
         try {
           const key = keymap[keyName]
           console.log("got key", key, "from keytable")
@@ -316,25 +316,25 @@ onMounted(() => {
     <v-row>
       <v-col>
         <RemoteTextButton
-          name=""
+          name="R"
           tooltip="Red Button"
           keyname="KEY_RED"
           color="red"
         />
         <RemoteTextButton
-          name=""
+          name="G"
           tooltip="Green Button"
           keyname="KEY_GREEN"
           color="green"
         />
         <RemoteTextButton
-          name=""
+          name="Y"
           tooltip="Yellow Button"
           keyname="KEY_YELLOW"
           color="yellow"
         />
         <RemoteTextButton
-          name=""
+          name="B"
           tooltip="Blue Button"
           keyname="KEY_BLUE"
           color="blue"
