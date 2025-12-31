@@ -29,7 +29,8 @@
       </template>
       <template #append>
         <v-icon-btn
-          aria-label="move to position"
+          v-tooltip="t('channels.moveToPosition', {name: channel.name})"
+          :aria-label="t('channels.moveToPosition', {name: channel.name})"
           icon="mdi-dialpad"
           size="small"
           density="comfortable"
@@ -42,7 +43,8 @@
         />
         <v-icon-btn
           v-ripple
-          :aria-label="t('channels.appendChannel')"
+          v-tooltip="t('channels.appendChannel', {what: channel.name})"
+          :aria-label="t('channels.appendChannel', {what: channel.name})"
           icon="mdi-plus"
           size="small"
           @click="$emit('addChannel', channel)"

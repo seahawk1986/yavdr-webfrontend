@@ -11,43 +11,30 @@
       flat
     >
       <v-toolbar-title>System Journal</v-toolbar-title>
-        
-      <v-tooltip
-        location="top"
-        :text="t('log.autoscroll')"
-      >
-        <template #activator="{ props }">
-          <v-btn
-            aria-label="Scroll to show newest syslog entries"
-            :color="scrollToLastElement ? 'primary' : ''"
-            size="small"
-            :icon="scrollToLastElement ? 'mdi-pause' : 'mdi-play'"
-            v-bind="props"
-            variant="tonal"
-            @click="scrollToLastElement = !scrollToLastElement"
-          />
-        </template>
-      </v-tooltip>
+      <v-btn
+        v-tooltip:bottom="t('log.autoscroll')"
+        aria-label="Scroll to show newest syslog entries"
+        :color="scrollToLastElement ? 'primary' : ''"
+        size="small"
+        :icon="scrollToLastElement ? 'mdi-pause' : 'mdi-play'"
+        variant="tonal"
+        @click="scrollToLastElement = !scrollToLastElement"
+      />
       <v-divider
         vertical
         thickness="5"
         opacity="0"
       />
-      <v-tooltip location="top">
-        <template #activator="{ props }">
-          <v-btn
-            aria-label="download syslog for current boot"
-            :loading="isDownloadingFile"
-            download
-            size="small"
-            icon="mdi-download"
-            v-bind="props"
-            variant="tonal"
-            @click="downloadSyslog"
-          />
-        </template>
-        <span>Download Syslog</span>
-      </v-tooltip>
+      <v-btn
+        v-tooltip:bottom="'Download Syslog'"
+        aria-label="download syslog for current boot"
+        :loading="isDownloadingFile"
+        download
+        size="small"
+        icon="mdi-download"
+        variant="tonal"
+        @click="downloadSyslog"
+      />
       <template v-if="$vuetify.display.mdAndUp">
         <div
           v-for="level in logLevelSelection.filter(
@@ -146,7 +133,7 @@ const goTo = useGoTo()
 const store = useBackendStore();
 const logEntries: Ref<Array<logEntryInterface>> = ref([]);
 const scrollToLastElement: Ref<boolean> = ref(true);
-  
+
 const innerToolbarHeight = ref(0)
 
 function formatDate(element: logEntryInterface) {
@@ -294,7 +281,8 @@ async function load(
               element.FORMATTED_TIMESTAMP = formatDate(element);
               return element;
             });
-            logEntries.value.push(...entries);
+            const filtered_entries = entries.filter((element) => element.CURSOR != lastElement.CURSOR)
+            logEntries.value.push(...filtered_entries);
             if (scrollToLastElement.value) {
               const lastEntry = entries[entries.length - 1];
               const element = await store.waitForElm(
