@@ -16,12 +16,14 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import { en, de } from 'vuetify/locale'
 
 import { VIconBtn } from 'vuetify/labs/VIconBtn'
+import { VFileUpload } from 'vuetify/labs/VFileUpload'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   blueprint: md3,
   components: {
     VIconBtn,
+    VFileUpload,
   },
   icons: {
     defaultSet: 'mdi',
@@ -36,6 +38,6 @@ export default createVuetify({
     messages: { en, de },
   },
   theme: {
-    defaultTheme: 'dark',
+    defaultTheme: 'system',
   },
 })
