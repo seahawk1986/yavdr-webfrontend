@@ -4,15 +4,16 @@
   > -->
   <v-card
     class="fill-height ma-2 pa-2"
+    color="background"
   >
     <v-row>
       <v-col
-        class="mx-auto"
+        class="mx-auto fill-height"
         col="12"
         md="6"
       >
         <v-card
-          class="ma-2 pa-2"
+          class="pa-2 fill-height"
           prepend-icon="mdi-speaker-multiple"
           :title="t('audio.audioOutput') + ' (PulseAudio)'"
         >
@@ -72,7 +73,7 @@
       </v-col>
       <v-col>
         <v-card
-          class="ma-2 pa-2"
+          class="pa-2"
           prepend-icon="mdi-soundbar"
           :title="t('audio.vdrAudioChannel')"
         >

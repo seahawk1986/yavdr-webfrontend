@@ -24,7 +24,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <v-container>
+  <v-card
+    class="overflow-y-auto ma-2 pa-2 fill-height"
+    color="background"
+  >
     <v-row>
       <v-col class="xs-1 sm-1 lg-3">
         <v-card
@@ -48,9 +51,9 @@ onUnmounted(() => {
       </v-col>
       <v-col
         class="xs-1 sm-1 lg-3"
-        rounded
       >
         <v-card
+          rounded
           class="pa-2 fill-height"
           :title="t('systeminfo.CPU')"
           prepend-icon="mdi-chip"
@@ -60,9 +63,9 @@ onUnmounted(() => {
       </v-col>
       <v-col
         class="xs-1 sm-1 lg-3"
-        rounded
       >
         <v-card
+          rounded
           class="pa-2 fill-height"
           :title="t('systeminfo.DiskUsage')"
           prepend-icon="mdi-chart-donut"
@@ -73,6 +76,7 @@ onUnmounted(() => {
       <!-- <v-responsive width="100%"></v-responsive> -->
       <v-col class="xs-1 sm-1 lg-3">
         <v-card
+          rounded
           class="pa-2 fill-height"
           :title="t('systeminfo.Fans')"
           prepend-icon="mdi-fan"
@@ -82,6 +86,7 @@ onUnmounted(() => {
       </v-col>
       <v-col class="xs-1 sm-1 lg-3">
         <v-card
+          rounded
           class="pa-2 fill-height"
           :title="t('systeminfo.Temperature')"
           prepend-icon="mdi-thermometer"
@@ -90,7 +95,7 @@ onUnmounted(() => {
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </v-card>
 </template>
 
 <style lang="scss">
