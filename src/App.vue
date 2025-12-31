@@ -1,12 +1,24 @@
 <template>
-  <!-- <v-app id="root"> -->
   <router-view v-slot="{ Component, route }">
-    <transition name="slide">
+    <transition
+      name="slide"
+      mode="out-in"
+    >
       <component
         :is="Component"
-        :key="route"
+        :key="route.fullPath"
       />
     </transition>
   </router-view>
-  <!-- </v-app> -->
 </template>
+
+<script setup lang="ts">
+
+import { useLocale } from 'vuetify'
+const { current } = useLocale()
+
+onMounted(() => {
+  document.documentElement.setAttribute('lang', current.value) // for some reason this is needed
+})
+
+</script>
