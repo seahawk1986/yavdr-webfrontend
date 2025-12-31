@@ -1,32 +1,27 @@
 <template>
-  <v-app id="root" class="rounded rounded-md border">
-    <TitleBar id="titlebar" />
+  <v-app class="rounded rounded-md border">
+    <TitleBar />
     <NavBar />
     <notification-queue-display />
-    <v-main  class="d-flex align-center justify-center">
-      <router-view
-        v-slot="{ Component }"
-      >
-        <keep-alive>
-          <component
-            :is="getView(Component)"
-            id="mainArea"
-          />
-        </keep-alive>
-      </router-view>
+
+    <v-main>
+      <router-view />
+      <RemoteOverlay />
     </v-main>
+    <LoginOverlay />
+    <LanguageOverlay />
   </v-app>
 </template>
+
+
 
 <script lang="ts" setup>
   import { useDisplay } from 'vuetify'
   // import { useI18n } from "vue-i18n";
-  import { onMounted, type RendererElement, type RendererNode } from 'vue'
+  import { onMounted, } from 'vue'
   import { useBackendStore } from '@/stores/backend'
 
   import NavBar from '@/components/NavBar.vue';
-  import RemoteControl from '@/components/RemoteControl.vue'
-  import LoginMask from '@/components/LoginMask.vue'
 
   // const { t } = useI18n();
   const store = useBackendStore()
@@ -43,16 +38,13 @@
     }
   })
 
- function getView(Component: globalThis.VNode<RendererNode, RendererElement, {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
-}>) {
-    if (!store.hasToken) {
-      return LoginMask
-    } else if (store.showRemote) {
-      return RemoteControl
-    } else {
-      return Component
-    }
-  }
 </script>
+
+<style lang="css" scoped>
+  .main-overlay-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+</style>

@@ -7,10 +7,12 @@ import { EventSourceController, EventSourcePlus } from "event-source-plus";
 import type { SystemStatusInterface } from "./interfaces/SystemStatusInterface";
 import { downloadBlob } from "@/services/download";
 
+
 interface OptionInterface {
   baseUrl: string;
   token?: string;
 }
+
 
 const options: OptionInterface = { baseUrl: import.meta.env.VITE_API_BASE_URL };
 console.log("baseURL:", options.baseUrl);
@@ -18,14 +20,17 @@ console.log("baseURL:", options.baseUrl);
 export const useBackendStore = defineStore("backend", () => {
   const ls = <T>(id: string, defaultValue: T): Ref<T> =>
     useLocalStorage(id, defaultValue);
-  const jwToken = ls("jwToken", "");
+  const jwToken: Ref<string | null> = ls("jwToken", null);
+  // const jwToken = authStore.jwToken
   const selectedLocale = ls("locale", "");
   const titlebarHeight: Ref<number> = ref(0);
   const mainAreaHeight: Ref<number> = ref(0);
-  const hasToken = computed(() => jwToken.value.length > 0);
+  const hasToken = computed(() => jwToken.value !== null && jwToken.value.length > 0);
+  const requiresLogin = computed(() => jwToken.value === null || jwToken.value.length === 0)
   // const refreshToken: Ref<string> = ref('')
   const showNavigation: Ref<boolean> = ref(false);
   const showRemote: Ref<boolean> = ref(false);
+  const showLanguageOverlay: Ref<boolean> = ref(false);
 
   // const listedPulseSinks = ref(new ListedPulseSinks());
   // const pulseErrorMessage: Ref<string | null> = ref(null);
@@ -469,12 +474,14 @@ export const useBackendStore = defineStore("backend", () => {
     isOnMobile,
     showNavigation,
     showRemote,
+    showLanguageOverlay,
     selectedLocale,
     titlebarHeight,
     mainAreaHeight,
     login,
     logout,
     hasToken,
+    requiresLogin,
     invalidateToken,
     getSSEClient,
     RetriableError,

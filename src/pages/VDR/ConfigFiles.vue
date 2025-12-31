@@ -1,7 +1,7 @@
 <template>
   <v-sheet
     fill-horizonal
-    :height="height - store.titlebarHeight"
+    height="100%"
   >
     <v-container
       fluid
@@ -17,12 +17,13 @@
           <v-card
             :prepend-icon="config.icon"
             :title="config.filename"
-            :min-height="180"
+            class="d-flex flex-column fill-height"
           >
-            <v-card-text>
+            <v-card-text class="fill-height">
               {{ config.description }}
             </v-card-text>
-            <v-card-actions>
+
+            <v-card-actions class="mt-auto">
               <v-btn
                 prepend-icon="mdi-pencil"
                 @click="config.showEditor = true"
@@ -34,6 +35,7 @@
           <v-dialog
             v-model="config.showEditor"
             persistent
+            fullscreen
             scrollable
           >
             <FileEditor
@@ -51,13 +53,10 @@
 
 <script lang="ts" setup>
 import type { configFileInterface } from '@/components/FileEditor/interfaces';
-import { useBackendStore } from '@/stores/backend';
-import { useDisplay } from "vuetify";
+import { useI18n } from 'vue-i18n';
 
-const store = useBackendStore()
-const {height} = useDisplay()
-// import { useI18n } from 'vue-i18n';
-// const { t } = useI18n()
+
+const { t } = useI18n()
 
 
 
@@ -66,7 +65,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     filename: "channels.conf",
     url: "vdr/configfile",
     title: "channels.conf",
-    description: "Channel entries for VDR",
+    description: t("descriptions.channels_conf"),
     icon: "mdi-list-box",
     showEditor: false,
   },
@@ -74,7 +73,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     filename: "remote.conf",
     url: "vdr/configfile",
     title: "remote.conf",
-    description: "Remote control entries for VDR. Be aware that yaVDR uses a special naming scheme.",
+    description: t("descriptions.remote_conf"),
     icon: "mdi-remote-tv",
     showEditor: false,
   },
@@ -82,7 +81,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     filename: "keymacros.conf",
     url: "vdr/configfile",
     title: "keymacros.conf",
-    description: "Map remote control button presses to VDR actions",
+    description: t("descriptions.keymacros_conf"),
     icon: "mdi-keyboard",
     showEditor: false,
   },
@@ -90,7 +89,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     filename: "diseqc.conf",
     url: "vdr/configfile",
     title: "diseqc.conf",
-    description: "Advanced LNB configuration",
+    description: t("descriptions.diseqc_conf"),
     icon: "mdi-satellite-variant",
     showEditor: false,
   },
@@ -98,7 +97,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     filename: "sources.conf",
     url: "vdr/configfile",
     title: "sources.conf",
-    description: "Map satellite positions",
+    description: t("descriptions.sources_conf"),
     icon: "mdi-satellite-uplink",
     showEditor: false,
   },
@@ -106,7 +105,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     filename: "setup.conf",
     url: "vdr/configfile",
     title: "setup.conf",
-    description: "VDR settings",
+    description: t("descriptions.setup_conf"),
     icon: "mdi-cog",
     showEditor: false,
   },
@@ -114,7 +113,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     filename: "menuorg.xml",
     url: "vdr/configfile",
     title: "plugins/menuorg.xml",
-    description: "menuorg configuration",
+    description: t("descriptions.menuorg_xml"),
     icon: "mdi-list-box-outline",
     showEditor: false,
   },

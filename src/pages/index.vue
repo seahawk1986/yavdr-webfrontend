@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TimerList from '@/components/TimerList.vue';
 import DashBoard from '@/pages/DashBoard.vue'
 
 const tab = ref(null)
@@ -28,30 +29,18 @@ const tab = ref(null)
         <v-container style="max-height: 89vh">
           <v-row no-gutters>
             <v-col
+              class="pa-1"
               cols="12"
               lg="6"
             >
-              <v-card>
-                <v-card-title>
-                  {{ $t('category.timer', 2) }}
-                </v-card-title>
-                <v-card-text>
-                  <TimerList />
-                </v-card-text>
-              </v-card>
+            <TimerList />
             </v-col>
             <v-col
+              class="pa-1"
               cols="12"
               lg="6"
             >
-              <v-card>
-                <v-card-title>
-                  {{ $t('category.recording', 2) }}
-                </v-card-title>
-                <v-card-text>
-                  <RecordingsList />
-                </v-card-text>
-              </v-card>
+            <RecordingsList />
             </v-col>
           </v-row>
         </v-container>

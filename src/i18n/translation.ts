@@ -1,7 +1,7 @@
 import { useBackendStore } from "@/stores/backend"
 import i18n from "@/plugins/i18n"
 
-const store = useBackendStore()
+const backend = useBackendStore()
 
 // see https://lokalise.com/blog/vue-i18n/
 
@@ -29,18 +29,18 @@ export const Trans = {
     await Trans.loadLocaleMessages(newLocale)
     Trans.currentLocale = newLocale
     const htmlTag = document.querySelector("html")
-      if (htmlTag) {
-        htmlTag.setAttribute("lang", newLocale)
-      }
-    store.selectedLocale = newLocale
+    if (htmlTag) {
+      htmlTag.setAttribute("lang", newLocale)
+    }
+    backend.selectedLocale = newLocale
   },
 
   async loadLocaleMessages(locale: typeof i18n.global.locale.value) {
-    if(!i18n.global.availableLocales.includes(locale)) {
+    if (!i18n.global.availableLocales.includes(locale)) {
       const messages = await import(`@/i18n/locales/${locale}.json`)
       i18n.global.setLocaleMessage(locale, messages.default)
     }
-    
+
     return nextTick()
   },
 
@@ -59,9 +59,9 @@ export const Trans = {
   },
 
   getPersistedLocale() {
-    const persistedLocale: string|null = store.selectedLocale
+    const persistedLocale: string | null = backend.selectedLocale
 
-    if(persistedLocale && Trans.isLocaleSupported(persistedLocale)) {
+    if (persistedLocale && Trans.isLocaleSupported(persistedLocale)) {
       return persistedLocale
     } else {
       return null
@@ -70,7 +70,7 @@ export const Trans = {
 
   guessDefaultLocale() { // TODO: call this function when loading the App?
     const userPersistedLocale = Trans.getPersistedLocale()
-    if(userPersistedLocale) {
+    if (userPersistedLocale) {
       console.log("locale from local storage is", userPersistedLocale)
       return userPersistedLocale
     }
@@ -84,7 +84,7 @@ export const Trans = {
     if (Trans.isLocaleSupported(userPreferredLocale.localeNoRegion)) {
       return userPreferredLocale.localeNoRegion
     }
-    
+
     return Trans.defaultLocale
   },
 
