@@ -3,94 +3,144 @@ import RemoteIconButton from '@/components/remote/RemoteIconButton.vue'
 import RemoteTextButton from '@/components/remote/RemoteTextButton.vue'
 
 import { useBackendStore } from '@/stores/backend';
+import { useUIStore } from '@/stores/ui';
 const backend = useBackendStore()
+const ui = useUIStore()
 
 const keymap: Record<string, string> = {
-  0: "KEY_0",
-  1: "KEY_1",
-  2: "KEY_2",
-  3: "KEY_3",
-  4: "KEY_4",
-  5: "KEY_5",
-  6: "KEY_6",
-  7: "KEY_7",
-  8: "KEY_8",
-  9: "KEY_9",
-  // : "KEY_BACK",
-  // : "KEY_BLUE",
-  // : "KEY_CHANNEL",
-  // : "KEY_CHANNELDOWN",
-  // : "KEY_CHANNELUP",
-  // : "KEY_DOWN",
-  // : "KEY_EPG",
-  // : "KEY_ESC",
-  // : "KEY_FASTFORWARD",
-  // : "KEY_FAVORITES",
-  // : "KEY_FN",
-  // : "KEY_GREEN",
-  // : "KEY_HOME",
-  // : "KEY_INFO",
-  // : "KEY_LEFT",
-  // : "KEY_M",
-  // : "KEY_MODE",
-  // : "KEY_MUTE",
-  // : "KEY_NEXT",
-  // : "KEY_OK",
-  // : "KEY_PAUSE",
-  // : "KEY_PLAY",
-  // : "KEY_PROG1",
-  // : "KEY_PROG2",
-  // : "KEY_PROG3",
-  // : "KEY_PROG4",
-  // : "KEY_PVR",
-  // : "KEY_RECORD",
-  // : "KEY_RED",
-  // : "KEY_REWIND",
-  // : "KEY_RIGHT",
-  // : "KEY_SETUP",
-  // : "KEY_STOP",
-  // : "KEY_SUBTITLE",
-  // : "KEY_TEXT",
-  // : "KEY_TIME",
-  // : "KEY_UP",
-  // : "KEY_VOLUMEDOWN",
-  // : "KEY_VOLUMEUP",
-  // : "KEY_YELLOW",
+  // numbers
+  Digit0: "KEY_0",
+  Digit1: "KEY_1",
+  Digit2: "KEY_2",
+  Digit3: "KEY_3",
+  Digit4: "KEY_4",
+  Digit5: "KEY_5",
+  Digit6: "KEY_6",
+  Digit7: "KEY_7",
+  Digit8: "KEY_8",
+  Digit9: "KEY_9",
+
+  Numpad0: "KEY_0",
+  Numpad1: "KEY_1",
+  Numpad2: "KEY_2",
+  Numpad3: "KEY_3",
+  Numpad4: "KEY_4",
+  Numpad5: "KEY_5",
+  Numpad6: "KEY_6",
+  Numpad7: "KEY_7",
+  Numpad8: "KEY_8",
+  Numpad9: "KEY_9",
+
+
+  // navigation
+  ArrowUp: "KEY_UP",
+  ArrowDown: "KEY_DOWN",
+  ArrowLeft: "KEY_LEFT",
+  ArrowRight: "KEY_RIGHT",
+  Enter: "KEY_OK",
+  NumpadEnter: "KEY_OK",
+  // Escape: "KEY_ESC", // not standard
+  Backspace: "KEY_ESC",
+  NumpadDecimal: "KEY_ESC",
+
+  // channel / volume
+  PageUp: "KEY_CHANNELUP",
+  PageDown: "KEY_CHANNELDOWN",
+  ArrowUpShift: "KEY_VOLUMEUP",     // see note below
+  ArrowDownShift: "KEY_VOLUMEDOWN",
+
+  // media - I don't think we need that
+
+  // Space: "KEY_PLAY",
+  // KeyK: "KEY_PLAY",
+  // KeyP: "KEY_PAUSE",
+  // KeyS: "KEY_STOP",
+  // KeyR: "KEY_RECORD",
+  // KeyF: "KEY_FASTFORWARD",
+  // KeyB: "KEY_REWIND",
+  // KeyN: "KEY_NEXT",
+
+  // color buttons
+  F1: "KEY_RED",      // see alt mapping note
+  F2: "KEY_GREEN",
+  F3: "KEY_YELLOW",
+  F4: "KEY_BLUE",
+
+  // user keys
+  F5: "KEY_PROG1",
+  F6: "KEY_PROG2",
+  F7: "KEY_PROG3",
+  F8: "KEY_PROG4",
+  // PrintScreen can't be mapped
+  ScrollLock: "KEY_VIDEO",
+  Insert: "KEY_IMAGES",
+  NumpadDivide: "KEY_FN",
+  NumpadMultiply: "KEY_SCREEN",
+
+
+  // replay control
+  F9: "KEY_PLAYPAUSE",
+
+  // volume control
+  F10: "KEY_MUTE",
+  F11: "KEY_VOLUMEUP",
+  F12: "KEY_VOLUMEDOWN",
+
+  NumpadAdd: "KEY_VOLUMEUP",
+  NumpadSubtract: "KEY_VOLUMEDOWN",
+
+
+  // misc
+  Home: "KEY_HOME",
+  End: "KEY_INFO",
+  KeyE: "KEY_EPG",
+  KeyT: "KEY_TEXT",
+  KeySAlt: "KEY_SUBTITLE",
+  ContextMenu: "KEY_MODE",
+
+  Pause: "KEY_POWER2",
 }
 
+function resolveKey(event: KeyboardEvent) {
+  if (event.code === "Escape") {
+    ui.showRemote = !ui.showRemote
+    return
+  }
+  if (event.shiftKey) {
+    if (event.code === "ArrowUp") return "KEY_VOLUMEUP"
+    if (event.code === "ArrowDown") return "KEY_VOLUMEDOWN"
+  }
+  return keymap[event.code]
+}
+
+
 onMounted(() => {
-  document.addEventListener(
-    "keypress",
-    (event) => {
-      if (backend.showRemote) {
+  const handler = (event: KeyboardEvent) => {
+    if (!ui.showRemote) return
 
-        const keyName = event.key
-        console.log("got keyName:", keyName)
+    // console.log("got event",{
+    //   key: event.key,
+    //   code: event.code,
+    //   shift: event.shiftKey,
+    //   ctrl: event.ctrlKey,
+    //   alt: event.altKey,
+    // })
 
-        try {
-          const key = keymap[keyName]
-          console.log("got key", key, "from keytable")
-          if (key) {
-            backend.onKeypress(key)
-            console.log("pressed", key)
-          }
-        } catch {
-          console.log("unhandled keyname:", keyName)
-        }
-      }
-    })
+    const key = resolveKey(event)
+    if (!key) return
+
+    event.preventDefault()
+    backend.onKeypress(key)
+    console.log("pressed key", key)
+  }
+
+  document.addEventListener("keydown", handler)
+
+  onUnmounted(() => {
+    document.removeEventListener("keydown", handler)
   })
-//   window.addEventListener("keypress", onKey)
-//   console.log("Add event listener keypress")
-// onUnmounted(() => {
-//   window.removeEventListener("keypress", onKey)
-//   console.log("remove event listener keypress")
-// })
+})
 
-// function onKey(event: Event) {
-//   const key = String.fromCharCode(event.keyCode)
-//   console.log("got key event:", key)
-// }
 </script>
 
 <template>
