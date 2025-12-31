@@ -8,48 +8,76 @@
       {{ $t('actions.reload') }}
     </v-btn>
   </v-sheet>
-  <v-data-table-virtual
+  <v-sheet
     v-else
-    class="vdr-item-list"
-    density="compact"
-    :headers="headers"
-    :items="recordings"
-    :loading="isLoadingRecordings"
-    item-value="raw"
-    items-per-page="-1"
-    fixed-header
-    hover
+    rounded="lg"
   >
-    <template #bottom />
-    <template #item="{ item }">
-      <tr>
-        <td>
-          <v-icon
-            v-if="item.IsNew"
-            icon="mdi-new-box"
-            :aria-label="$t('recording.isNew')"
+    <v-data-table-virtual
+      class="vdr-item-list"
+      density="compact"
+      :headers="headers"
+      :items="recordings"
+      :loading="isLoadingRecordings"
+      item-value="raw"
+      items-per-page="-1"
+      fixed-header
+      hover
+    >
+      <template #top>
+        <v-toolbar
+          flat
+          rounded
+          density="compact"
+        >
+          <v-toolbar-title>
+            {{ $t('category.recording', 2) }}
+          </v-toolbar-title>
+          <v-btn
+            class="me-2"
+            prepend-icon="mdi-reload"
+            rounded="lg"
+            :text="$t('actions.reload')"
+            :aria-label="$t('actions.reloadSth', {what: $t('category.recording', 2)})"
+            border
+            @click="reloadRecordings"
           />
-        </td>
-        <td>
-          {{ getStartDate(item.Start) }}
-        </td>
-        <td>
-          <v-icon
-            v-if="item.IsEdited"
-            icon="mdi-content-cut"
-            :aria-label="$t('recording.isEdited')"
-          />
-          {{ item.InfoTitle }}
-        </td>
-        <td>
-          {{ item.duration }}
-        </td>
-        <td>
-          {{ item.InfoChannelName }}
-        </td>
-      </tr>
-    </template>
-  </v-data-table-virtual>
+        </v-toolbar>
+      </template>
+
+
+      <template #bottom />
+      <template #item="{ item }">
+        <tr>
+          <td>
+            <v-icon
+              v-if="item.IsNew"
+              align-self="center"
+              icon="mdi-new-box"
+              size="x-large"
+              :aria-label="$t('recording.isNew')"
+            />
+          </td>
+          <td>
+            {{ getStartDate(item.Start) }}
+          </td>
+          <td>
+            <v-icon
+              v-if="item.IsEdited"
+              icon="mdi-content-cut"
+              :aria-label="$t('recording.isEdited')"
+            />
+            {{ item.InfoTitle }}
+          </td>
+          <td>
+            {{ item.duration }}
+          </td>
+          <td>
+            {{ item.InfoChannelName }}
+          </td>
+        </tr>
+      </template>
+    </v-data-table-virtual>
+  </v-sheet>
 </template>
 
 <script setup lang="ts">
@@ -77,8 +105,10 @@ const headers = [{
     title: i18n.global.t('info.state'),
     headerProps: {
       class: "status-column",
+      align: "center"
     },
     cellProps: {
+      align: "center",
     },
   },
   {

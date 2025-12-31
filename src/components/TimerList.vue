@@ -22,24 +22,37 @@
     hover
     :no-data-text="$t('timer.noTimers')"
   >
+    <template #top>
+      <v-toolbar
+        flat
+        rounded
+        density="compact"
+      >
+        <v-toolbar-title>
+          {{ $t('category.timer', 2) }}
+        </v-toolbar-title>
+        <v-btn
+          class="me-2"
+          prepend-icon="mdi-reload"
+          rounded="lg"
+          :text="$t('actions.reload')"
+          :aria-label="$t('actions.reloadSth', {what: $t('category.timer', 2)})"
+          border
+          @click="reloadTimers"
+        />
+      </v-toolbar>
+    </template>
     <template #bottom />
     <template #item="{ item }">
       <tr>
         <td>
-          <v-tooltip
-            location="start"
-            :text="timerStatusLabel(item.status_flags)"
-          >
-            <template #activator="{ props }">
-              <v-icon
-                v-bind="props"
-                :color="timerStatusColor(item.status_flags)"
-                icon="mdi-record"
-                :aria-label="timerStatusLabel(item.status_flags)"
-                size="x-large"
-              />
-            </template>
-          </v-tooltip>
+          <v-icon
+            v-tooltip:start="timerStatusLabel(item.status_flags)"
+            :color="timerStatusColor(item.status_flags)"
+            icon="mdi-record"
+            :aria-label="timerStatusLabel(item.status_flags)"
+            size="x-large"
+          />
         </td>
         <td>
           <div v-if="item.start > 0">
@@ -107,6 +120,7 @@ const headers = [{
     title: i18n.global.t('info.state'),
     headerProps: {
       class: "status-column",
+      align: 'center',
     },
     cellProps: {}
   },
