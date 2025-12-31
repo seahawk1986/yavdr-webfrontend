@@ -4,13 +4,16 @@
     :height="height - backend.titlebarHeight"
     style="min-width: 80%"
   >
-    <!-- <h1>EPG Viewer</h1> -->
-    <v-label :text="`${t('channels.selection')}:`">
-      <v-divider
-        vertical
-        thickness="5"
-        opacity="0"
-      />
+    <v-toolbar
+      flat
+      rounded
+      density="compact"
+    >
+      <v-toolbar-title>
+        {{ $t('category.epg') }} - {{ $t('channels.selection') }}:
+      </v-toolbar-title>
+
+
       <v-select
         id="channel-selection"
         v-model="selectedChannel"
@@ -21,17 +24,27 @@
         hide-details="auto"
         :isloading="isLoading"
       />
-    </v-label>
-    <v-tooltip :text="t('channels.switchto', { channel: selectedChannelName })">
-      <template #activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :aria-label="t('channels.switchto', { channel: selectedChannelName })"
-          icon="mdi-television-classic"
-          @click="switchChannel"
-        />
-      </template>
-    </v-tooltip>
+
+      <v-divider
+        vertical
+        thickness="10"
+        opacity="0"
+      />
+
+      <v-icon-btn
+        v-tooltip="t('channels.switchto', { channel: selectedChannelName })"
+        :aria-label="t('channels.switchto', { channel: selectedChannelName })"
+        color="primary"
+        icon="mdi-television-classic"
+        @click="switchChannel"
+      />
+    </v-toolbar>
+
+    <v-spacer
+      vertical
+    />
+
+
     <div v-if="isLoading">
       <v-progress-linear indeterminate />
     </div>
@@ -46,7 +59,7 @@
       aria-role="list"
       item-height="48"
     >
-    <!-- TODO set constant width -->
+      <!-- TODO set constant width -->
       <template #default="{ item, index }">
         <v-list-item
           v-if="index === 0"
@@ -78,7 +91,7 @@
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
         >
           <template #prepend>
-            <v-btn
+            <v-icon-btn
               v-if="!item.has_timer"
               color="primary"
               :aria-label="
@@ -89,10 +102,10 @@
                 })
               "
               icon="mdi-timer-plus-outline"
-              size="x-small"
+              size="small"
               @click="createTimer(item)"
             />
-            <v-btn
+            <v-icon-btn
               v-else
               color="red"
               :aria-label="
@@ -103,7 +116,7 @@
                 })
               "
               icon="mdi-timer-edit-outline"
-              size="x-small"
+              size="small"
               @click="editTimer(item)"
             />
             <v-list-item
@@ -121,7 +134,7 @@
               :text="item.description ? item.description : ''"
             >
               <template #activator="{ props }">
-                <v-btn
+                <v-icon-btn
                   icon="mdi-information"
                   v-bind="props"
                 />
@@ -263,11 +276,11 @@ async function loadEpgData(channel_id: string | null) {
   }
   isLoading.value = false;
 }
-watch(selectedChannel, async (old_channel_id, channel_id) => {
+watch(selectedChannel, async (new_channel_id, old_channel_id) => {
   isLoading.value = true;
-  if (old_channel_id !== channel_id || old_channel_id === null) {
+  if (new_channel_id !== old_channel_id || new_channel_id !== null) {
     // epgChannelList.value = []
-    await loadEpgData(channel_id);
+    await loadEpgData(new_channel_id);
   }
 });
 
