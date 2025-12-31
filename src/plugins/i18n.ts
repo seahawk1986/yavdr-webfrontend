@@ -33,6 +33,7 @@ export default createI18n({
                 uploadLabel: 'upload file',
                 uploadSth: "upload {what}",
                 uploadSuccessful: 'Upload successful',
+                downloadSyslog: "Download syslog for the current boot",
             },
             audio: {
                 audioOutput: "Audio Output",
@@ -165,6 +166,7 @@ export default createI18n({
                 logout: "Abmelden",
                 shutdown: "Herunterfahren",
                 reset: "Zurücksetzen",
+                downloadSyslog: "Syslog ab Boot herunterladen",
             },
             audio: {
                 audioOutput: "Audio Ausgabe",
