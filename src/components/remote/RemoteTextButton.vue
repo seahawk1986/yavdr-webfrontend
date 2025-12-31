@@ -8,25 +8,19 @@ export interface Props {
   color?: string
 }
 const props = withDefaults(defineProps<Props>(), {
-  color: ""
+  color: "",
 })
 </script>
 
 <template>
   <v-btn
+    v-tooltip="props.tooltip"
     class="remote-icon-btn mx-2"
     :color="props.color"
     :aria-label="props.name ? props.name : props.tooltip"
     rounded="pill"
     @click="store.onKeypress(props.keyname)"
   >
-    {{ name }}
-    <v-tooltip
-      location="bottom"
-      :text="tooltip"
-      activator="parent"
-    >
-      {{ props.tooltip }}
-    </v-tooltip>
+    {{ props?.name }}
   </v-btn>
 </template>
