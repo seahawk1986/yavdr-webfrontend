@@ -22,3 +22,10 @@ onMounted(() => {
 })
 
 </script>
+
+<style lang="css">
+  html, body {
+  overflow: hidden !important;
+  height: 100%;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="ma-2"
+    class="ma-2 pa-2 fill-height"
     :disabled="isLookingForDisplays"
     :loading="isLookingForDisplays || isSettingConfig"
   >

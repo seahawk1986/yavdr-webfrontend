@@ -4,7 +4,10 @@
     <NavBar />
     <notification-queue-display />
 
-    <v-main>
+    <v-main
+      class="d-flex flex-column"
+      style="height: 100dvh;"
+    >
       <router-view />
       <RemoteOverlay />
     </v-main>

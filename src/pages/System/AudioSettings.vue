@@ -1,12 +1,12 @@
 <template>
-  <v-container
+  <!-- <v-container
     class="ma-0 pa-2"
+  > -->
+  <v-card
+    class="fill-height ma-2 pa-2"
   >
-    <v-sheet
-      class="fill-height"
-    >
-      <v-row no-gutters>
-        <!-- <v-col
+    <v-row>
+      <v-col
         class="mx-auto"
         col="12"
         md="6"
@@ -14,27 +14,52 @@
         <v-card
           class="ma-2 pa-2"
           prepend-icon="mdi-speaker-multiple"
+          :title="t('audio.audioOutput') + ' (PulseAudio)'"
         >
-          <template #title>
-            Pulseaudio Profiles
-          </template>
-          <template #text>
+          <v-card-text
+            v-if="audio.pulseErrorMessage === null"
+          >
             <v-radio-group
-              v-for="card in audio.listedPulseProfiles"
-              :key="card.card_name"
-              v-model="card.profile_active"
-              :label="card.card_description"
-              @update:model-value="audio.setPulseProfile(card.card_name, card.profile_active); refresh()"
+              v-model="audio.listedPulseSinks.default_sink"
+              hide-details="auto"
+              :label="t('audio.sink')"
+              @update:model-value="setNewDefaultSink"
+            >
+              <template
+                v-for="device in audio.listedPulseSinks.pulse_devices"
+                :key="device.device"
+              >
+                <v-radio
+                  :label="device.device_name"
+                  :value="device.device"
+                />
+              </template>
+            </v-radio-group>
+
+            <v-radio-group
+              v-if="cardForCurrentSink"
+              v-model="cardForCurrentSink.profile_active"
+              hide-details="auto"
+              :label="t('audio.profile')"
+              @update:model-value="setProfile"
             >
               <v-radio
-                v-for="profile in card.profiles"
+                v-for="profile in profilesForCurrentSink"
                 :key="profile.profile_name"
-                :value="profile.profile_name"
                 :label="profile.profile_description"
+                :value="profile.profile_name"
               />
             </v-radio-group>
-          </template>
-          <template #actions>
+            <!-- Selected: {{ store.listedPulseSinks.default_sink }} -->
+          </v-card-text>
+          <v-card-text
+            v-else
+          >
+            <h2>
+              {{ audio.pulseErrorMessage }}
+            </h2>
+          </v-card-text>
+          <v-card-actions>
             <v-btn
               color="primary"
               prepend-icon="mdi-refresh"
@@ -42,121 +67,49 @@
             >
               {{ t('actions.reload') }}
             </v-btn>
-          </template>
+          </v-card-actions>
         </v-card>
-      </v-col> -->
-        <!-- <ul>
-        <li>
-          {{ audio.listedPulseSinks }}
-        </li>
-        <li>
-          {{ cardForCurrentSink }}
-        </li>
-      </ul> -->
-        <v-col
-          class="mx-auto"
-          col="12"
-          md="6"
+      </v-col>
+      <v-col>
+        <v-card
+          class="ma-2 pa-2"
+          prepend-icon="mdi-soundbar"
+          :title="t('audio.vdrAudioChannel')"
         >
-          <v-card
-            class="ma-2 pa-2"
-            prepend-icon="mdi-speaker-multiple"
-            :title="t('audio.audioOutput') + ' (PulseAudio)'"
-          >
-            <v-card-text
-              v-if="audio.pulseErrorMessage === null"
+          <v-card-text>
+            <v-radio-group
+              v-model="selectedVdrAudioChannel"
+              :error="(VDRAudioSelectionErrorMessage && VDRAudioSelectionErrorMessage.length > 0) || false"
+              :error-messages="VDRAudioSelectionErrorMessage"
+              hide-details="auto"
+              @update:model-value="setVDRAudioChannel"
             >
-              <v-radio-group
-                v-model="audio.listedPulseSinks.default_sink"
-                hide-details="auto"
-                :label="t('audio.sink')"
-                @update:model-value="setNewDefaultSink"
-              >
-                <template
-                  v-for="device in audio.listedPulseSinks.pulse_devices"
-                  :key="device.device"
-                >
-                  <v-radio
-                    :label="device.device_name"
-                    :value="device.device"
-                  />
-                </template>
-              </v-radio-group>
-
-              <v-radio-group
-                v-if="cardForCurrentSink"
-                v-model="cardForCurrentSink.profile_active"
-                hide-details="auto"
-                :label="t('audio.profile')"
-                @update:model-value="setProfile"
+              <template
+                v-for="channel in VdrAudioChannels"
+                :key="channel.number"
               >
                 <v-radio
-                  v-for="profile in profilesForCurrentSink"
-                  :key="profile.profile_name"
-                  :label="profile.profile_description"
-                  :value="profile.profile_name"
+                  :label="channel.desc"
+                  :value="channel.number"
                 />
-              </v-radio-group>
-            <!-- Selected: {{ store.listedPulseSinks.default_sink }} -->
-            </v-card-text>
-            <v-card-text
-              v-else
-            >
-              <h2>
-                {{ audio.pulseErrorMessage }}
-              </h2>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-refresh"
-                @click="refresh"
-              >
-                {{ t('actions.reload') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-        <v-col>
-          <v-card
-            class="ma-2 pa-2"
-            prepend-icon="mdi-soundbar"
-            :title="t('audio.vdrAudioChannel')"
-          >
-            <v-card-text>
-              <v-radio-group
-                v-model="selectedVdrAudioChannel"
-                :error="(VDRAudioSelectionErrorMessage && VDRAudioSelectionErrorMessage.length > 0) || false"
-                :error-messages="VDRAudioSelectionErrorMessage"
-                hide-details="auto"
-                @update:model-value="setVDRAudioChannel"
-              >
-                <template
-                  v-for="channel in VdrAudioChannels"
-                  :key="channel.number"
-                >
-                  <v-radio
-                    :label="channel.desc"
-                    :value="channel.number"
-                  />
-                </template>
-              </v-radio-group>
+              </template>
+            </v-radio-group>
             <!-- {{ selectedVdrAudioChannel }} -->
-            </v-card-text>
-            <v-card-actions>
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-refresh"
-                @click="refreshVDRAudioChannels"
-              >
-                {{ t('actions.reload') }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-sheet>
-  </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="primary"
+              prepend-icon="mdi-refresh"
+              @click="refreshVDRAudioChannels"
+            >
+              {{ t('actions.reload') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-card>
+  <!-- </v-container> -->
 </template>
 
 
