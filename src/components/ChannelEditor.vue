@@ -121,14 +121,16 @@
                   <template #append>
                     <v-icon-btn
                       v-if="channel.is_group"
+                      v-tooltip="t('channels.editGroup', {what: channel.name})"
                       icon="mdi-pencil"
                       size="small"
                       density="comfortable"
-                      aria-label="edit"
+                      :aria-label="t('actions.edit')"
                       @click="editGroup(channel)"
                     />
                     <v-icon-btn
                       v-else
+                      v-tooltip="t('channels.changePosition', {name: channel.name})"
                       icon="mdi-dialpad"
                       size="small"
                       density="comfortable"
@@ -141,6 +143,7 @@
                       thickness="5"
                     />
                     <v-icon-btn
+                      v-tooltip="channel.is_group ? t('channels.deleteChannelGroup', {what: channel.name}) : t('channels.deleteChannel', {what: channel.name})"
                       icon="mdi-close-circle"
                       size="small"
                       density="comfortable"
