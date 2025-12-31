@@ -39,9 +39,6 @@
       <v-speed-dial
         location="top center"
         transition="fade-transition"
-        open-on-hover
-        open-on-click
-        open-on-focus
       >
         <template #activator="{ props: activatorProps }">
           <v-fab
@@ -54,7 +51,7 @@
 
         <v-icon-btn
           key="1"
-          :v-tooltip="t('actions.logout')"
+          v-tooltip="t('actions.logout')"
           icon="mdi-logout"
           color="warning"
           :aria-label="t('actions.logout')"
@@ -62,7 +59,7 @@
         />
         <v-btn
           key="2"
-          :v-tooltip="t('language.selectLanguage')"
+          v-tooltip="t('language.selectLanguage')"
           :aria-label="t('language.selectLanguage')"
           icon="mdi-translate-variant"
           @click="store.showLanguageOverlay = true"
