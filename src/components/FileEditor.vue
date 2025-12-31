@@ -1,60 +1,89 @@
 <template>
-  <v-card>
-    <v-card-title>
-      {{
-        t("category.editor", { what: props.fileconfig.filename })
-      }}
-    </v-card-title>
-    <v-card-text>
+  <v-card
+    class="d-flex flex-column fill-height"
+  >
+    <div class="d-flex justify-center border-b">
+      <v-card-title style="width: 100%; max-width: 1440px;">
+        <v-toolbar class="bg-surface">
+          <v-icon-btn
+            v-tooltip="t('actions.close')"
+            class="mb-4"
+            color="red"
+            icon="mdi-close"
+            @click="emit('abort')"
+          />
+          <v-toolbar-title>
+            {{
+              t("category.editor", { what: props.fileconfig.filename })
+            }}
+          </v-toolbar-title>
+
+          <v-toolbar-items>
+            <v-file-input
+              v-if="!mobile"
+              v-model="fileToUpload"
+              v-tooltip="t('actions.uploadSth', { what: props.fileconfig.filename })"
+              accept=".conf,text/plain"
+              filter-by-type=".conf,text/plain"
+              :label="t('actions.uploadSth', { what: props.fileconfig.filename })"
+              :loading="isUploading"
+              prepend-icon="mdi-upload"
+              :rules="[validateFileType]"
+              show-size
+              tile
+              min-width="400px"
+
+              variant="outlined"
+              density="compact"
+              @update:model-value="uploadFile"
+            />
+            <v-divider
+              vertical
+              thickness="5px"
+              opacity="0"
+            />
+            <v-icon-btn
+              v-tooltip="t('actions.download')"
+              color="secondary"
+              icon="mdi-download"
+              variant="tonal"
+              @click="createDownloadFile"
+            />
+          </v-toolbar-items>
+          <v-spacer
+            horizontal
+            opacity="0%"
+            size="5px"
+          />
+          <v-icon-btn
+            v-tooltip="t('actions.save')"
+            class="mb-4"
+            :loading="isSaving"
+            color="green"
+            icon="mdi-floppy"
+            @click="saveFilecontent(editableFileContent, props.fileconfig)"
+          />
+        </v-toolbar>
+      </v-card-title>
+    </div>
+    <v-card-text class="pa-0  d-flex justify-center">
       <v-textarea
         v-model="editableFileContent"
+        :autofocus="false"
+        width="100%"
+        height="100%"
+        class="overflow-auto pa-n4 text-no-wrap"
+        style="font-family: monospace;"
+        max-width="1440"
         autofocus
-        auto-grow
-        style="max-height: 100%"
         spellcheck="false"
-        variant="outlined"
+        density="compact"
+        variant="solo"
+        wrap="off"
+        :hide-details="true"
+        no-resize
       />
     </v-card-text>
-    <v-card-actions>
-      <v-file-input
-        v-model="fileToUpload"
-        accept="*.conf"
-        :label="t('actions.uploadSth', { what: props.fileconfig.filename })"
-        :loading="isUploading"
-        prepend-icon="mdi-upload"
-        :rules="[validateFileType]"
-        show-size
-        tile
-        variant="solo"
-        width="20%"
-        @update:model-value="uploadFile"
-      />
-      <v-btn
-        color="red"
-        prepend-icon="mdi-cancel"
-        variant="tonal"
-        @click="emit('abort')"
-      >
-        {{ t("actions.cancel") }}
-      </v-btn>
-      <v-btn
-        :loading="isSaving"
-        color="green"
-        prepend-icon="mdi-floppy"
-        variant="tonal"
-        @click="saveFilecontent(editableFileContent, props.fileconfig)"
-      >
-        {{ t("actions.save") }}
-      </v-btn>
-      <v-btn
-        color="secondary"
-        prepend-icon="mdi-download"
-        variant="tonal"
-        @click="createDownloadFile"
-      >
-        {{ t("actions.download") }}
-      </v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -63,6 +92,10 @@ import type { configFileInterface } from "@/components/FileEditor/interfaces";
 import { downloadBlob } from "@/services/download";
 import { useI18n } from "vue-i18n";
 import { useBackendStore } from "@/stores/backend";
+import { useDisplay } from 'vuetify'
+
+const { name, mobile } = useDisplay()
+
 
 const backend = useBackendStore();
 
@@ -102,7 +135,7 @@ onMounted(async () => {
 
 const isUploading: Ref<boolean> = ref(false);
 const uploadDisabled: Ref<boolean> = ref(false);
-const fileToUpload: Ref<File | null> = ref(null);
+const fileToUpload: Ref<File | undefined > = ref(undefined);
 
 async function saveFilecontent(content: string, config: configFileInterface) {
   isSaving.value = true
@@ -124,6 +157,7 @@ async function uploadFile() {
   isUploading.value = true;
   if (fileToUpload.value) {
     editableFileContent.value = await fileToUpload.value?.text();
+    fileToUpload.value = undefined
   }
   isUploading.value = false;
 }
@@ -138,7 +172,3 @@ async function validateFileType() {
   }
 }
 </script>
-
-<style lang="css" scoped>
-.v-textarea {font-family: "Monospace"}
-</style>
