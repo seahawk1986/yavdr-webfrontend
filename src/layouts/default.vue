@@ -5,8 +5,8 @@
     <notification-queue-display />
 
     <v-main
-      class="d-flex flex-column"
-      style="height: 100dvh;"
+      class="d-flex flex-column w-100"
+      style="height: 100dvh; position: relative;"
     >
       <router-view />
       <RemoteOverlay />
