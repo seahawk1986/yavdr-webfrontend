@@ -2,28 +2,22 @@
 import { useUIStore } from '@/stores/ui';
 
 const ui = useUIStore()
+
+
 </script>
 
 <template>
-  <div
-    v-if="ui.showRemote"
-    class="remote-overlay bg-background"
+  <v-dialog
+    v-model="ui.showRemote"
+    contained
+    persistent
+    scroll-strategy="block"
+    class="remote-overlay d-flex align-center justify-center bg-background pa-0 ma-0"
+    style="z-index: 1000;"
   >
-    <RemoteControl />
-</div>
+    <RemoteControl
+      class="pa-0 ma-0"
+      style="position: relative; top: 4dvh;"
+    />
+  </v-dialog>
 </template>
-
-<style lang="css" scoped>
-.remote-overlay {
-  position: absolute;
-  inset: 0;              /* cover only v-main */
-  z-index: 10;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  pointer-events: auto;
-  overscroll-behavior: contain;
-}
-</style>
