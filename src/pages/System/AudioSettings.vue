@@ -9,7 +9,7 @@
     <v-row>
       <v-col
         class="mx-auto fill-height"
-        col="12"
+        cols="12"
         lg="6"
       >
         <v-card
@@ -73,7 +73,7 @@
         </v-card>
       </v-col>
       <v-col
-        col="12"
+        cols="12"
         lg="6"
       >
         <v-card
