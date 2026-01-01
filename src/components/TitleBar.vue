@@ -2,12 +2,13 @@
   <v-app-bar
     id="appbar"
     :elevation="2"
-    scrim
+    class="mx-auto"
   >
     <template #prepend>
       <v-app-bar-nav-icon
         variant="text"
         :aria-label="t('actions.openNavbar')"
+        density="compact"
         @click.stop="store.showNavigation = !store.showNavigation"
       />
     </template>
@@ -19,6 +20,21 @@
       </nav> -->
 
     <template #append>
+      <RemoteIconButton
+        name="Power"
+        tooltip="Power Button"
+        :aria-label="t('actions.shutdown')"
+        icon-name="mdi-power"
+        keyname="KEY_POWER2"
+        color="red"
+        variant="tonal"
+        :size="null"
+      />
+      <v-divider
+        vertical
+        thickness="5px"
+        opacity="0"
+      />
       <v-btn
         v-tooltip="ui.showRemote ? 'Hide remote': 'Show remote'"
         :aria-label="ui.showRemote ? t('remote.hideRemote') : t('remote.showRemote')"
@@ -26,14 +42,10 @@
         :color="ui.showRemote ? 'primary' : 'secondary'"
         @click="ui.showRemote=!ui.showRemote"
       />
-
-      <RemoteIconButton
-        name="Power"
-        tooltip="Power Button"
-        :aria-label="t('actions.shutdown')"
-        icon-name="mdi-power"
-        keyname="KEY_POWER2"
-        icon-color="red"
+      <v-divider
+        vertical
+        thickness="5px"
+        opacity="0"
       />
       <v-speed-dial
         location="top center"
@@ -43,8 +55,9 @@
           <v-fab
             v-bind="activatorProps"
             :aria-label="t('descriptions.additionalActions')"
-            size="default"
+            size="small"
             icon="mdi-dots-vertical"
+            variant="flat"
           />
         </template>
 
@@ -64,10 +77,6 @@
           @click="store.showLanguageOverlay = true"
         />
       </v-speed-dial>
-
-      <!-- <v-btn icon="mdi-magnify"></v-btn> -->
-
-      <!-- <v-btn icon="mdi-dots-vertical"></v-btn> -->
     </template>
   </v-app-bar>
 </template>
