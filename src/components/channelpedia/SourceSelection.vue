@@ -1,118 +1,112 @@
 <template>
-  <v-card class="fill-height">
-    <v-sheet>
-      <v-sheet
-        color="#0d1117"
-        elevation="3"
-        rounded="lg"
-      >
-        <v-tabs
-          v-model="selectedSource"
-          align-tabs="center"
-          color="white"
-        >
-          <v-tab
-            v-for="source in channelpediaData"
-            :key="source.id"
-            :prepend-icon="getIconBySouce(source.id)"
-            :text="source.title"
-            :value="source.id"
-          />
-        </v-tabs>
-        <v-select
-          v-model="selectedLocation"
-          density="comfortable"
-          :label="t('channels.location')"
-          :items="locationItems"
-          no-data-text="no data available"
-        >
-          <template #item="{ props, item }">
-            <v-list-item
-              v-bind="props"
-              :title="getLocationTitle(item.raw.title)"
-            >
-              <template
-                v-if="item.raw.title[2] === '_'"
-                #prepend
-              >
-                {{ getFlagEmoji(item.raw.title.slice(0, 2)) }}
-                <v-divider
-                  vertical
-                  thickness="10"
-                  class="border-opacity-0"
-                />
-              </template>
-              <template
-                v-else
-                #prepend
-              >
-                <v-icon icon="mdi-satellite" />
-              </template>
-            </v-list-item>
-          </template>
-          <template #selection="{ item }">
-            <v-list-item>
-              <template
-                v-if="item.raw.title[2] === '_'"
-                #prepend
-              >
-                {{ getFlagEmoji(item.raw.title.slice(0, 2)) }}
-                <v-divider
-                  vertical
-                  thickness="10"
-                  class="border-opacity-0"
-                />
-              </template>
-              <template
-                v-else
-                #prepend
-              >
-                <v-icon icon="mdi-satellite" />
-              </template>
-              {{ getLocationTitle(item.raw.title) }}
-            </v-list-item>
-          </template>
-        </v-select>
-        <v-select
-          v-model="selectedGroup"
-          :label="t('channels.group')"
-          :items="groupItems"
-          no-data-text="no data available"
-          density="comfortable"
-        />
-      </v-sheet>
-      <v-sheet
-        class="overflow-y-auto"
-        max-height="75vh"
-      >
-        <v-expansion-panels
-          v-if="subGroupItems"
-          variant="accordion"
-          class="overflow-y-auto"
-          max-height="90vh"
+  <v-sheet
+    color="#0d1117"
+    elevation="3"
+    rounded="lg"
+  >
+    <v-tabs
+      v-model="selectedSource"
+      align-tabs="center"
+      color="white"
+    >
+      <v-tab
+        v-for="source in channelpediaData"
+        :key="source.id"
+        :prepend-icon="getIconBySouce(source.id)"
+        :text="source.title"
+        :value="source.id"
+      />
+    </v-tabs>
+    <v-select
+      v-model="selectedLocation"
+      density="comfortable"
+      :label="t('channels.location')"
+      :items="locationItems"
+      no-data-text="no data available"
+    >
+      <template #item="{ props, item }">
+        <v-list-item
+          v-bind="props"
+          :title="getLocationTitle(item.raw.title)"
         >
           <template
-            v-for="subGroupItem in subGroupItems"
-            :key="subGroupItem.id"
+            v-if="item.raw.title[2] === '_'"
+            #prepend
           >
-            <v-expansion-panel
-              v-if="subGroupItem"
-              :title="subGroupItem.title"
-            >
-              <v-expansion-panel-text>
-                <ChannelCandidateList
-                  :original-channel-candidates="subGroupItem.children as unknown as VDRChannel[]"
-                  :channel-id-set="pprops.channelIdSet"
-                  @add-channel="(channel) => {$emit('addChannel', channel)}"
-                  @insert-channel="(channel, number, scroll) => {$emit('insertChannel', channel, number, scroll)}"
-                />
-              </v-expansion-panel-text>
-            </v-expansion-panel>
+            {{ getFlagEmoji(item.raw.title.slice(0, 2)) }}
+            <v-divider
+              vertical
+              thickness="10"
+              class="border-opacity-0"
+            />
           </template>
-        </v-expansion-panels>
-      </v-sheet>
-    </v-sheet>
-  </v-card>
+          <template
+            v-else
+            #prepend
+          >
+            <v-icon icon="mdi-satellite" />
+          </template>
+        </v-list-item>
+      </template>
+      <template #selection="{ item }">
+        <v-list-item>
+          <template
+            v-if="item.raw.title[2] === '_'"
+            #prepend
+          >
+            {{ getFlagEmoji(item.raw.title.slice(0, 2)) }}
+            <v-divider
+              vertical
+              thickness="10"
+              class="border-opacity-0"
+            />
+          </template>
+          <template
+            v-else
+            #prepend
+          >
+            <v-icon icon="mdi-satellite" />
+          </template>
+          {{ getLocationTitle(item.raw.title) }}
+        </v-list-item>
+      </template>
+    </v-select>
+    <v-select
+      v-model="selectedGroup"
+      :label="t('channels.group')"
+      :items="groupItems"
+      no-data-text="no data available"
+      density="comfortable"
+    />
+  </v-sheet>
+  <v-sheet
+    class="overflow-y-auto"
+    max-height="85dvh"
+  >
+    <v-expansion-panels
+      v-if="subGroupItems"
+      variant="accordion"
+    >
+      <template
+        v-for="subGroupItem in subGroupItems"
+        :key="subGroupItem.id"
+      >
+        <v-expansion-panel
+          v-if="subGroupItem"
+          :title="subGroupItem.title"
+        >
+          <v-expansion-panel-text>
+            <ChannelCandidateList
+              :original-channel-candidates="subGroupItem.children as unknown as VDRChannel[]"
+              :channel-id-set="pprops.channelIdSet"
+              @add-channel="(channel) => {$emit('addChannel', channel)}"
+              @insert-channel="(channel, number, scroll) => {$emit('insertChannel', channel, number, scroll)}"
+            />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </template>
+    </v-expansion-panels>
+  </v-sheet>
 </template>
 
 <script lang="ts" setup>
@@ -120,10 +114,13 @@ import { computed, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue
 import { useBackendStore } from '@/stores/backend'
 import type { ChannelSubGroup, VDRChannel } from '@/stores/interfaces/VdrChannelInterface'
 import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
+import { useDisplay } from 'vuetify'
+const { smAndUp } = useDisplay()
+
 import ChannelCandidateList from './ChannelCandidateList.vue'
 
-const store = useBackendStore()
+const backend = useBackendStore()
+const { t } = useI18n();
 
 const pprops = defineProps<{
   channelIdSet: Ref<Set<string>>
@@ -203,7 +200,7 @@ async function getChannelsByGroup(groupName: ChannelCategoryInterface) {
       const [source, position, group] = groupName.id.split('|', 3)
       const url = `/channelpedia/get_group_channels/${source}/${position}/${group}`
       console.log('fetching data for ', url)
-      const response = await store.getRequest(url)
+      const response = await backend.getRequest(url)
       if (response?.data) {
         channelpediaSubGroupMap.value.set(groupName.id, response.data)
         groupName.children = response.data
@@ -244,7 +241,7 @@ const getFlagEmoji = (countryCode: string) => {
 onMounted(async () => {
   try {
     isLoadingMap.value.set('channelpediaMain', true)
-    const response =  await store.getRequest('/channelpedia/get_categories')
+    const response =  await backend.getRequest('/channelpedia/get_categories')
     if (response?.data) {
       channelpediaData.value = response.data
     }
