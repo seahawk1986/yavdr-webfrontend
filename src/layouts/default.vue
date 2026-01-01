@@ -9,8 +9,8 @@
       style="height: 100dvh; position: relative;"
     >
       <router-view />
-      <RemoteOverlay />
     </v-main>
+    <RemoteOverlay />
     <LoginOverlay />
     <LanguageOverlay />
   </v-app>

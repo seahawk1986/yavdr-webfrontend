@@ -9,15 +9,14 @@ const ui = useUIStore()
 <template>
   <v-dialog
     v-model="ui.showRemote"
-    contained
-    persistent
-    scroll-strategy="block"
-    class="remote-overlay d-flex align-center justify-center bg-background pa-0 ma-0"
-    style="z-index: 1000;"
+    :fullscreen="true"
+
+    color=""
   >
-    <RemoteControl
-      class="pa-0 ma-0"
-      style="position: relative; top: 4dvh;"
-    />
+    <v-sheet
+      class="ma-0 pa-0 ga-0 d-flex flex-column justify-center align-center fill-height"
+    >
+      <RemoteControl />
+    </v-sheet>
   </v-dialog>
 </template>
