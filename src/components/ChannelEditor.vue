@@ -6,46 +6,71 @@
     * Scratchpad to park subgroups of channels
     * Upload/Download channels.conf
     -->
-  <v-container class="fill-height">
+  <v-container
+    :class="['pa-0', smAndUp ? 'fill-height' : '']"
+    fluid
+  >
     <v-row
       id="secondRow"
       dense
       fill-height
+      justify="center"
+      no-gutters
+      :class="['flex-column flex-sm-row', smAndUp ? 'fill-height' : '']"
+      :style="!smAndUp ? 'height: auto;' : ''"
     >
       <v-col
         cols="12"
         sm="6"
+        :class="['d-flex flex-column', smAndUp ? 'fill-height' : '']"
       >
-        <SourceSelection
-          :channel-id-set="channelIdSet"
-          @add-channel="
-            (channel) => {
-              channelsConf.push(channel);
-              scroll_to_channel_id(channel.channel_id);
-            }
-          "
-          @insert-channel="(channel: VDRChannel, number: number, scroll: boolean) => {insertChannel(channel, number, scroll)}"
-        />
+        <v-card
+          :class="['ma-2 d-flex flex-column', smAndUp ? 'fill-height' : '']"
+          :style="!smAndUp ? 'height: 500px;' : ''"
+        >
+          <SourceSelection
+            :channel-id-set="channelIdSet"
+            @add-channel="
+              (channel) => {
+                channelsConf.push(channel);
+                scroll_to_channel_id(channel.channel_id);
+              }
+            "
+            @insert-channel="(channel: VDRChannel, number: number, scroll: boolean) => {insertChannel(channel, number, scroll)}"
+          />
+        </v-card>
       </v-col>
       <v-col
         cols="12"
         sm="6"
+        :class="['d-flex flex-column', smAndUp ? 'fill-height' : '']"
+        style="min-height: 0;"
       >
-        <v-card>
+        <v-card
+          :class="['ma-2 d-flex flex-column', smAndUp ? 'fill-height' : '']"
+        >
           <v-card-title>
-            channels.conf
-            <v-divider
-              class="ms-3"
-              inset
-              vertical
-            />
-            <v-btn
-              color="info"
-              :text="t('channels.reloadVDRChannels')"
-              prepend-icon="mdi-reload"
-              variant="flat"
-              @click="reloadChannels"
-            />
+            <v-row justify="center">
+              <v-col
+                cols="12"
+                md="4"
+              >
+                channels.conf
+              </v-col>
+              <v-col
+                cols="12"
+                md="8"
+              >
+                <v-btn
+                  color="info"
+                  :text="t('channels.reloadVDRChannels')"
+                  prepend-icon="mdi-reload"
+                  variant="flat"
+                  block
+                  @click="reloadChannels"
+                />
+              </v-col>
+            </v-row>
             <v-dialog
               v-model="showGroupAddDialog"
               max-width="500"
@@ -62,39 +87,42 @@
               />
             </v-dialog>
           </v-card-title>
-          <v-card-text>
-            <div>
-              <!-- TODO: how to use drag and drop in a vuetifyjs VirtualScroll Element? -->
-              <v-list
-                id="goto-container"
-                ref="channelsConfRef"
+          <v-card-text
+            ref="cardTextRef"
+            class="flex-grow-1 overflow-y-auto pa-0"
+            style="min-height: 0;"
+          >
+            <!-- TODO: how to use drag and drop in a vuetifyjs VirtualScroll Element? -->
+            <v-list
+              id="goto-container"
+              ref="channelsConfRef"
+              density="compact"
+              variant="text"
+              border
+            >
+              <v-list-item
+                v-for="(channel, channel_idx) in channelsConf"
+                :id="channel.channel_id"
+                :key="channel.channel_id"
+                role="listitem"
+                :aria-label="t('channels.channelNumberN', {number: runningChannelNumbers[channel_idx]?.toString()}) + ', ' + channel.name"
                 density="compact"
-                class="overflow-y-auto"
-                max-height="80vh"
+                :base-color="isRadio(channel) ? 'secondary' : ''"
               >
-                <v-list-item
-                  v-for="(channel, channel_idx) in channelsConf"
-                  :id="channel.channel_id"
-                  :key="channel.channel_id"
-                  role="listitem"
-                  :aria-label="t('channels.channelNumberN', {number: runningChannelNumbers[channel_idx]?.toString()}) + ', ' + channel.name"
-                  density="compact"
-                  :base-color="isRadio(channel) ? 'secondary' : ''"
-                >
-                  <template #title>
-                    {{
-                      channel.name +
-                        (channel.is_group ? "" : ` (${channel.provider})`)
-                    }}
-                  </template>
-                  <template #prepend>
-                    <v-icon
-                      :aria-label="t('descriptions.draghandle', {name: channel.name})"
-                      class="drag-handle"
-                      icon="mdi-drag"
-                      style="cursor: grab"
-                    />
-                    <pre>{{
+                <template #title>
+                  {{
+                    channel.name +
+                      (channel.is_group ? "" : ` (${channel.provider})`)
+                  }}
+                </template>
+                <template #prepend>
+                  <v-icon
+                    :aria-label="t('descriptions.draghandle', {name: channel.name})"
+                    class="drag-handle"
+                    icon="mdi-drag"
+                    style="cursor: grab"
+                  />
+                  <pre>{{
                       (!channel.is_group
                         ? runningChannelNumbers[channel_idx]?.toString()
                         : `${
@@ -103,22 +131,23 @@
                               : ""
                           }`
                       ).padStart(channelNumberPadding, " ") + " "
-                    }}</pre>
-                    <v-icon
-                      :color="isRadio(channel) ? 'secondary' : ''"
-                      :icon="getSourceIcon(channel.source)"
-                    />
-                    <v-divider
-                      vertical
-                      thickness="5"
-                      opacity="0"
-                    />
-                    <v-icon
-                      :color="isRadio(channel) ? 'secondary' : ''"
-                      :icon="isRadio(channel) ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
-                    />
-                  </template>
-                  <template #append>
+                  }}</pre>
+                  <v-icon
+                    :color="isRadio(channel) ? 'secondary' : ''"
+                    :icon="getSourceIcon(channel.source)"
+                  />
+                  <v-divider
+                    vertical
+                    thickness="5"
+                    opacity="0"
+                  />
+                  <v-icon
+                    :color="isRadio(channel) ? 'secondary' : ''"
+                    :icon="isRadio(channel) ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
+                  />
+                </template>
+                <template #append>
+                  <div class="justify-center flex-wrap ga-2">
                     <v-icon-btn
                       v-if="channel.is_group"
                       v-tooltip="t('channels.editGroup', {what: channel.name})"
@@ -150,17 +179,17 @@
                       :aria-label="t('channels.deleteChannel', {what: channel.name})"
                       @click="deleteChannel(channel.channel_id, channel_idx)"
                     />
-                  </template>
-                </v-list-item>
-              </v-list>
-            </div>
+                  </div>
+                </template>
+              </v-list-item>
+            </v-list>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions class="justify-center flex-wrap ga-2">
             <v-btn
               color="secondary-darken-1"
               :text="t('channels.createGroup')"
               prepend-icon="mdi-plus"
-              variant="flat"
+              variant="tonal"
               @click="addGroup"
             />
             <v-dialog
@@ -178,8 +207,8 @@
             <v-btn
               :loading="isSaving"
               color="primary"
-              :text="t('actions.saveChanges')"
-              prepend-icon="mdi-send"
+              :text="t('actions.save')"
+              prepend-icon="mdi-floppy"
               variant="flat"
               @click="saveChanges"
             />
@@ -193,8 +222,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, type Ref } from "vue"
 // import { useConfirmDialog } from '@vueuse/core'
-import { useGoTo } from "vuetify"
-import { useLayout } from "vuetify"
+import { useLayout, useDisplay, useGoTo} from "vuetify"
+import type { VCardText } from 'vuetify/components'
 import { useDragAndDrop } from "@formkit/drag-and-drop/vue"
 // import { animations, dropOrSwap, insert } from '@formkit/drag-and-drop'
 // import { useBackendStore } from "@/stores/backend";
@@ -204,6 +233,7 @@ import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface"
 import { useBackendStore } from "@/stores/backend";
 import { useI18n } from "vue-i18n";
 
+const { smAndUp, mobile } = useDisplay()
 // import { downloadBlob } from "@/services/download";
 const { t } = useI18n()
 
@@ -213,6 +243,17 @@ const layout = useLayout()
 // const backend = useBackendStore()
 const vdr = useVDRStore()
 const goTo = useGoTo()
+// Extract the options type from the goTo function's second argument
+type GoToOptions = Parameters<typeof goTo>[1]
+
+// Dynamically enable/disable main page scrolling
+watchEffect(() => {
+  if (mobile.value) {
+    document.documentElement.style.overflow = 'auto'
+  } else {
+    document.documentElement.style.overflow = 'hidden'
+  }
+})
 
 // const revealChannelGroupInput: Ref<boolean> = ref(false)
 // const ChannelGroupDialog = useConfirmDialog(revealChannelGroupInput)
@@ -381,10 +422,11 @@ const processChannelGroup = async function (newName: string, newPosition: number
   }
   if (scrollToNewGroup) {
     console.log("Scroll to new channel Group");
-    const element = await waitForElm(`#${CSS.escape(channelId)}`);
+    const css_identifier = `#${CSS.escape(channelId)}`
+    const element = await waitForElm(css_identifier);
     if (element) {
       console.log("Scroll to new channel Group Element:", element);
-      goTo(`#${CSS.escape(channelId)}`, scrollOptions.value);
+      goTo(css_identifier, scrollOptions.value);
     }
   }
 
@@ -402,12 +444,14 @@ async function scroll_to_channel_id(channelId: string) {
   }
 }
 
-const scrollOptions = computed(() => {
+const cardTextRef = ref<InstanceType<typeof VCardText> | null>(null)
+
+const scrollOptions = computed<GoToOptions>(() => {
   return {
-    container: "#goto-container",
+    container: (cardTextRef.value?.$el as HTMLElement) || '#goto-container', //container: "#goto-container",
     duration: 100,
     easing: "easeInOutCubic",
-    offset: 0,
+    offset: -50,
   };
 });
 
