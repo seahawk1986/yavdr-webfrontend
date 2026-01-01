@@ -49,17 +49,6 @@ const keymap: Record<string, string> = {
   ArrowUpShift: "KEY_VOLUMEUP",     // see note below
   ArrowDownShift: "KEY_VOLUMEDOWN",
 
-  // media - I don't think we need that
-
-  // Space: "KEY_PLAY",
-  // KeyK: "KEY_PLAY",
-  // KeyP: "KEY_PAUSE",
-  // KeyS: "KEY_STOP",
-  // KeyR: "KEY_RECORD",
-  // KeyF: "KEY_FASTFORWARD",
-  // KeyB: "KEY_REWIND",
-  // KeyN: "KEY_NEXT",
-
   // color buttons
   F1: "KEY_RED",      // see alt mapping note
   F2: "KEY_GREEN",
@@ -83,18 +72,19 @@ const keymap: Record<string, string> = {
 
   // volume control
   F10: "KEY_MUTE",
-  F11: "KEY_VOLUMEUP",
-  F12: "KEY_VOLUMEDOWN",
+  F11: "KEY_VOLUMEDOWN",
+  F12: "KEY_VOLUMEUP",
 
   NumpadAdd: "KEY_VOLUMEUP",
   NumpadSubtract: "KEY_VOLUMEDOWN",
 
 
   // misc
-  Home: "KEY_HOME",
+  Home: "KEY_MENU",
   End: "KEY_INFO",
   KeyE: "KEY_EPG",
   KeyT: "KEY_TEXT",
+  KeyK: "KEY_HOME",
   KeySAlt: "KEY_SUBTITLE",
   ContextMenu: "KEY_MODE",
 
