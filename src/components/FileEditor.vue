@@ -10,6 +10,7 @@
             class="mb-4"
             color="red"
             icon="mdi-close"
+            variant="tonal"
             @click="emit('abort')"
           />
           <v-toolbar-title>
@@ -18,35 +19,56 @@
             }}
           </v-toolbar-title>
 
-          <v-toolbar-items>
+          <v-toolbar-items class="justify-center ga-2">
             <v-file-input
               v-if="!mobile"
               v-model="fileToUpload"
               v-tooltip="t('actions.uploadSth', { what: props.fileconfig.filename })"
-              accept=".conf,text/plain"
-              filter-by-type=".conf,text/plain"
+              :aria-label="t('actions.uploadSth', { what: props.fileconfig.filename })"
+              accept="text/plain"
+              filter-by-type="text/plain"
               :label="t('actions.uploadSth', { what: props.fileconfig.filename })"
               :loading="isUploading"
-              prepend-icon="mdi-upload"
+              prepend-icon="mdi-file-upload"
               :rules="[validateFileType]"
               show-size
               tile
               min-width="400px"
+              :hide-input="mobile"
 
               variant="outlined"
               density="compact"
               @update:model-value="uploadFile"
             />
+            <v-icon-btn
+              v-else
+              v-tooltip="t('actions.uploadSth', { what: props.fileconfig.filename })"
+              :aria-label="t('actions.uploadSth', { what: props.fileconfig.filename })"
+              icon="mdi-file-upload"
+              color="primary"
+              variant="tonal"
+              @click="triggerPicker"
+            />
+
+            <input
+              ref="hiddenInput"
+              type="file"
+              accept="text/plain"
+              style="display: none"
+              @change="onFileChange"
+            >
             <v-divider
               vertical
               thickness="5px"
               opacity="0"
             />
             <v-icon-btn
-              v-tooltip="t('actions.download')"
+              v-tooltip="t('actions.downloadSth', {what: props.fileconfig.filename})"
+              :aria-label="t('actions.downloadSth', {what: props.fileconfig.filename})"
               color="secondary"
               icon="mdi-download"
               variant="tonal"
+              :loading="isUploading"
               @click="createDownloadFile"
             />
           </v-toolbar-items>
@@ -61,6 +83,7 @@
             :loading="isSaving"
             color="green"
             icon="mdi-floppy"
+            variant="tonal"
             @click="saveFilecontent(editableFileContent, props.fileconfig)"
           />
         </v-toolbar>
@@ -75,7 +98,6 @@
         class="overflow-auto pa-n4 text-no-wrap"
         style="font-family: monospace;"
         max-width="1440"
-        autofocus
         spellcheck="false"
         density="compact"
         variant="solo"
@@ -94,7 +116,7 @@ import { useI18n } from "vue-i18n";
 import { useBackendStore } from "@/stores/backend";
 import { useDisplay } from 'vuetify'
 
-const { name, mobile } = useDisplay()
+const { mobile } = useDisplay()
 
 
 const backend = useBackendStore();
@@ -153,11 +175,27 @@ async function saveFilecontent(content: string, config: configFileInterface) {
   }
 }
 
+const hiddenInput = ref<HTMLInputElement | null>(null)
+// Trigger the hidden input picker (Mobile)
+const triggerPicker = () => hiddenInput.value?.click()
+
 async function uploadFile() {
   isUploading.value = true;
   if (fileToUpload.value) {
     editableFileContent.value = await fileToUpload.value?.text();
     fileToUpload.value = undefined
+  }
+  isUploading.value = false;
+}
+
+// this is for the native input form used on mobile platforms
+const onFileChange = async (e: Event) => {
+  isUploading.value = true;
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    editableFileContent.value = await file.text()
+    target.value = '' // Reset so the same file can be selected again
   }
   isUploading.value = false;
 }
