@@ -2,19 +2,20 @@
   <!-- <v-container
     class="ma-0 pa-2"
   > -->
-  <v-card
-    class="fill-height ma-2 pa-2"
+  <v-container
+    class="fill-height ma-2 pa-2 overflow-y-auto"
     color="background"
   >
     <v-row>
       <v-col
         class="mx-auto fill-height"
         col="12"
-        md="6"
+        lg="6"
       >
         <v-card
           class="pa-2 fill-height"
           prepend-icon="mdi-speaker-multiple"
+          min-width="350px"
           :title="t('audio.audioOutput') + ' (PulseAudio)'"
         >
           <v-card-text
@@ -71,7 +72,10 @@
           </v-card-actions>
         </v-card>
       </v-col>
-      <v-col>
+      <v-col
+        col="12"
+        lg="6"
+      >
         <v-card
           class="pa-2"
           prepend-icon="mdi-soundbar"
@@ -109,8 +113,7 @@
         </v-card>
       </v-col>
     </v-row>
-  </v-card>
-  <!-- </v-container> -->
+  </v-container>
 </template>
 
 
