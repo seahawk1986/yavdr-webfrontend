@@ -3,7 +3,6 @@
     id="appbar"
     :elevation="2"
     scrim
-    :location="$vuetify.display.mobile ? 'bottom' : undefined"
   >
     <template #prepend>
       <v-app-bar-nav-icon
