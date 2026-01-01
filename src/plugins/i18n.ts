@@ -13,6 +13,7 @@ export default createI18n({
                 delete: "delete",
                 delete_sth: "delete {what}",
                 download: "download",
+                downloadSth: "download {what}",
                 edit: "edit {what}",
                 loadingData: 'loading {what} ...',
                 loadSth: "load {what}",
@@ -34,6 +35,8 @@ export default createI18n({
                 uploadSth: "upload {what}",
                 uploadSuccessful: 'Upload successful',
                 downloadSyslog: "Download syslog for the current boot",
+                rescanDisplays: "Rescan Displays",
+                apply: "appl",
             },
             audio: {
                 audioOutput: "Audio Output",
@@ -158,6 +161,7 @@ export default createI18n({
                 search: "Suchen",
                 searchObj: "Suche {what}",
                 download: "Herunterladen",
+                downloadSth: "{what} downloaden",
                 update: "Aktualisieren",
                 updateSth: "{what} aktualisieren",
                 upload: "Hochladen",
@@ -167,6 +171,9 @@ export default createI18n({
                 shutdown: "Herunterfahren",
                 reset: "Zurücksetzen",
                 downloadSyslog: "Syslog ab Boot herunterladen",
+                rescanDisplays: "Bildschirme erkennen",
+                apply: "Anwenden",
+
             },
             audio: {
                 audioOutput: "Audio Ausgabe",
@@ -177,7 +184,7 @@ export default createI18n({
             channels: {
                 channelNumberN: "Kanalnummer {number}",
                 channelGroup: "Kanalgruppe",
-                createGroup: "Kanalgruppe erstellen",
+                createGroup: "Neue Kanalgruppe",
                 createNewChannelGroup: "Neue Kanalgruppe erstellen",
                 editGroup: 'Kanalgruppe "{what}" bearbeiten',
                 group: "Gruppe",
