@@ -8,8 +8,16 @@ const backend = useBackendStore()
   <v-dialog
     v-model="backend.requiresLogin"
     persistent
-    max-width="420"
+    :fullscreen="true"
+    class="ma-0 pa-0"
+    color=""
   >
-    <LoginMask />
+    <v-sheet class="d-flex justify-center align-center">
+      <LoginMask
+        color="surface"
+        max-width="420"
+        class="ma-0 pa-0"
+      />
+    </v-sheet>
   </v-dialog>
 </template>
