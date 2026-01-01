@@ -1,59 +1,38 @@
 <template>
   <v-card
-    class="ma-2 pa-2 fill-height"
+    class="ma-2 pa-2 fill-height overflow-y-auto align-center"
     :disabled="isLookingForDisplays"
     :loading="isLookingForDisplays || isSettingConfig"
+    prepend-icon="mdi-monitor-multiple"
+    title="Display Configuration"
   >
-    <template #title>
-      <h1>Display Configuration</h1>
-      <!-- </template>-->
-    </template>
-    <template #subtitle>
-      <!--<template #actions> -->
-      <!-- <v-container v-if="xorgFacts && xrandrFacts"> -->
-      <!-- <v-row
-          no-gutters
-        >
-          <v-col
-            cols="12"
-            sm="6"
-          > -->
-
-      <!-- TODO Button position - best if centered -->
+    <v-card-actions class="justify-center flex-wrap ga-2">
       <v-btn
-        class="px-5 mr-4"
         :disabled="isSettingConfig"
         :loading="isLookingForDisplays"
         prepend-icon="mdi-monitor-eye"
         color="primary"
+        variant="tonal"
+        :text="t('actions.rescanDisplays')"
         @click="scanDisplays()"
-      >
-        Rescan Displays
-      </v-btn>
-      <!-- </v-col>
-        <v-col
-          cols="12"
-          sm="6"
-        > -->
+      />
+
       <v-btn
-        class="px-5"
+        class="flex-sm-grow-0"
         :disabled="isLookingForDisplays"
         :loading="isSettingConfig"
         prepend-icon="mdi-send"
         color="secondary"
+        variant="tonal"
+        :text="t('actions.apply')"
         @click="setDisplayConfig()"
-      >
-        Apply Configuration
-        <!-- TODO: how to save the configuration? -->
-      </v-btn>
-      <!-- </v-col>
-        </v-row>
-        </v-col> -->
-      <!-- </v-container> -->
-    </template>
+      />
+    </v-card-actions>
 
-    <template #text>
-      <v-container v-if="xorgConfig && xrandrFacts">
+    <v-card-text>
+      <v-container
+        v-if="xorgConfig && xrandrFacts"
+      >
         <v-row
           no-gutters
           justify="center"
@@ -63,7 +42,7 @@
             sm="6"
           >
             <v-card
-              class="flex-1-0 ma-2 pa-2 w-100"
+              class="flex-1-0 ma-2 pa-2"
               variant="outlined"
             >
               <template #title>
@@ -95,6 +74,7 @@
             </v-card>
           </v-col>
           <v-col
+            v-if="secondaryDisplay"
             cols="12"
             sm="6"
           >
@@ -127,14 +107,17 @@
           </v-col>
         </v-row>
       </v-container>
-    </template>
+    </v-card-text>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
 import { useBackendStore } from "@/stores/backend";
+import { useI18n } from "vue-i18n";
 const backend = useBackendStore();
+
+const {t} = useI18n()
 
 interface XrandrModeList {
   [key: string]: number[];
