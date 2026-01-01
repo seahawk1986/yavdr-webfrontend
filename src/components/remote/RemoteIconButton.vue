@@ -14,6 +14,8 @@ const props = defineProps<{
   <v-icon-btn
     class="remote-icon-btn mx-2"
     icon=""
+    variant="outlined"
+    size="large"
     :aria-label="props.name"
     @click="store.onKeypress(props.keyname)"
   >
