@@ -14,7 +14,6 @@ const backend = useBackendStore()
   >
     <v-sheet class="d-flex justify-center align-center">
       <LoginMask
-        color="surface"
         max-width="420"
         class="ma-0 pa-0"
       />

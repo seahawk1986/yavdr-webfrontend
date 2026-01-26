@@ -137,7 +137,7 @@ onMounted(() => {
 <template>
   <!-- Main container for centering -->
   <v-card
-    class="pa-0 ga-0 ma-0 bg-blue-grey-darken-4"
+    class="pa-0 ga-0 ma-0"
     variant="outlined"
     rounded="xl"
     style="max-width: 400px; width: 100%;"
@@ -149,13 +149,14 @@ onMounted(() => {
         :aria-label="t('actions.shutdown')"
         icon-name="mdi-power"
         keyname="KEY_POWER2"
+        variant="elevated"
         color="red"
       />
     </template>
     <template #title>
       <v-switch
         v-model="enableKeyboardInput"
-        v-tooltip="'Forward keypresses as remote button presses'"
+        v-tooltip="'Forward keyboard as remote button presses'"
         :hide-details="true"
         inset
         label="Keyboard input"
@@ -167,10 +168,14 @@ onMounted(() => {
         v-tooltip="t('actions.close')"
         icon="mdi-close"
         variant="tonal"
+        color="red"
         @click="ui.showRemote = false"
       />
     </template>
-    <v-card-text class="ma-0 pt-0" style="max-height: 100%; overflow-y: auto;">
+    <v-card-text
+      class="ma-0 pt-0"
+      style="max-height: 100%; overflow-y: auto;"
+    >
       <v-container class="ma-0 pt-0 fill-height d-flex align-center justify-center overflow-y-auto">
         <!-- The Remote Body -->
         <!-- <v-sheet
@@ -193,7 +198,6 @@ onMounted(() => {
               :name="`${n}`"
               :tooltip="`Key ${n}`"
               :keyname="`KEY_${n}`"
-              variant="outlined"
             />
           </v-col>
 
@@ -205,7 +209,6 @@ onMounted(() => {
               name="TXT"
               tooltip="Teletext"
               keyname="KEY_TEXT"
-              variant="outlined"
             />
           </v-col>
 
@@ -218,7 +221,6 @@ onMounted(() => {
               name="0"
               tooltip="Key 0"
               keyname="KEY_0"
-              variant="outlined"
             />
           </v-col>
           <v-col
@@ -229,7 +231,6 @@ onMounted(() => {
               name="#"
               tooltip="Open Commands"
               keyname="KEY_FAVORITES"
-              variant="outlined"
             />
           </v-col>
         </v-row>
@@ -248,7 +249,7 @@ onMounted(() => {
               icon-name="mdi-volume-plus"
               tooltip="Increase volume"
               keyname="KEY_VOLUMEUP"
-              color="secondary"
+              color="secondary-darken-1"
             />
           </v-col>
           <v-col
@@ -271,7 +272,7 @@ onMounted(() => {
               icon-name="mdi-arrow-up-thick"
               tooltip="move up"
               keyname="KEY_UP"
-              color="primary"
+              color="primary-darken-1"
             />
           </v-col>
           <v-col
@@ -294,7 +295,7 @@ onMounted(() => {
               icon-name="mdi-arrow-up-bold"
               tooltip="Channel +"
               keyname="KEY_CHANNELUP"
-              color="secondary"
+              color="secondary-darken-1"
             />
           </v-col>
           <!-- next row" -->
@@ -319,7 +320,7 @@ onMounted(() => {
               icon-name="mdi-arrow-left-thick"
               tooltip="Move left"
               keyname="KEY_LEFT"
-              color="primary"
+              color="primary-darken-1"
             />
           </v-col>
           <v-col
@@ -331,7 +332,7 @@ onMounted(() => {
               icon-name="mdi-circle-outline"
               tooltip="OK"
               keyname="KEY_OK"
-              color="primary"
+              color="primary-darken-1"
             />
           </v-col>
           <v-col
@@ -343,7 +344,7 @@ onMounted(() => {
               icon-name="mdi-arrow-right-thick"
               tooltip="Move right"
               keyname="KEY_RIGHT"
-              color="primary"
+              color="primary-darken-1"
             />
           </v-col>
           <v-col
@@ -367,7 +368,7 @@ onMounted(() => {
               icon-name="mdi-volume-minus"
               tooltip="Decrease volume"
               keyname="KEY_VOLUMEDOWN"
-              color="secondary"
+              color="secondary-darken-1"
             />
           </v-col>
           <v-col
@@ -390,7 +391,7 @@ onMounted(() => {
               icon-name="mdi-arrow-down-thick"
               tooltip="Move down"
               keyname="KEY_DOWN"
-              color="primary"
+              color="primary-darken-1"
             />
           </v-col>
           <v-col
@@ -413,7 +414,7 @@ onMounted(() => {
               icon-name="mdi-arrow-down-bold"
               tooltip="Channel -"
               keyname="KEY_CHANNELDOWN"
-              color="secondary"
+              color="secondary-darken-1"
             />
           </v-col>
         </v-row>
@@ -431,6 +432,7 @@ onMounted(() => {
               tooltip="Red Button"
               keyname="KEY_RED"
               color="red"
+              variant="elevated"
             />
           </v-col>
           <v-col
@@ -442,6 +444,7 @@ onMounted(() => {
               tooltip="Green Button"
               keyname="KEY_GREEN"
               color="green"
+              variant="elevated"
             />
           </v-col>
           <v-col
@@ -453,6 +456,7 @@ onMounted(() => {
               tooltip="Yellow Button"
               keyname="KEY_YELLOW"
               color="yellow"
+              variant="elevated"
             />
           </v-col>
           <v-col
@@ -464,6 +468,7 @@ onMounted(() => {
               tooltip="Blue Button"
               keyname="KEY_BLUE"
               color="blue"
+              variant="elevated"
             />
           </v-col>
         </v-row>

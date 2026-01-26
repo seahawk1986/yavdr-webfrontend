@@ -20,7 +20,7 @@ console.log("baseURL:", options.baseUrl);
 export const useBackendStore = defineStore("backend", () => {
   const ls = <T>(id: string, defaultValue: T): Ref<T> =>
     useLocalStorage(id, defaultValue);
-  const jwToken: Ref<string | null> = ls("jwToken", null);
+  const jwToken: Ref<string> = ls("jwToken", "");
   // const jwToken = authStore.jwToken
   const selectedLocale = ls("locale", "");
   const titlebarHeight: Ref<number> = ref(0);
@@ -34,6 +34,8 @@ export const useBackendStore = defineStore("backend", () => {
 
   // const listedPulseSinks = ref(new ListedPulseSinks());
   // const pulseErrorMessage: Ref<string | null> = ref(null);
+
+  console.log("baseURL:", options)
 
   const axios_instance = axios.create({
     baseURL: options.baseUrl, // TODO: use '/api/' for production

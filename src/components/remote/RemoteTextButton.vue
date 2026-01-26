@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
     :color="props.color"
     :aria-label="props.name ? props.name : props.tooltip"
     rounded="pill"
+    variant="outlined"
     @click="store.onKeypress(props.keyname)"
   >
     {{ props?.name }}

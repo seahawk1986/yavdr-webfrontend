@@ -31,7 +31,6 @@ declare module 'vue' {
     MoveChannelInput: typeof import('./components/channelpedia/MoveChannelInput.vue')['default']
     NavBar: typeof import('./components/NavBar.vue')['default']
     NotificationQueueDisplay: typeof import('./components/NotificationQueueDisplay.vue')['default']
-    Old_SchemaField: typeof import('./components/old_SchemaField.vue')['default']
     PluginSettingsCard: typeof import('./components/PluginSettingsCard.vue')['default']
     RecordingsList: typeof import('./components/RecordingsList.vue')['default']
     RemoteControl: typeof import('./components/RemoteControl.vue')['default']
