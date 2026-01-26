@@ -31,7 +31,7 @@
 
     <v-card-text>
       <v-container
-        v-if="xorgConfig && xrandrFacts"
+        v-if="displayConfig && displayOutputs"
       >
         <v-row
           no-gutters
@@ -64,7 +64,7 @@
                     v-if="primaryDisplayResolution"
                     v-model="primaryDisplayRefreshRate"
                     :items="
-                      xrandrFacts[primaryDisplay].modes[
+                      displayOutputs[primaryDisplay].modes[
                         primaryDisplayResolution
                       ]
                     "
@@ -119,43 +119,58 @@ const backend = useBackendStore();
 
 const {t} = useI18n()
 
-interface XrandrModeList {
-  [key: string]: number[];
+// interface XrandrModeList {
+//   [key: string]: number[];
+// }
+
+// interface XrandrDisplayInterface {
+//   connector: string;
+//   EDID: string;
+//   model: string;
+//   vendor: string;
+//   auto: string;
+//   current: string;
+//   is_connected: boolean;
+//   modelines: Map<string, string>;
+//   modes: XrandrModeList;
+//   preferred: string;
+//   preferred_resolution: string;
+//   preferred_refreshrate: number;
+// }
+
+interface ConnectorInterface {
+    xrandr_name: string;
+    is_connected: boolean;
+    edid: string|null;
+    xorg_modelines: Record<string, string>;
+    edid_modelines: Record<string, string>;
+    all_modelines: Record<string, string>;
+    modes: Record<string, number[]>;
+    bus_id: string|null;
+    drm_name: string|null;
+    card_name: string|null;
+    vendor: string|null;
+    model: string|null;
 }
 
-interface XrandrDisplayInterface {
-  connector: string;
-  EDID: string;
-  model: string;
-  vendor: string;
-  auto: string;
-  current: string;
-  is_connected: boolean;
-  modelines: Map<string, string>;
-  modes: XrandrModeList;
-  preferred: string;
-  preferred_resolution: string;
-  preferred_refreshrate: number;
+interface NestedConnectorInterface {
+  [key: string]: ConnectorInterface;
 }
 
-interface NestedXrandrDisplayInterface {
-  [key: string]: XrandrDisplayInterface;
-}
-
-interface XorgMonitorConfigInterface {
+interface MonitorConfigInterface {
   connector: string;
   resolution: string;
   refreshrate: number;
 }
 
-interface XorgConfigInterface {
-  primary: XorgMonitorConfigInterface;
-  secondary?: XorgMonitorConfigInterface;
+interface DisplayConfigInterface {
+  primary?: MonitorConfigInterface;
+  secondary?: MonitorConfigInterface;
 }
 
 // const xorgFacts: Ref<XorgDisplayMainInterface | undefined> = ref();
-const xrandrFacts: Ref<NestedXrandrDisplayInterface | undefined> = ref();
-const xorgConfig: Ref<XorgConfigInterface | undefined> = ref();
+const displayOutputs: Ref<NestedConnectorInterface | undefined> = ref();
+const displayConfig: Ref<DisplayConfigInterface | undefined> = ref();
 const primaryDisplay: Ref<string | undefined> = ref();
 const secondaryDisplay: Ref<string | undefined> = ref();
 
@@ -168,39 +183,40 @@ const isLookingForDisplays: Ref<boolean> = ref(false);
 const isSettingConfig: Ref<boolean> = ref(false);
 // const enableSecondaryDisplay: Ref<boolean> = ref(true);
 
-const updateXorgConfig = async () => {
-  const xorg_config_response = await backend.getRequest("/system/xorg_config");
+const updateDisplayConfig = async () => {
+  const xorg_config_response = await backend.getRequest("/system/display_config");
   if (xorg_config_response?.data) {
-    xorgConfig.value = xorg_config_response.data;
-    console.log("xorgConfig:", xorgConfig.value);
+    displayConfig.value = xorg_config_response.data.display_config;
+    console.log("DisplayConfig:", displayConfig.value);
   }
 
-  const xrandr_response = await backend.getRequest("/system/xrandr_facts");
+  const xrandr_response = await backend.getRequest("/system/display_outputs");
   if (xrandr_response?.data) {
-    xrandrFacts.value = xrandr_response.data.xrandr["Screen 0:"];
-    console.log("xrandr facts:", xrandr_response.data);
+    displayOutputs.value = xrandr_response.data.connectors;
+    console.log("DisplayOutputs:", xrandr_response.data);
   }
 
-  if (xorgConfig?.value?.primary) {
-    primaryDisplay.value = xorgConfig.value.primary.connector;
-    primaryDisplayResolution.value = xorgConfig.value.primary.resolution;
-    primaryDisplayRefreshRate.value = xorgConfig.value.primary.refreshrate;
+  if (displayConfig?.value?.primary) {
+    primaryDisplay.value = displayConfig.value.primary.connector;
+    primaryDisplayResolution.value = displayConfig.value.primary.resolution;
+    primaryDisplayRefreshRate.value = displayConfig.value.primary.refreshrate;
   }
-  if (xorgConfig?.value?.secondary) {
-    secondaryDisplay.value = xorgConfig.value.secondary.connector;
-    secondaryDisplayResolution.value = xorgConfig.value.secondary.resolution;
-    secondaryDisplayRefreshRate.value = xorgConfig.value.secondary.refreshrate;
+  if (displayConfig?.value?.secondary) {
+    secondaryDisplay.value = displayConfig.value.secondary.connector;
+    secondaryDisplayResolution.value = displayConfig.value.secondary.resolution;
+    secondaryDisplayRefreshRate.value = displayConfig.value.secondary.refreshrate;
   }
 };
 
 onMounted(async () => {
-  await updateXorgConfig()
+  await updateDisplayConfig()
 });
 
 const primaryDisplayResolutionOptions = computed(() => {
-  if (xrandrFacts.value && primaryDisplay.value) {
+  if (displayOutputs?.value && primaryDisplay?.value) {
+    console.log("primary resolutions:", displayOutputs.value[primaryDisplay.value])
     const resolutions = Object.keys(
-      xrandrFacts.value[primaryDisplay.value].modes
+      displayOutputs.value[primaryDisplay.value].modes
     );
     resolutions.sort((a, b) => {
       const a_parts = a.split("x", 2).map((e) => Number(e));
@@ -216,8 +232,8 @@ const primaryDisplayResolutionOptions = computed(() => {
 });
 
 const available_connectors = computed(() => {
-  if (xrandrFacts.value) {
-    return Object.entries(xrandrFacts.value)
+  if (displayOutputs.value) {
+    return Object.entries(displayOutputs.value)
       .filter(([, monitor]) => monitor.is_connected)
       .map(([connector, monitor]) => {
         const entry = {
@@ -239,9 +255,9 @@ const secondaryDisplayOptions = computed(() => {
 
 const secondaryDisplayResolutionOptions = computed(() => {
   // TODO: why does the rescan-displays.yml playbook return the wrong connectors compared to running the yavdr-ansible07.yml playbook?
-  if (xrandrFacts.value && secondaryDisplay.value && xrandrFacts.value[secondaryDisplay.value]?.modes) {
+  if (displayOutputs.value && secondaryDisplay.value && displayOutputs.value[secondaryDisplay.value]?.modes) {
     const resolutions = Object.keys(
-      xrandrFacts.value[secondaryDisplay.value].modes
+      displayOutputs.value[secondaryDisplay.value].modes
     );
     resolutions.sort((a, b) => {
       const a_parts = a.split("x", 2).map((e) => Number(e));
@@ -258,11 +274,11 @@ const secondaryDisplayResolutionOptions = computed(() => {
 
 const secondaryDisplayRefreshrateOptions = computed(() => {
   if (
-    xrandrFacts.value &&
+    displayOutputs.value &&
     secondaryDisplay.value &&
     secondaryDisplayResolution.value
   ) {
-    return xrandrFacts.value[secondaryDisplay.value].modes[
+    return displayOutputs.value[secondaryDisplay?.value].modes[
       secondaryDisplayResolution.value
     ];
   } else {
@@ -281,7 +297,7 @@ async function scanDisplays() {
     (chunk) => console.log("finished playbook:", chunk)
   );
   console.log("got rescan displays result", result);
-  await updateXorgConfig()
+  await updateDisplayConfig()
   isLookingForDisplays.value = false;
 }
 
@@ -300,27 +316,27 @@ watch(primaryDisplay, async (newValue, oldValue) => {
     );
   }
   if (
-    xorgConfig.value &&
-    xrandrFacts.value &&
+    displayConfig.value &&
+    displayOutputs.value &&
     primaryDisplay.value &&
     primaryDisplayResolution.value
   ) {
-    console.log("xorgConfig.primary:", xorgConfig.value.primary.connector);
+    console.log("xorgConfig.primary:", displayConfig.value.primary?.connector);
     // set the resolution and refreshrate according to the existing configuration if possible
-    if (newValue === xorgConfig.value.primary?.connector) {
-      primaryDisplayResolution.value = xorgConfig.value.primary.resolution;
-      primaryDisplayRefreshRate.value = xorgConfig.value.primary.refreshrate;
+    if (newValue === displayConfig.value.primary?.connector) {
+      primaryDisplayResolution.value = displayConfig.value.primary.resolution;
+      primaryDisplayRefreshRate.value = displayConfig.value.primary.refreshrate;
       console.log("use existing configuration for primary display");
-    } else if (newValue === xorgConfig.value.secondary?.connector) {
-      primaryDisplayResolution.value = xorgConfig.value.secondary.resolution;
-      primaryDisplayRefreshRate.value = xorgConfig.value.secondary.refreshrate;
+    } else if (newValue === displayConfig.value.secondary?.connector) {
+      primaryDisplayResolution.value = displayConfig.value.secondary.resolution;
+      primaryDisplayRefreshRate.value = displayConfig.value.secondary.refreshrate;
       console.log("use existing configuration for secondary display");
     } else {
       primaryDisplayResolution.value =
-        xrandrFacts.value[newValue].preferred_resolution;
+        displayConfig.value.primary?.resolution
       primaryDisplayRefreshRate.value =
-        xrandrFacts.value[newValue].preferred_refreshrate;
-      console.log("fallback to default display", xrandrFacts.value[newValue]);
+        displayConfig.value.primary?.refreshrate;
+      console.log("fallback to default display", displayOutputs.value[newValue]);
     }
     console.log("changed primary resolution to", primaryDisplayResolution);
   }
@@ -330,28 +346,28 @@ watch(secondaryDisplay, async (newValue, oldValue) => {
   if (!newValue) return;
   console.log("watch secondaryDisplay", oldValue, "=>", newValue);
   if (
-    xorgConfig.value &&
-    xrandrFacts.value &&
+    displayConfig.value &&
+    displayOutputs.value &&
     secondaryDisplay.value &&
     secondaryDisplayResolution.value
   ) {
-    console.log("xorgConfig.secondary:", xorgConfig.value.secondary?.connector);
+    console.log("xorgConfig.secondary:", displayConfig.value.secondary?.connector);
     // set the resolution and refreshrate according to the existing configuration if possible
-    if (newValue === xorgConfig.value.primary?.connector) {
-      secondaryDisplayResolution.value = xorgConfig.value.primary.resolution;
-      secondaryDisplayRefreshRate.value = xorgConfig.value.primary.refreshrate;
+    if (newValue === displayConfig.value.primary?.connector) {
+      secondaryDisplayResolution.value = displayConfig.value.primary.resolution;
+      secondaryDisplayRefreshRate.value = displayConfig.value.primary.refreshrate;
       console.log("use existing configuration for primary display");
-    } else if (newValue === xorgConfig.value.secondary?.connector) {
-      secondaryDisplayResolution.value = xorgConfig.value.secondary.resolution;
+    } else if (newValue === displayConfig.value.secondary?.connector) {
+      secondaryDisplayResolution.value = displayConfig.value.secondary.resolution;
       secondaryDisplayRefreshRate.value =
-        xorgConfig.value.secondary.refreshrate;
+        displayConfig.value.secondary.refreshrate;
       console.log("use existing configuration for secondary display");
     } else {
       secondaryDisplayResolution.value =
-        xrandrFacts.value[newValue].preferred_resolution;
+        displayConfig.value?.secondary?.resolution;
       secondaryDisplayRefreshRate.value =
-        xrandrFacts.value[newValue].preferred_refreshrate;
-      console.log("fallback to default display", xrandrFacts.value[newValue]);
+        displayConfig.value?.secondary?.refreshrate;
+      console.log("fallback to default display", displayOutputs.value[newValue]);
     }
     console.log("changed secondary resolution to", primaryDisplayResolution);
   }
@@ -364,7 +380,7 @@ const setDisplayConfig = async () => {
     primaryDisplayRefreshRate.value
   ) {
     isSettingConfig.value = true;
-    const newXorgConfig: XorgConfigInterface = (() => {
+    const newXorgConfig: DisplayConfigInterface = (() => {
       if (
         secondaryDisplay.value &&
         secondaryDisplayResolution.value &&
