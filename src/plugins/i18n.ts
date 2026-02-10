@@ -36,7 +36,9 @@ export default createI18n({
                 uploadSuccessful: 'Upload successful',
                 downloadSyslog: "Download syslog for the current boot",
                 rescanDisplays: "Rescan Displays",
-                apply: "appl",
+                apply: "apply",
+                install: "install",
+
             },
             audio: {
                 audioOutput: "Audio Output",
@@ -56,6 +58,10 @@ export default createI18n({
                 entry: 'Entry',
                 editor: "{what} Editor",
                 vdrArguments: "VDR Arguments",
+                installer: "Installer",
+                configuration: "Configuration",
+                installation: "Installation",
+                playbook: "Playbook",
             },
             channels: {
                 channelNumberN: "channel number {number}",
@@ -173,6 +179,7 @@ export default createI18n({
                 downloadSyslog: "Syslog ab Boot herunterladen",
                 rescanDisplays: "Bildschirme erkennen",
                 apply: "Anwenden",
+                install: "Installieren",
 
             },
             audio: {
@@ -228,6 +235,10 @@ export default createI18n({
                 entry: 'Eintrag',
                 editor: "{what} Editor",
                 vdrArguments: "VDR Startargumente",
+                installer: "Installer",
+                configuration: "Konfiguration",
+                installation: "Installation",
+                playbook: "Playbook",
             },
             info: {
                 state: 'Status',
