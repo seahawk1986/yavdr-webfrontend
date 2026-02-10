@@ -54,12 +54,17 @@ export const useAudioStore = defineStore("audio", () => {
         console.log("listing sinks failed:", error.toJSON());
         pulseErrorMessage.value = error.toJSON().message;
       })
-    }
+  }
+
+
+  const defaultSink = computed(() => {
+    return listedPulseSinks.value.pulse_devices.find((device: PulseDeviceInterface) => listedPulseSinks.value.default_sink == device.device)
+  })
 
   async function listPulseaudioProfiles() {
     console.log("called listProfiles()")
     backend.getRequest("/system/audio/pulseaudio_output_profiles").then((response) => {
-      if (response?.status &&  response.status == 200 && response?.data != null) {
+      if (response?.status && response.status == 200 && response?.data != null) {
         listedPulseProfiles.value = response.data
         console.log("audio profiles:", response.data)
         pulseErrorMessage.value = null
@@ -72,12 +77,13 @@ export const useAudioStore = defineStore("audio", () => {
   }
 
   async function setPulseProfile(card: string, profile: string) {
-    await backend.postRequest("/system/audio/pulseaudio_output_profile", {card_name: card, profile_name: profile})
+    await backend.postRequest("/system/audio/pulseaudio_output_profile", { card_name: card, profile_name: profile })
   }
 
   return {
     listedPulseSinks,
     listedPulseProfiles,
+    defaultSink,
     pulseErrorMessage,
     listPulseaudioSinks,
     listPulseaudioProfiles,

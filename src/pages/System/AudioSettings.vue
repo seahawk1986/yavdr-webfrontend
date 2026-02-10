@@ -46,13 +46,27 @@
               @update:model-value="setProfile"
             >
               <v-radio
-                v-for="profile in profilesForCurrentSink"
+                v-for="profile in cardForCurrentSink?.profiles "
                 :key="profile.profile_name"
                 :label="profile.profile_description"
                 :value="profile.profile_name"
               />
             </v-radio-group>
+
+            <!-- {{  cardForCurrentSink?.profile_active }} -->
             <!-- Selected: {{ store.listedPulseSinks.default_sink }} -->
+            <!-- listedPulseSinks: {{ audio.listedPulseSinks }} -->
+            <!-- <br>
+            <br>
+            <p>
+              audio.listedPulseProfiles: {{ audio.listedPulseProfiles }}
+            </p>
+                        <br>
+            <br>
+            <p>Card for current Sink: {{ cardForCurrentSink }}</p>
+                        <br>
+            <br>
+            <p>Profiles for current Sink: {{ cardForCurrentSink ? cardForCurrentSink?.profiles :"undefined" }}</p> -->
           </v-card-text>
           <v-card-text
             v-else
@@ -116,12 +130,15 @@
   </v-container>
 </template>
 
+<!-- TODO: choosing the profile for a output doesn't work with pipewire -->
+
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useBackendStore } from '@/stores/backend'
 import { useAudioStore, type PulseProfileInterface } from '@/stores/audio'
 import { useI18n } from 'vue-i18n'
+import { consoleError } from 'vuetify/lib/util/console.mjs'
 
 const backend = useBackendStore()
 const audio = useAudioStore()
@@ -149,18 +166,36 @@ onMounted(async () => {
 const cardForCurrentSink = computed(() => {
   const sink = audio.listedPulseSinks.pulse_devices.find((sink) => sink.device === audio.listedPulseSinks.default_sink)
   if (sink) {
-    return audio.listedPulseProfiles[sink.card]
-  }
-  return undefined
-})
+    // console.log("sink:", sink.device.split('.', 3))
+    return audio.listedPulseProfiles.find ((profile) => {
+      const dot_idx = profile.card_name.indexOf('.')
+      if (dot_idx !== -1 ) {
+        const card_name = profile.card_name.substring(dot_idx + 1)
+        // console.log("card name for", profile.card_name, card_name)
+        const found = sink.device.search(card_name) > -1
+        // console.log("found match:", found, card_name)
+        return found
+      } else {
+        return false
+      }
+    })
+  } else {
+    return undefined
+  }})
 
-const profilesForCurrentSink = computed((): PulseProfileInterface[] => {
-  const sink = audio.listedPulseSinks.pulse_devices.find((sink) => sink.device === audio.listedPulseSinks.default_sink)
-  if (sink) {
-    return audio.listedPulseProfiles[sink.card].profiles
-  }
-  return []
-})
+// const profilesForCurrentSink = computed((cardForCurrentSink): PulseProfileInterface[] => {
+//   console.log("cardForCurrentSink:", cardForCurrentSink)
+//   if (cardForCurrentSink) {
+//     return cardForCurrentSink.profiles
+//   } else {
+//     return []
+//   }
+//   // const sink = audio.listedPulseSinks.pulse_devices.find((sink) => audio.listedPulseSinks.default_sink.search(sink.device) > -1)
+//   // if (sink) {
+//   //   return audio.listedPulseProfiles[sink.card].profiles
+//   // }
+//   // return []
+// })
 
 function setNewDefaultSink() {
   console.log('new sink selected:', audio.listedPulseSinks.default_sink)
@@ -173,6 +208,7 @@ function setNewDefaultSink() {
 async function setProfile() {
   if (cardForCurrentSink.value) {
     const currentCard = cardForCurrentSink.value
+    console.log("setProfile:", currentCard.card_name, cardForCurrentSink.value.profile_active)
     await audio.setPulseProfile(currentCard.card_name, cardForCurrentSink.value.profile_active)
   }
   // await refresh() # TODO: this additional refresh() call breaks the switching of the profiles - why?
