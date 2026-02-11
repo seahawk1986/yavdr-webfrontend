@@ -16,7 +16,7 @@
           class="pa-2 fill-height"
           prepend-icon="mdi-speaker-multiple"
           min-width="350px"
-          :title="t('audio.audioOutput') + ' (PulseAudio)'"
+          :title="t('audio.audioOutput') + ' (Pipewire)'"
         >
           <v-card-text
             v-if="audio.pulseErrorMessage === null"
@@ -55,16 +55,16 @@
 
             <!-- {{  cardForCurrentSink?.profile_active }} -->
             <!-- Selected: {{ store.listedPulseSinks.default_sink }} -->
-            <!-- listedPulseSinks: {{ audio.listedPulseSinks }}
-            <br>
-            <br>
+            <!-- listedPulseSinks: {{ audio.listedPulseSinks }} -->
+            <!-- <br> -->
+            <!-- <br>
             <p>
               audio.listedPulseProfiles: {{ audio.listedPulseProfiles }}
             </p>
-                        <br>
+            <br>
             <br>
             <p>Card for current Sink: {{ cardForCurrentSink }}</p>
-                        <br>
+            <br>
             <br>
             <p>Profiles for current Sink: {{ cardForCurrentSink ? cardForCurrentSink?.profiles :"undefined" }}</p> -->
           </v-card-text>
@@ -177,7 +177,7 @@ function setNewDefaultSink() {
     console.log('new sink selected:', audio.listedPulseSinks.default_sink, cardForCurrentSink.value?.card_name)
     backend.postRequest('/audio/set_default_pulseaudio_sink', {
         default_sink: audio.listedPulseSinks.default_sink,
-        card_name: cardForCurrentSink.value.card_name,
+        card_name: cardForCurrentSink.value.card_name ? cardForCurrentSink.value.card_name : "",
       scopes: []
     })
   } else {
