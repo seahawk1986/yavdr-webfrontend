@@ -21,11 +21,13 @@ declare module 'vue-router/auto-routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/DashBoard': RouteRecordInfo<'/DashBoard', '/DashBoard', Record<never, never>, Record<never, never>>,
     '/Installer/Assistant': RouteRecordInfo<'/Installer/Assistant', '/Installer/Assistant', Record<never, never>, Record<never, never>>,
+    '/Installer/ConfigComponent': RouteRecordInfo<'/Installer/ConfigComponent', '/Installer/ConfigComponent', Record<never, never>, Record<never, never>>,
     '/Installer/ConfigForm': RouteRecordInfo<'/Installer/ConfigForm', '/Installer/ConfigForm', Record<never, never>, Record<never, never>>,
     '/RemoteSettings': RouteRecordInfo<'/RemoteSettings', '/RemoteSettings', Record<never, never>, Record<never, never>>,
     '/System/AudioSettings': RouteRecordInfo<'/System/AudioSettings', '/System/AudioSettings', Record<never, never>, Record<never, never>>,
     '/System/DisplaySettings': RouteRecordInfo<'/System/DisplaySettings', '/System/DisplaySettings', Record<never, never>, Record<never, never>>,
     '/System/LogViewer': RouteRecordInfo<'/System/LogViewer', '/System/LogViewer', Record<never, never>, Record<never, never>>,
+    '/System/Updates': RouteRecordInfo<'/System/Updates', '/System/Updates', Record<never, never>, Record<never, never>>,
     '/System/UploadFile': RouteRecordInfo<'/System/UploadFile', '/System/UploadFile', Record<never, never>, Record<never, never>>,
     '/SystemSettings': RouteRecordInfo<'/SystemSettings', '/SystemSettings', Record<never, never>, Record<never, never>>,
     '/VDR/ChannelpediaEditor': RouteRecordInfo<'/VDR/ChannelpediaEditor', '/VDR/ChannelpediaEditor', Record<never, never>, Record<never, never>>,
@@ -34,6 +36,7 @@ declare module 'vue-router/auto-routes' {
     '/VDR/InfoDisplay': RouteRecordInfo<'/VDR/InfoDisplay', '/VDR/InfoDisplay', Record<never, never>, Record<never, never>>,
     '/VDR/PluginSettings': RouteRecordInfo<'/VDR/PluginSettings', '/VDR/PluginSettings', Record<never, never>, Record<never, never>>,
     '/VDR/SetupEditor': RouteRecordInfo<'/VDR/SetupEditor', '/VDR/SetupEditor', Record<never, never>, Record<never, never>>,
+    '/VDR/SetupEditor2': RouteRecordInfo<'/VDR/SetupEditor2', '/VDR/SetupEditor2', Record<never, never>, Record<never, never>>,
     '/VDR/VDRStartArguments': RouteRecordInfo<'/VDR/VDRStartArguments', '/VDR/VDRStartArguments', Record<never, never>, Record<never, never>>,
   }
 }

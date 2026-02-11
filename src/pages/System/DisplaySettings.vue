@@ -186,7 +186,7 @@ const isSettingConfig: Ref<boolean> = ref(false);
 const updateDisplayConfig = async () => {
   const xorg_config_response = await backend.getRequest("/system/display_config");
   if (xorg_config_response?.data) {
-    displayConfig.value = xorg_config_response.data.display_config;
+    displayConfig.value = xorg_config_response.data;
     console.log("DisplayConfig:", displayConfig.value);
   }
 

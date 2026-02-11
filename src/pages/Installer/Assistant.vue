@@ -1,11 +1,13 @@
+<!-- eslint-disable vue/valid-v-slot -->
 <template>
   <v-container>
     <v-card>
-      <v-stepper :items="['Step 1', 'Step 2', 'Step 3']">
+      <v-stepper :items="[t('category.playbook'), t('category.configuration'), t('category.installation')]">
         <template #item.1>
           <v-card
             title="Select the Playbook:"
             flat
+            fill-height
           >
             <v-radio-group v-model="playbook">
               <v-radio
@@ -22,29 +24,34 @@
           <v-card
             title="Customize the Playbook variables"
             flat
+            fill-height
           >
-            <v-list>
-              <v-list-item
+            <v-divider />
+            <v-list height="80vh">
+              <ConfigComponent
                 v-for="(value, key) in ansibleSchema.properties"
                 :key="key"
-                :title="key"
-              >
-                <template v-if="'type' in value && value.type === 'string'">
-                  <v-text-field>{{ value.default }}</v-text-field>
-                </template>
-              </v-list-item>
+                v-model="Config[key]"
+                :label="key"
+                :schema="value"
+              />
             </v-list>
           </v-card>
         </template>
 
-        <!-- <v-textarea variant="outlined" /> -->
-
         <template #item.3>
           <v-card
-            title="Step Three"
             flat
+            fill-height
+            max-height="80vh"
+            class="overflow-auto"
           >
-            ...
+            <v-card-actions>
+              <v-btn
+                block
+                text="Install"
+              />
+            </v-card-actions>
           </v-card>
         </template>
       </v-stepper>
@@ -53,30 +60,45 @@
 </template>
 
 <script setup lang="ts">
-    // TODO: load the schema from backend
-    import ansibleSchema from './AnsibleConfig.schema.json'
 
-    console.log(ansibleSchema)
+  // TODO: load the schema from backend
+  import yaVDRConfig from './yaVDRConfig.json'
+  import ansibleSchema from './yaVDRConfig.schema.json'
 
-    interface AnsiblePlaybook {
-        label: string,
-        value: string
-    }
+  import ConfigComponent from './ConfigComponent.vue';
 
-    const playbook: Ref<string> = ref("yavdr07.yml")
-    const playbooks: Ref<Array<AnsiblePlaybook>> = ref([
-        {
-            label: "yaVDR with Xorg",
-            value: "yavdr07.yml",
-        },
-        {
-            label: "yaVDR headless",
-            value: "yavdr07-headless.yml",
-        },
-        {
-            label: "yaVDR with DRM output",
-            value: "yavdr07-drm.yml",
-        }
-    ])
+  import { useI18n } from "vue-i18n";
+
+  const {t} = useI18n()
+
+  interface AnsiblePlaybook {
+      label: string,
+      value: string
+  }
+
+  interface InstallerConfig {
+    [key: string]: any
+  }
+
+  const Config: Ref<InstallerConfig> = ref(yaVDRConfig)
+
+  const playbook: Ref<string> = ref("yavdr07.yml")
+  const playbooks: Ref<Array<AnsiblePlaybook>> = ref([
+      {
+          label: "yaVDR with Xorg",
+          value: "yavdr07.yml",
+      },
+      {
+          label: "yaVDR headless",
+          value: "yavdr07-headless.yml",
+      },
+      {
+          label: "yaVDR with DRM output",
+          value: "yavdr07-drm.yml",
+      }
+  ])
+
+  function add(list_data: string[]) {console.log("add list entry to", list_data); list_data.push("")}
+  function remove(list_data: string[], index: number) {console.log("remove from", list_data, "at", index); list_data.splice(index, 1)}
 
 </script>

@@ -7,6 +7,7 @@ import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 // import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import browserslistToEsbuild from 'browserslist-to-esbuild'
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -15,6 +16,9 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
+  build: {
+    target: browserslistToEsbuild()
+  },
   plugins: [
     VueRouter({
       dts: 'src/typed-router.d.ts',

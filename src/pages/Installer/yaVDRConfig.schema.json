@@ -78,12 +78,9 @@
             {
               "maxLength": 0,
               "type": "string"
-            },
-            {
-              "type": "null"
             }
           ],
-          "default": null,
+          "default": "",
           "title": "Client Remote Ip"
         },
         "client_remote_port": {
@@ -406,12 +403,9 @@
             {
               "maxLength": 0,
               "type": "string"
-            },
-            {
-              "type": "null"
             }
           ],
-          "default": null,
+          "default": "",
           "title": "Client Remote Ip"
         },
         "client_remote_port": {
@@ -490,104 +484,76 @@
       "type": "array"
     },
     "vdr_svdrphosts": {
-      "anyOf": [
-        {
-          "items": {
-            "anyOf": [
-              {
-                "format": "ipvanynetwork",
-                "type": "string"
-              },
-              {
-                "format": "ipvanyaddress",
-                "type": "string"
-              }
-            ]
-          },
-          "type": "array"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
+      "default": [],
       "description": "List of allowed SVDRP TCP clients - IP addresses or ranges",
-      "title": "Vdr Svdrphosts"
+      "items": {
+        "anyOf": [
+          {
+            "format": "ipvanynetwork",
+            "type": "string"
+          },
+          {
+            "format": "ipvanyaddress",
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Vdr Svdrphosts",
+      "type": "array"
     },
     "xineliboutput_allowed_hosts": {
-      "anyOf": [
-        {
-          "items": {
-            "anyOf": [
-              {
-                "format": "ipvanynetwork",
-                "type": "string"
-              },
-              {
-                "format": "ipvanyaddress",
-                "type": "string"
-              }
-            ]
-          },
-          "type": "array"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
+      "default": [],
       "description": "List of allowed xineliboutput TCP clients - IP addresses or ranges",
-      "title": "Xineliboutput Allowed Hosts"
+      "items": {
+        "anyOf": [
+          {
+            "format": "ipvanynetwork",
+            "type": "string"
+          },
+          {
+            "format": "ipvanyaddress",
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Xineliboutput Allowed Hosts",
+      "type": "array"
     },
     "vnsiserver_allowed_hosts": {
-      "anyOf": [
-        {
-          "items": {
-            "anyOf": [
-              {
-                "format": "ipvanynetwork",
-                "type": "string"
-              },
-              {
-                "format": "ipvanyaddress",
-                "type": "string"
-              }
-            ]
-          },
-          "type": "array"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
+      "default": [],
       "description": "List of allowed vnsiserver TCP clients - IP addresses or ranges",
-      "title": "Vnsiserver Allowed Hosts"
+      "items": {
+        "anyOf": [
+          {
+            "format": "ipvanynetwork",
+            "type": "string"
+          },
+          {
+            "format": "ipvanyaddress",
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Vnsiserver Allowed Hosts",
+      "type": "array"
     },
     "streamdev_server_allowed_hosts": {
-      "anyOf": [
-        {
-          "items": {
-            "anyOf": [
-              {
-                "format": "ipvanynetwork",
-                "type": "string"
-              },
-              {
-                "format": "ipvanyaddress",
-                "type": "string"
-              }
-            ]
-          },
-          "type": "array"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
+      "default": [],
       "description": "List of allowed streamdev TCP clients - IP addresses or ranges",
-      "title": "Streamdev Server Allowed Hosts"
+      "items": {
+        "anyOf": [
+          {
+            "format": "ipvanynetwork",
+            "type": "string"
+          },
+          {
+            "format": "ipvanyaddress",
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Streamdev Server Allowed Hosts",
+      "type": "array"
     },
     "media_dirs": {
       "additionalProperties": {
@@ -768,7 +734,6 @@
     },
     "preferred_refreshrates": {
       "default": [
-        100,
         50,
         60
       ],
