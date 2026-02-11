@@ -7,7 +7,7 @@ const tab = ref(null)
 
 <template>
   <v-sheet
-    class="fill-height"
+    class="h-100 overflow-y-auto"
   >
     <v-tabs
       v-model="tab"
@@ -26,24 +26,18 @@ const tab = ref(null)
     </v-tabs>
     <v-tabs-window v-model="tab">
       <v-tabs-window-item value="VDR">
-        <v-container style="max-height: 89vh">
-          <v-row no-gutters>
-            <v-col
-              class="pa-1"
-              cols="12"
-              lg="6"
-            >
+        <v-sheet
+          class="fill-height d-flex flex-column align-self-center justify-center"
+          color="background"
+        >
+          <v-card class="ma-2">
             <TimerList />
-            </v-col>
-            <v-col
-              class="pa-1"
-              cols="12"
-              lg="6"
-            >
+          </v-card>
+
+          <v-card class="ma-2">
             <RecordingsList />
-            </v-col>
-          </v-row>
-        </v-container>
+          </v-card>
+        </v-sheet>
       </v-tabs-window-item>
       <v-tabs-window-item value="System">
         <DashBoard />

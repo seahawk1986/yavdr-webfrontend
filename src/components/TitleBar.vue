@@ -1,6 +1,7 @@
 <template>
   <v-app-bar
     id="appbar"
+    app
     :elevation="2"
     class="mx-auto"
   >

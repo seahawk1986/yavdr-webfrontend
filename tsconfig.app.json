@@ -24,7 +24,8 @@
       "vite-plugin-vue-layouts-next/client",
     ],
     "lib": [
-      "ES2022"
+      "ESNext",
+      "DOM", // Manuelle Absicherung
     ]
   }
 }

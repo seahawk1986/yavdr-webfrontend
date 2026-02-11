@@ -2,6 +2,7 @@
   <v-navigation-drawer
     id="navbar"
     v-model:model-value="store.showNavigation"
+    app
   >
     <v-list>
       <v-list-item
@@ -59,7 +60,7 @@
         to="/vdr/ChannelpediaEditor"
         title="Channelpedia"
       />
-      <v-list-item 
+      <v-list-item
         prepend-icon="mdi-list-box-outline"
         to="/VDR/EPGViewer"
         title="VDR EPG"

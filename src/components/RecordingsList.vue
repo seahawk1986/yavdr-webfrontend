@@ -28,6 +28,7 @@
           flat
           rounded
           density="compact"
+          color="primary"
         >
           <v-toolbar-title>
             {{ $t('category.recording', 2) }}

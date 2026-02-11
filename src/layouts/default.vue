@@ -4,12 +4,23 @@
     <NavBar />
     <notification-queue-display />
 
+    <!-- In deinem App-Template -->
     <v-main
+      class="d-flex flex-column"
+      style="height: 100dvh;"
+    >
+      <!-- router-view muss wissen, dass es flexibel wachsen darf -->
+      <router-view
+        style="min-height: 0;"
+      />
+    </v-main>
+
+    <!-- <v-main
       class="d-flex flex-column w-100"
       style="height: 100dvh; position: relative;"
     >
       <router-view />
-    </v-main>
+    </v-main> -->
     <RemoteOverlay />
     <LoginOverlay />
     <LanguageOverlay />

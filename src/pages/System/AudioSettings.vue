@@ -1,133 +1,107 @@
 <template>
-  <!-- <v-container
-    class="ma-0 pa-2"
-  > -->
-  <v-container
-    class="fill-height ma-2 pa-2 overflow-y-auto"
+  <v-sheet
+    class="overflow-y-auto pa-4 d-flex flex-wrap align-self-center justify-space-between"
     color="background"
   >
-    <v-row>
-      <v-col
-        class="mx-auto fill-height"
-        cols="12"
-        lg="6"
+    <v-card
+      prepend-icon="mdi-speaker-multiple"
+      min-width="350px"
+      class="pa-2 ma-2"
+      :title="t('audio.audioOutput') + ' (Pipewire)'"
+    >
+      <v-card-text
+        v-if="audio.pulseErrorMessage === null"
       >
-        <v-card
-          class="pa-2 fill-height"
-          prepend-icon="mdi-speaker-multiple"
-          min-width="350px"
-          :title="t('audio.audioOutput') + ' (Pipewire)'"
+        <v-radio-group
+          v-model="audio.listedPulseSinks.default_sink"
+          hide-details="auto"
+          class="mb-6"
+          :label="t('audio.sink')"
+          @update:model-value="setNewDefaultSink"
         >
-          <v-card-text
-            v-if="audio.pulseErrorMessage === null"
-          >
-            <v-radio-group
-              v-model="audio.listedPulseSinks.default_sink"
-              hide-details="auto"
-              :label="t('audio.sink')"
-              @update:model-value="setNewDefaultSink"
-            >
-              <template
-                v-for="device in audio.listedPulseSinks.pulse_devices"
-                :key="device.device"
-              >
-                <v-radio
-                  :label="device.device_name"
-                  :value="device.device"
-                />
-              </template>
-            </v-radio-group>
+          <v-radio
+            v-for="device in audio.listedPulseSinks.pulse_devices"
+            :key="device.device"
+            :label="device.device_name"
+            :value="device.device"
+          />
+        </v-radio-group>
 
-            <v-radio-group
-              v-if="cardForCurrentSink"
-              v-model="cardForCurrentSink.profile_active"
-              hide-details="auto"
-              :label="t('audio.profile')"
-              @update:model-value="setProfile"
-            >
-              <v-radio
-                v-for="profile in cardForCurrentSink?.profiles "
-                :key="profile.profile_name"
-                :label="profile.profile_description"
-                :value="profile.profile_name"
-              />
-            </v-radio-group>
-
-            <!-- {{  cardForCurrentSink?.profile_active }} -->
-            <!-- Selected: {{ store.listedPulseSinks.default_sink }} -->
-            <!-- listedPulseSinks: {{ audio.listedPulseSinks }} -->
-            <!-- <br> -->
-            <!-- <br>
-            <p>
-              audio.listedPulseProfiles: {{ audio.listedPulseProfiles }}
-            </p>
-            <br>
-            <br>
-            <p>Card for current Sink: {{ cardForCurrentSink }}</p>
-            <br>
-            <br>
-            <p>Profiles for current Sink: {{ cardForCurrentSink ? cardForCurrentSink?.profiles :"undefined" }}</p> -->
-          </v-card-text>
-          <v-card-text
-            v-else
-          >
-            <h2>
-              {{ audio.pulseErrorMessage }}
-            </h2>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-refresh"
-              @click="refresh"
-            >
-              {{ t('actions.reload') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-      <v-col
-        cols="12"
-        lg="6"
+        <v-radio-group
+          v-if="cardForCurrentSink"
+          v-model="cardForCurrentSink.profile_active"
+          hide-details="auto"
+          :label="t('audio.profile')"
+          @update:model-value="setProfile"
+        >
+          <v-radio
+            v-for="profile in cardForCurrentSink?.profiles "
+            :key="profile.profile_name"
+            :label="profile.profile_description"
+            :value="profile.profile_name"
+          />
+        </v-radio-group>
+      </v-card-text>
+      <v-card-text
+        v-else
       >
-        <v-card
-          class="pa-2"
-          prepend-icon="mdi-soundbar"
-          :title="t('audio.vdrAudioChannel')"
+        <h2>
+          {{ audio.pulseErrorMessage }}
+        </h2>
+      </v-card-text>
+      <!-- <v-divider /> -->
+
+      <v-card-actions>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-refresh"
+          @click="refresh"
         >
-          <v-card-text>
-            <v-radio-group
-              v-model="selectedVdrAudioChannel"
-              :error="(VDRAudioSelectionErrorMessage && VDRAudioSelectionErrorMessage.length > 0) || false"
-              :error-messages="VDRAudioSelectionErrorMessage"
-              hide-details="auto"
-              @update:model-value="setVDRAudioChannel"
-            >
-              <template
-                v-for="channel in VdrAudioChannels"
-                :key="channel.number"
-              >
-                <v-radio
-                  :label="channel.desc"
-                  :value="channel.number"
-                />
-              </template>
-            </v-radio-group>
-            <!-- {{ selectedVdrAudioChannel }} -->
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-refresh"
-              @click="refreshVDRAudioChannels"
-            >
-              {{ t('actions.reload') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+          {{ t('actions.reload') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <v-card
+      class="pa-2 ma-2"
+      prepend-icon="mdi-soundbar"
+      :title="t('audio.vdrAudioChannel')"
+      min-width="350px"
+    >
+      <v-card-text>
+        <v-radio-group
+          v-model="selectedVdrAudioChannel"
+          :error="(VDRAudioSelectionErrorMessage && VDRAudioSelectionErrorMessage.length > 0) || false"
+          :error-messages="VDRAudioSelectionErrorMessage"
+          hide-details="auto"
+          @update:model-value="setVDRAudioChannel"
+        >
+          <template
+            v-for="channel in VdrAudioChannels"
+            :key="channel.number"
+          >
+            <v-radio
+              :label="channel.desc"
+              :value="channel.number"
+            />
+          </template>
+        </v-radio-group>
+        <!-- {{ selectedVdrAudioChannel }} -->
+      </v-card-text>
+
+      <!-- <v-divider /> -->
+
+      <v-card-actions>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-refresh"
+          @click="refreshVDRAudioChannels"
+        >
+          {{ t('actions.reload') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-sheet>
 </template>
 
 <!-- TODO: choosing the profile for a output doesn't work with pipewire -->
@@ -136,9 +110,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useBackendStore } from '@/stores/backend'
-import { useAudioStore, type ListedPulseCardInterface, type PulseProfileInterface } from '@/stores/audio'
+import { useAudioStore } from '@/stores/audio'
 import { useI18n } from 'vue-i18n'
-import { consoleError } from 'vuetify/lib/util/console.mjs'
 
 const backend = useBackendStore()
 const audio = useAudioStore()

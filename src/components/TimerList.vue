@@ -27,6 +27,7 @@
         flat
         rounded
         density="compact"
+        color="primary"
       >
         <v-toolbar-title>
           {{ $t('category.timer', 2) }}
@@ -88,8 +89,6 @@
 import i18n from '@/plugins/i18n';
 import { useVDRStore } from '@/stores/vdr';
 import type { VDRTimerInterface } from '@/stores/interfaces/VdrTimerInterface';
-import { Temporal } from "temporal-polyfill";
-
 
 enum RequestState {
     Unused,
