@@ -55,8 +55,8 @@
 
             <!-- {{  cardForCurrentSink?.profile_active }} -->
             <!-- Selected: {{ store.listedPulseSinks.default_sink }} -->
-            <!-- listedPulseSinks: {{ audio.listedPulseSinks }} -->
-            <!-- <br>
+            <!-- listedPulseSinks: {{ audio.listedPulseSinks }}
+            <br>
             <br>
             <p>
               audio.listedPulseProfiles: {{ audio.listedPulseProfiles }}
@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useBackendStore } from '@/stores/backend'
-import { useAudioStore, type PulseProfileInterface } from '@/stores/audio'
+import { useAudioStore, type ListedPulseCardInterface, type PulseProfileInterface } from '@/stores/audio'
 import { useI18n } from 'vue-i18n'
 import { consoleError } from 'vuetify/lib/util/console.mjs'
 
@@ -167,42 +167,25 @@ const cardForCurrentSink = computed(() => {
   const sink = audio.listedPulseSinks.pulse_devices.find((sink) => sink.device === audio.listedPulseSinks.default_sink)
   if (sink) {
     // console.log("sink:", sink.device.split('.', 3))
-    return audio.listedPulseProfiles.find ((profile) => {
-      const dot_idx = profile.card_name.indexOf('.')
-      if (dot_idx !== -1 ) {
-        const card_name = profile.card_name.substring(dot_idx + 1)
-        // console.log("card name for", profile.card_name, card_name)
-        const found = sink.device.search(card_name) > -1
-        // console.log("found match:", found, card_name)
-        return found
-      } else {
-        return false
-      }
-    })
+    return audio.listedPulseProfiles.find ((profile) => sink.card_name === profile.card_name)
   } else {
     return undefined
   }})
 
-// const profilesForCurrentSink = computed((cardForCurrentSink): PulseProfileInterface[] => {
-//   console.log("cardForCurrentSink:", cardForCurrentSink)
-//   if (cardForCurrentSink) {
-//     return cardForCurrentSink.profiles
-//   } else {
-//     return []
-//   }
-//   // const sink = audio.listedPulseSinks.pulse_devices.find((sink) => audio.listedPulseSinks.default_sink.search(sink.device) > -1)
-//   // if (sink) {
-//   //   return audio.listedPulseProfiles[sink.card].profiles
-//   // }
-//   // return []
-// })
-
 function setNewDefaultSink() {
-  console.log('new sink selected:', audio.listedPulseSinks.default_sink)
-  backend.postRequest('/audio/set_default_pulseaudio_sink', {
-    sink: audio.listedPulseSinks.default_sink,
-    scopes: []
-  })
+  if (cardForCurrentSink.value) {
+    console.log('new sink selected:', audio.listedPulseSinks.default_sink, cardForCurrentSink.value?.card_name)
+    backend.postRequest('/audio/set_default_pulseaudio_sink', {
+        default_sink: audio.listedPulseSinks.default_sink,
+        card_name: cardForCurrentSink.value.card_name,
+      scopes: []
+    })
+  } else {
+    console.log(
+      "Can't set default pulseaudio sink - cardForCurrentSink is undefined, sink was",
+      audio.listedPulseSinks.default_sink
+    )
+  }
 }
 
 async function setProfile() {

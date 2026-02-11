@@ -3,6 +3,7 @@ export interface PulseDeviceInterface {
   device_name: string
   index: number
   card: number
+  card_name: string
   muted: boolean
   number_of_channels: number
   volume_values: Array<number>
