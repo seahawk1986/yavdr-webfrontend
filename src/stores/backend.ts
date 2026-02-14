@@ -288,7 +288,7 @@ export const useBackendStore = defineStore("backend", () => {
   }
 
   async function putRequest(url: string, payload: unknown) {
-    return axios_instance.post(url, payload).then((response) => {
+    return axios_instance.put(url, payload).then((response) => {
       return response;
     });
   }

@@ -104,6 +104,7 @@
                   })
                 "
                 @delete="(id) => deleteTimer(id)"
+                @update="(timer) => updateTimer(timer)"
               />
             </template>
             <v-icon-btn
@@ -357,10 +358,12 @@ async function createTimer(epgEntry: epgListInterface) {
   await refreshTimers();
 }
 
-async function editTimer(timerEntry: VDRTimerInterface|undefined) {
+async function updateTimer(timerEntry: string) {
   if (timerEntry) {
     console.log("edit timer for:", timerEntry)
+    await vdr.updateTimer(timerEntry)
   }
+  await refreshTimers()
 }
 
 

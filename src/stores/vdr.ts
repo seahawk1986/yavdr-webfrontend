@@ -71,6 +71,11 @@ export const useVDRStore = defineStore("vdr", () => {
     isDeletingTimer.value = false;
   }
 
+  async function updateTimer(timer: string) {
+    const response = await backend.putRequest('/vdr/timers', { timer_str: timer })
+    console.log(response?.data)
+  }
+
   const vdrRecordings: Ref<Array<VDRTimerInterface>> = ref([]);
   const isLoadingRecordings: Ref<boolean> = ref(false);
 
@@ -114,6 +119,7 @@ export const useVDRStore = defineStore("vdr", () => {
     loadRecordings,
     loadTimers,
     deleteTimer,
+    updateTimer,
     vdrTimers,
   }
 })
