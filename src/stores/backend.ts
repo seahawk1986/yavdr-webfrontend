@@ -440,13 +440,10 @@ export const useBackendStore = defineStore("backend", () => {
     return returnStatus;
   }
 
-  async function deleteRequest(url: string) {
-    return axios_instance
-      .delete(url)
-      .then((response) => {
-        return response.data;
-      })
-      .catch();
+  async function deleteRequest(url: string, payload: unknown) {
+    return axios_instance.delete(url, payload).then((response) => {
+      return response;
+    });
   }
 
   const isOnMobile: Ref<boolean> = ref(false);

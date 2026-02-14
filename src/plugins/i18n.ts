@@ -145,7 +145,9 @@ export default createI18n({
                     unknown: 'unknown'
                 },
                 createTimer: "create timer for {entry} from {start} to {end}",
-                noTimers: 'no timers'
+                editTimer: "edit timer for {entry} from {start} to {end}",
+                noTimers: 'no timers',
+                title: "Title",
             },
         },
         de: {
@@ -287,6 +289,8 @@ export default createI18n({
                 },
                 noTimers: 'keine Timer',
                 createTimer: "Timer für {entry} von {start} bis {end} anlegen",
+                editTimer: "Timer for {entry} von {start} bis {end} bearbeiten",
+                title: "Titel",
             },
         }
     }

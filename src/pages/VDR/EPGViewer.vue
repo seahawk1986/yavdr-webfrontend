@@ -54,12 +54,13 @@
     <v-virtual-scroll
       v-else
       :height="height - 120"
+      width="100dvw"
       :items="epgChannelList"
+      item-key="event_id"
       density="compact"
       aria-role="list"
       item-height="48"
     >
-      <!-- TODO set constant width -->
       <template #default="{ item, index }">
         <v-list-item
           v-if="index === 0"
@@ -91,8 +92,22 @@
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
         >
           <template #prepend>
+            <template v-if="getEventTimer(item.event_id)">
+              <EditTimer
+                v-if="timerEvents.get(item.event_id)"
+                :timer="timerEvents.get(item.event_id)"
+                :aria-label="
+                  t('timer.editTimer', {
+                    entry: item.title,
+                    start: formatTime(item.dtStart),
+                    end: formatTime(item.dtEnd),
+                  })
+                "
+                @delete="(id) => deleteTimer(id)"
+              />
+            </template>
             <v-icon-btn
-              v-if="!item.has_timer"
+              v-else
               color="primary"
               :aria-label="
                 t('timer.createTimer', {
@@ -105,20 +120,7 @@
               size="small"
               @click="createTimer(item)"
             />
-            <v-icon-btn
-              v-else
-              color="red"
-              :aria-label="
-                t('timer.createTimer', {
-                  entry: item.title,
-                  start: formatTime(item.dtStart),
-                  end: formatTime(item.dtEnd),
-                })
-              "
-              icon="mdi-timer-edit-outline"
-              size="small"
-              @click="editTimer(item)"
-            />
+
             <v-list-item
               :title="formatTimespan(item.dtStart, item.dtEnd)"
               :subtitle="`(${item.duration
@@ -190,15 +192,17 @@ interface epgEntryInterface {
 }
 
 interface epgListInterface {
+  event_id: string;
   dtStart: Temporal.PlainDateTime;
   dtEnd: Temporal.PlainDateTime;
+  start_ts: number;
   duration: Temporal.Duration;
   title: string;
   subtitle: string | null;
   description: string | null;
   channelId: string | null;
   crossDay: boolean;
-  has_timer: boolean;
+  timer?: VDRTimerInterface;
   // isSeparator: boolean
 }
 
@@ -217,6 +221,29 @@ const selectedChannelName = computed(() => {
 const isLoading: Ref<boolean> = ref(true);
 
 const epgChannelList: Ref<epgListInterface[]> = ref([]);
+const channelTimers: Ref<VDRTimerInterface[]> = ref([])
+
+function getTimer(element: epgListInterface) {
+  return channelTimers.value.find((timer) => timer.start <= element.start_ts && timer.stop >= (element.start_ts + element.duration.total('seconds')))
+}
+
+const getEventTimer = (eventId: string) => timerEvents.value.get(eventId);
+
+const timerEvents = computed(() => {
+  const timerEventMap = new Map<string, VDRTimerInterface>();
+
+  for (const timer of channelTimers.value) {
+    const matchingEvents = epgChannelList.value.filter(event =>
+      timer.start <= event.start_ts &&
+      timer.stop >= (event.start_ts + event.duration.total('seconds'))
+    );
+
+    for (const event of matchingEvents) {
+      timerEventMap.set(event.event_id, timer);
+    }
+  }
+  return timerEventMap;
+});
 
 const selectable_channels = computed(() => {
   return vdr.vdrChannels.filter((channel) => !channel.is_group)
@@ -235,39 +262,43 @@ function formatTimespan(
   return `${formatTime(dtStart)} - ${formatTime(dtEnd)}`;
 }
 
+
+async function refreshTimers() {
+  if (!selectedChannel.value) return;
+
+  const timers = await vdr.loadTimers();
+  channelTimers.value = timers.filter(t => t.channel_id === selectedChannel.value);
+}
+
 async function loadEpgData(channel_id: string | null) {
   isLoading.value = true;
-  const channelTimers = (await vdr.loadTimers()).filter(t => t.channel === channel_id)
+  channelTimers.value = (await vdr.loadTimers()).filter(t => t.channel_id === channel_id)
 
-  // get the EPG for this channel
   if (channel_id) {
     const response = await vdr.loadEPG(channel_id);
     if (response?.data) {
       const data: epgEntryInterface[] = response.data;
-      epgChannelList.value = [];
       if (data) {
         const epgListData: epgListInterface[] = data.map((element) => {
+          const event_id = element.event_id
           const dtStart = Temporal.PlainDateTime.from(element.start);
           const duration = Temporal.Duration.from(element.duration);
           const dtEnd = dtStart.add(duration);
           const crossDay = dtStart.day !== dtEnd.day ? true : false;
-
-          function hasTimer(timer: VDRTimerInterface) {
-            return (timer.start <= element.start_ts && timer.stop >= (element.start_ts + duration.total('seconds')))
-          }
-
-          const has_timer = channelTimers.some(hasTimer)
+          const timer = undefined;
 
           return {
+            event_id: event_id,
             channelId: element.channel_id,
             dtStart: dtStart,
             dtEnd: dtEnd,
+            start_ts: element.start_ts,
             duration: duration,
             crossDay: crossDay,
             title: element.title,
             subtitle: element.subtitle,
             description: element.description,
-            has_timer: has_timer
+            timer: timer
           };
         });
         epgChannelList.value = epgListData;
@@ -279,7 +310,6 @@ async function loadEpgData(channel_id: string | null) {
 watch(selectedChannel, async (new_channel_id, old_channel_id) => {
   isLoading.value = true;
   if (new_channel_id !== old_channel_id || new_channel_id !== null) {
-    // epgChannelList.value = []
     await loadEpgData(new_channel_id);
   }
 });
@@ -324,12 +354,19 @@ async function createTimer(epgEntry: epgListInterface) {
     title: epgEntry.title,
 
   })
+  await refreshTimers();
 }
 
-async function editTimer(epgEntry: epgListInterface) {
-  console.log("edit timer for:", epgEntry)
-  // TODO: find the matching timer
-  // TODO: Implement a Timer editor dialog
+async function editTimer(timerEntry: VDRTimerInterface|undefined) {
+  if (timerEntry) {
+    console.log("edit timer for:", timerEntry)
+  }
+}
+
+
+async function deleteTimer(id: number) {
+  await vdr.deleteTimer(id)
+  await refreshTimers()
 }
 
 onMounted(async () => {
