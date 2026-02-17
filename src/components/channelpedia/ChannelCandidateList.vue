@@ -32,8 +32,9 @@
           v-tooltip="t('channels.moveToPosition', {name: channel.name})"
           :aria-label="t('channels.moveToPosition', {name: channel.name})"
           icon="mdi-dialpad"
-          size="small"
           density="comfortable"
+          variant="tonal"
+          color="primary"
           @click="showMoveChannelDialog(channel)"
         />
         <v-divider
@@ -46,7 +47,8 @@
           v-tooltip="t('channels.appendChannel', {what: channel.name})"
           :aria-label="t('channels.appendChannel', {what: channel.name})"
           icon="mdi-plus"
-          size="small"
+          variant="tonal"
+          color="primary"
           @click="$emit('addChannel', channel)"
         />
       </template>
