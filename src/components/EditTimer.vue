@@ -41,7 +41,7 @@
         <v-card-text>
           <v-container class="d-flex flex-row flex-wrap justify-space-between">
             <v-switch
-              :model-value="timerActive"
+              v-model="timerActive"
               :label="t('timer.switch_active')"
               inset
               color="green"
@@ -49,6 +49,7 @@
               density="compact"
             />
             <v-switch
+              v-model="timerVPS"
               :label="t('timer.use_VPS')"
               inset
               color="primary"
@@ -73,7 +74,6 @@
             prepend-icon="mdi-calendar"
             :label="t('timer.day')"
             :allowed-dates="allowedDates"
-            input-format="yyyy-mm-dd"
             :clearable="true"
             density="compact"
             @click:clear="timerDate = null"
@@ -172,6 +172,8 @@
           {{ timerString }}
           <!-- <br> -->
           timerDate: {{ timerDate }}
+          <br>
+          timerVPS: {{ timerVPS }}
           <!-- {{ props.timer }}
 
           <br>
