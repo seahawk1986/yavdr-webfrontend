@@ -42,14 +42,14 @@
           <v-container class="d-flex flex-row flex-wrap justify-space-between">
             <v-switch
               :model-value="timerActive"
-              label="Active"
+              :label="t('timer.switch_active')"
               inset
               color="green"
               :hide-details="true"
               density="compact"
             />
             <v-switch
-              label="Use VPS"
+              :label="t('timer.use_VPS')"
               inset
               color="primary"
               :hide-details="true"
@@ -69,18 +69,21 @@
             density="compact"
           />
           <v-date-input
-            :model-value="timerDate"
+            v-model="timerDate"
             prepend-icon="mdi-calendar"
-            label="Start Date"
+            :label="t('timer.day')"
             :allowed-dates="allowedDates"
+            input-format="yyyy-mm-dd"
             :clearable="true"
             density="compact"
             @click:clear="timerDate = null"
+            @update:model-value="(val: unknown) => {timerDate = val}"
           />
+          <!-- TODO: Why is @update:model-value needed?  -->
 
           <v-text-field
             :model-value="timerStart"
-            label="Start Time"
+            :label="t('timer.start_time')"
             prepend-icon="mdi-timer-play"
             readonly
             density="compact"
@@ -100,7 +103,7 @@
           </v-text-field>
           <v-text-field
             :model-value="timerEnd"
-            label="End Time"
+            :label="t('timer.end_time')"
             prepend-icon="mdi-timer-stop"
             density="compact"
             readonly
@@ -150,7 +153,9 @@
             control-variant="split"
             :max-width="200"
             density="compact"
+            @update:model-value="(val) => priority = val"
           />
+          <!-- TODO: Why is @update:model-value needed? -->
           <v-number-input
             :min="0"
             :max="99"
@@ -160,12 +165,17 @@
             control-variant="split"
             :max-width="200"
             density="compact"
+            @update:model-value="(val) => lifetime = val"
           />
+          <!-- TODO: Why is @update:model-value needed? -->
+
+          {{ timerString }}
+          <!-- <br> -->
+          timerDate: {{ timerDate }}
           <!-- {{ props.timer }}
 
           <br>
 
-          {{ timerString }}
           <br>
 
           {{ weekdaySettings }}
@@ -179,6 +189,7 @@
             prepend-icon="mdi-send"
             variant="flat"
             tile
+            @click="updateTimer(isActive)"
           />
           <!-- TODO: implement updating the timer -->
         </v-card-actions>
@@ -193,6 +204,7 @@ import { useDate } from 'vuetify'
 import { useI18n } from "vue-i18n";
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import type { VDRTimerInterface } from "@/stores/interfaces/VdrTimerInterface";
+import type { ShallowRef } from 'vue';
 const {t} = useI18n()
 const date = useDate()
 
@@ -224,29 +236,29 @@ const timerEnd = ref("00:00")
 const priority = ref(50)
 const lifetime = ref(99)
 if (props.timer) {
-    const startDate = new Date(props.timer.start * 1000)
-    const startHour = startDate.getHours()
-    const startMinutes = startDate.getMinutes()
+    const startDate = ref(new Date(props.timer.start * 1000))
+    const startHour = startDate.value.getHours()
+    const startMinutes = startDate.value.getMinutes()
     timerStart.value = String(startHour).padStart(2, "0") + ":" + String(startMinutes).padStart(2, "0")
     const stopDate = new Date(props.timer.stop * 1000)
     const endHour = stopDate.getHours()
     const endMinutes = stopDate.getMinutes()
     timerEnd.value = String(endHour).padStart(2, "0") + ":" + String(endMinutes).padStart(2, "0")
-    startDate.setHours(0)
-    startDate.setMinutes(0)
-    startDate.setSeconds(0)
+    startDate.value.setHours(0)
+    startDate.value.setMinutes(0)
+    startDate.value.setSeconds(0)
     timerActive.value = (props.timer.status_flags & 1) !== 0
     timerVPS.value = (props.timer.status_flags & 4) !== 0
     timerTitle.value = props.timer.filename
-    timerDate.value = startDate
+    timerDate.value = startDate.value
     priority.value = props.timer.priority
     lifetime.value = props.timer.lifetime
 }
 
+
 const showStartMenu: Ref<boolean> = ref(false)
 const showStopMenu: Ref<boolean> = ref(false)
 const weekdaySettings: Ref<number[]> = ref([])
-const time: Ref<string> = ref('20:15')
 
 const allowedDates = (val: unknown) => {
     const now = new Date
@@ -270,11 +282,15 @@ const timerDayResult = computed(() => {
     }).join("")}${timerDate.value ? "@" : ""}`
   }
   if (timerDate.value) {
-    timerDay += `${timerDate.value.getFullYear()}-${String(timerDate.value.getMonth()).padStart(2, "0")}-${String(timerDate.value.getDay()).padStart(2, "0")}`
+    timerDay += format_day(timerDate.value)
   }
   return timerDay
 
 })
+
+const format_day = (date: Date) => {
+  return `${date.getFullYear()}-${String(date.getMonth()).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+}
 
 const timerString = computed(() => {
   if (props.timer) {
@@ -282,12 +298,22 @@ const timerString = computed(() => {
     const channel_id = props.timer.channel_id
     const start = timerStart.value.replace(':', '')
     const stop = timerEnd.value.replace(':', '')
+    const prio = priority.value
+    const life = lifetime.value
     const aux = props.timer.aux
 
 
-    return `${flags}:${channel_id}:${timerDayResult}:${start}:${stop}:${priority.value}:${lifetime.value}:${aux}`
+    return `${flags}:${channel_id}:${timerDayResult.value}:${start}:${stop}:${prio}:${life}:${timerTitle.value}:${aux}`
   }
 })
+
+const updateTimer = async (isActive: Ref<boolean>) => {
+  if (props.timer && timerString.value) {
+    console.log("Update timer", timerString.value)
+    emit('update', timerString.value)
+    isActive.value = false
+  }
+}
 
 const deleteTimer = async (isActive: Ref<boolean>) => {
   if (props.timer && window.confirm(`Are you sure you want to delete the timer ${props.timer.id} "${props.timer.filename}"?`)) {

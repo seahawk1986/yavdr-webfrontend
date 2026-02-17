@@ -140,14 +140,23 @@ export default createI18n({
             timer: {
                 status: {
                     inactive: 'disabled',
+                    active: "active",
+                    switch_on: "Enable timer",
+                    switch_of: "Disable timer",
                     recording: 'recording',
                     pending: 'pending',
                     unknown: 'unknown'
                 },
+                switch_active: 'Enable',
                 createTimer: "create timer for {entry} from {start} to {end}",
                 editTimer: "edit timer for {entry} from {start} to {end}",
                 noTimers: 'no timers',
                 title: "Title",
+                use_VPS: "Use VPS",
+                day: "Day",
+                start_time: "Beginning",
+                end_time: "End",
+
             },
         },
         de: {
@@ -287,10 +296,15 @@ export default createI18n({
                     pending: 'anstehend',
                     unknown: 'unbekannt'
                 },
+                switch_active: 'Aktiv',
                 noTimers: 'keine Timer',
                 createTimer: "Timer für {entry} von {start} bis {end} anlegen",
                 editTimer: "Timer for {entry} von {start} bis {end} bearbeiten",
                 title: "Titel",
+                use_VPS: "Nutze VPS",
+                day: "Tag",
+                start_time: "Anfang",
+                end_time: "Ende",
             },
         }
     }
