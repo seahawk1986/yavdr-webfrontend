@@ -4,7 +4,7 @@
     :disabled="isLookingForDisplays"
     :loading="isLookingForDisplays || isSettingConfig"
     prepend-icon="mdi-monitor-multiple"
-    title="Display Configuration"
+    :title="t('category.displaySettings')"
   >
     <v-card-actions class="justify-center flex-wrap ga-2">
       <v-btn
@@ -44,9 +44,10 @@
             <v-card
               class="flex-1-0 ma-2 pa-2"
               variant="outlined"
+              :min-width="200"
             >
               <template #title>
-                Main Display
+                {{ t('category.mainDisplay') }}
               </template>
               <template #text>
                 <v-select
@@ -73,17 +74,19 @@
               </template>
             </v-card>
           </v-col>
+
           <v-col
             v-if="secondaryDisplay"
             cols="12"
             sm="6"
           >
             <v-card
-              class="ma-2 pa-2 w-100"
+              class="flex-1-0 ma-2 pa-2"
               variant="outlined"
+              :min-width="200"
             >
               <template #title>
-                Secondary Display
+                {{ t('category.secondaryDisplay') }}
               </template>
 
               <template #text>

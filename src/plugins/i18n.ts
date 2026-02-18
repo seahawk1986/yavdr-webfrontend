@@ -38,7 +38,7 @@ export default createI18n({
                 rescanDisplays: "Rescan Displays",
                 apply: "apply",
                 install: "install",
-
+                show_details: "Show details",
             },
             audio: {
                 audioOutput: "Audio Output",
@@ -62,7 +62,8 @@ export default createI18n({
                 configuration: "Configuration",
                 installation: "Installation",
                 playbook: "Playbook",
-            },
+            }, mainDisplay: "Main Display",
+            secondaryDisplay: "Secondary Display",
             channels: {
                 channelNumberN: "channel number {number}",
                 channelGroup: "channel group",
@@ -98,6 +99,9 @@ export default createI18n({
                 sources_conf: "Map satellite positions",
                 setup_conf: "VDR settings",
                 menuorg_xml: "menuorg configuration",
+                arguments_for: "Arguments for {what}",
+                start_arguments: "Start arguments",
+                details: "Details",
             },
             info: {
                 state: 'state',
@@ -105,6 +109,8 @@ export default createI18n({
                 duration: 'duration',
                 title: 'title',
                 channel: 'channel',
+                priority: 'Priority',
+                lifetime: 'Lifetime',
             },
             log: {
                 autoscroll: 'automatically scroll to newest log entry',
@@ -156,7 +162,7 @@ export default createI18n({
                 day: "Day",
                 start_time: "Beginning",
                 end_time: "End",
-
+                repeat_on_weekdays: "Repeat on weekdays",
             },
         },
         de: {
@@ -191,6 +197,7 @@ export default createI18n({
                 rescanDisplays: "Bildschirme erkennen",
                 apply: "Anwenden",
                 install: "Installieren",
+                show_details: "Zeige Details",
 
             },
             audio: {
@@ -231,12 +238,15 @@ export default createI18n({
                 sources_conf: "Konfiguriere Satellitenpositionen",
                 setup_conf: "VDR Einstellungen",
                 menuorg_xml: "Menülayout für das menuorg Plugin",
+                arguments_for: "Argumente für {what}",
+                start_arguments: "Startargumente",
+                details: "Details",
             },
             errors: {
                 loadingFailed: 'Laden der {what} fehlgeschlagen'
             },
             category: {
-                displaySettings: 'Anzeige',
+                displaySettings: 'Anzeigeneinstellungen',
                 audioSettings: 'Audio',
                 timer: 'Timer',
                 recording: 'Aufnahme | Aufnahmen',
@@ -250,6 +260,8 @@ export default createI18n({
                 configuration: "Konfiguration",
                 installation: "Installation",
                 playbook: "Playbook",
+                mainDisplay: "Hauptbildschirm",
+                secondaryDisplay: "Zweitbildschirm",
             },
             info: {
                 state: 'Status',
@@ -257,6 +269,8 @@ export default createI18n({
                 duration: 'Länge',
                 title: 'Titel',
                 channel: 'Kanal | Kanäle',
+                priority: 'Priorität',
+                lifetime: 'Lebensdauer',
             },
             language: {
                 selectLanguage: "Sprache auswählen"
@@ -305,6 +319,7 @@ export default createI18n({
                 day: "Tag",
                 start_time: "Anfang",
                 end_time: "Ende",
+                repeat_on_weekdays: "Wiederholung an Wochentagen",
             },
         }
     }

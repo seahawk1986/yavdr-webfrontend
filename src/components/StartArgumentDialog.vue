@@ -22,7 +22,7 @@
             color="surface"
             density="compact"
           >
-            <help-dialog :name="`Help for ${name}`">
+            <help-dialog :name="t('descriptions.arguments_for', {what: name})">
               <template #help>
                 <v-textarea
                   v-model="help"
@@ -31,6 +31,7 @@
                   auto-grow
                   hide-details="auto"
                   variant="plain"
+                  color="info"
                 />
               </template>
             </help-dialog>
@@ -40,26 +41,30 @@
               text="Close"
               size="small"
               variant="tonal"
+              color="red"
               @click="isActive.value = false"
             />
           </v-toolbar>
         </template>
 
-        <v-card-text class="overflow-auto">
+        <v-card-text>
+          <v-divider class="mt-2" />
           <v-number-input
             v-if="!is_static"
-            label="Priority"
+            :label="t('info.priority')"
             :min="10"
             :max="99"
             :model-value="prio"
           />
+
           <v-textarea
             v-model="args"
             class="monospace overflow-auto"
-            label="Start Arguments"
+            :label="t('descriptions.start_arguments')"
             auto-grow
             max-rows="20"
             hide-details="auto"
+            variant="filled"
           />
         </v-card-text>
         <template #actions>
@@ -88,6 +93,9 @@
 <script lang="ts" setup>
 import type { ArgumentFileInterface, ArgumentSaveInterface } from "@/pages/VDR/VDRStartArgumentInterface";
 import { useBackendStore } from "@/stores/backend";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n()
 
 const store = useBackendStore();
 const props = defineProps<{

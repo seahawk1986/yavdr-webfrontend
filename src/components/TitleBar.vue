@@ -4,6 +4,9 @@
     app
     :elevation="2"
     class="mx-auto"
+    scroll-behavior="fully-hide"
+    density="compact"
+    scroll-target=""
   >
     <template #prepend>
       <v-app-bar-nav-icon

@@ -47,13 +47,27 @@
     <template #item="{ item }">
       <tr>
         <td>
-          <v-icon
+          <EditTimer
+            tooltip="timerStatusLabel(item.status_flags)"
+            :timer="item"
+            :color="timerStatusColor(item.status_flags)"
+            :aria-label="
+              t('timer.editTimer', {
+                entry: item.filename,
+                start: item.start,
+                end: item.stop,
+              })
+            "
+            @delete="(id) => deleteTimer(id)"
+            @update="(timer) => updateTimer(timer)"
+          />
+          <!-- <v-icon
             v-tooltip:start="timerStatusLabel(item.status_flags)"
             :color="timerStatusColor(item.status_flags)"
             icon="mdi-record"
             :aria-label="timerStatusLabel(item.status_flags)"
             size="x-large"
-          />
+          /> -->
         </td>
         <td>
           <div v-if="item.start > 0">
@@ -88,7 +102,10 @@
 <script setup lang="ts">
 import i18n from '@/plugins/i18n';
 import { useVDRStore } from '@/stores/vdr';
+import { useI18n } from 'vue-i18n';
 import type { VDRTimerInterface } from '@/stores/interfaces/VdrTimerInterface';
+
+const {t} = useI18n()
 
 enum RequestState {
     Unused,
@@ -201,6 +218,20 @@ const timerStatusLabel = function(status: number) {
 //     const midnight = new Temporal.PlainDate
 //   } // ((d_end.hour * 60 + d_end.minute) - (d_start.hour * 60 + d_start.minute)).}
 
+
+async function updateTimer(timerEntry: string) {
+  if (timerEntry) {
+    console.log("edit timer for:", timerEntry)
+    await vdr.updateTimer(timerEntry)
+  }
+  await reloadTimers()
+}
+
+
+async function deleteTimer(id: number) {
+  await vdr.deleteTimer(id)
+  await reloadTimers()
+}
 
 
 onMounted (async () => {

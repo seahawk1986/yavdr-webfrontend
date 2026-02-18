@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type { VDRChannel } from "./interfaces/VdrChannelInterface";
 import { useBackendStore } from "./backend";
 import type { VDRTimerInterface } from "./interfaces/VdrTimerInterface";
+import { consoleError } from "vuetify/lib/util/console.mjs";
 
 const backend = useBackendStore()
 
@@ -108,11 +109,34 @@ export const useVDRStore = defineStore("vdr", () => {
     }
   }
 
+  async function playRecording(recID: number, position: number = -1) {
+    console.log("play recording", recID)
+    const response = await backend.postRequest('/vdr/recordings/play', { RecNum: recID, continue_replay: position })
+    console.log("playRecording response:", response)
+  }
+
+  async function deleteRecording(recID: number) {
+    console.log("delete recording", recID)
+    const response = await backend.deleteRequest(`/vdr/recordings/${recID}`, null)
+    console.log("deleteRecording response:", response)
+    loadRecordings()
+  }
+
+
+  async function getCurrentChannel() {
+    const response = await backend.getRequest('/vdr/channels/current', {})
+    if (response) {
+      console.log("current channel is", response.data)
+      currentChannel.value = response.data[0]
+      return response.data
+    }
+  }
   return {
     vdrChannels,
     currentChannel,
     isLoadingChannels,
     isDeletingTimer,
+    getCurrentChannel,
     loadChannels,
     saveChannels,
     loadEPG,
@@ -121,5 +145,7 @@ export const useVDRStore = defineStore("vdr", () => {
     deleteTimer,
     updateTimer,
     vdrTimers,
+    playRecording,
+    deleteRecording,
   }
 })

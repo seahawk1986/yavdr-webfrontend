@@ -9,6 +9,7 @@
         text="Help"
         size="small"
         variant="tonal"
+        color="info"
       />
     </template>
     <template #default="{ isActive }">
@@ -25,6 +26,8 @@
               icon="mdi-close"
               text="Close"
               size="small"
+              variant="tonal"
+              color="red"
               @click="isActive.value = false"
             />
             <v-toolbar-title :text="props.name" />
@@ -47,7 +50,7 @@
     </template>
   </v-dialog>
 </template>
-  
+
 <script lang="ts" setup>
 import { useBackendStore } from '@/stores/backend';
 

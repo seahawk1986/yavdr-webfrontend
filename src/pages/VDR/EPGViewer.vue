@@ -14,6 +14,18 @@
       </v-toolbar-title>
 
 
+      <v-icon-btn
+        v-tooltip="t('channels.switchto', { channel: selectedChannelName })"
+        :aria-label="t('channels.switchto', { channel: selectedChannelName })"
+        color="primary"
+        icon="mdi-television-classic"
+        @click="switchChannel"
+      />
+      <v-divider
+        vertical
+        thickness="10"
+        opacity="0"
+      />
       <v-select
         id="channel-selection"
         v-model="selectedChannel"
@@ -23,20 +35,6 @@
         density="comfortable"
         hide-details="auto"
         :isloading="isLoading"
-      />
-
-      <v-divider
-        vertical
-        thickness="10"
-        opacity="0"
-      />
-
-      <v-icon-btn
-        v-tooltip="t('channels.switchto', { channel: selectedChannelName })"
-        :aria-label="t('channels.switchto', { channel: selectedChannelName })"
-        color="primary"
-        icon="mdi-television-classic"
-        @click="switchChannel"
       />
     </v-toolbar>
 
@@ -118,7 +116,6 @@
                 })
               "
               icon="mdi-timer-plus-outline"
-              size="small"
               @click="createTimer(item)"
             />
 
@@ -132,17 +129,13 @@
             />
           </template>
           <template #append>
-            <v-tooltip
-              location="top"
-              :text="item.description ? item.description : ''"
-            >
-              <template #activator="{ props }">
-                <v-icon-btn
-                  icon="mdi-information"
-                  v-bind="props"
-                />
-              </template>
-            </v-tooltip>
+            <v-icon-btn
+              v-if="((item.description ? item.description : '').length > 0)"
+              v-tooltip="(item.description ? item.description : '').replaceAll('|', '\n')"
+              style="white-space: pre-wrap;"
+              icon="mdi-information"
+              variant="flat"
+            />
           </template>
         </v-list-item>
         <v-list-item
@@ -172,6 +165,7 @@ import { Temporal } from "temporal-polyfill";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 import type { VDRTimerInterface } from "@/stores/interfaces/VdrTimerInterface";
+import { consoleError } from "vuetify/lib/util/console.mjs";
 
 const { height } = useDisplay();
 const { t } = useI18n();
@@ -348,7 +342,7 @@ async function switchChannel() {
 }
 
 async function createTimer(epgEntry: epgListInterface) {
-  await backend.postRequest("/vdr/newt", {
+  await backend.postRequest("/vdr/timers", {
     channel_id: epgEntry.channelId,
     dt_start: epgEntry.dtStart,
     dt_end: epgEntry.dtEnd,
@@ -375,13 +369,21 @@ async function deleteTimer(id: number) {
 onMounted(async () => {
   // load the channels
   await vdr.loadChannels();
-  const first = selectable_channels.value.find(() => true);
+  const [_channel_num, channel_string] = await vdr.getCurrentChannel()
+  const first = selectable_channels.value.find((channel) => channel.channel_string === channel_string);
   if (first) {
     selectedChannel.value = first.channel_id;
     await loadEpgData(selectedChannel.value);
   }
 });
 </script>
+
+<style>
+/* Die Klasse muss den Tooltip-Inhalt ansprechen */
+.v-tooltip .v-overlay__content {
+  white-space: pre-wrap !important;
+}
+</style>
 
 <style lang="css" scoped>
 .v-list-item-subtitle {

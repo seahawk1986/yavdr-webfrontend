@@ -4,12 +4,12 @@
   >
     <template #activator="{ props: activatorProps }">
       <v-icon-btn
+        :v-tooltip="props.vTooltip"
         icon="mdi-timer-edit-outline"
         v-bind="activatorProps"
         text="Open Dialog"
         variant="flat"
-        size="small"
-        color="red"
+        :color="props.color ? props.color : 'red'"
       />
     </template>
     <template #default="{ isActive }">
@@ -19,7 +19,7 @@
             {{ t('actions.edit', { what: t('category.timer')}) }}
           </v-toolbar-title>
           <v-icon-btn
-            v-tooltip="t('actions.delete_sth', {what: t('category.timer')})"
+            :v-tooltip="t('actions.delete_sth', {what: t('category.timer')})"
             color="red"
             icon="mdi-delete-clock"
             variant="flat"
@@ -127,12 +127,12 @@
             class="mb-5"
           >
             <v-expansion-panel
-              title="Repeat on Weekdays"
+              :title="t('timer.repeat_on_weekdays')"
             >
               <v-expansion-panel-text>
                 <v-container class="d-flex flex-row flex-wrap justify-center">
                   <v-checkbox
-                    v-for="(w, idx) in weekdays"
+                    v-for="(w, idx) in weekday_selection"
                     :key="idx"
                     v-model="weekdaySettings"
                     :label="w"
@@ -148,7 +148,7 @@
             :min="0"
             :max="99"
             :model-value="priority"
-            label="Priority"
+            :label="t('info.priority')"
             prepend-icon="mdi-star"
             control-variant="split"
             :max-width="200"
@@ -160,7 +160,7 @@
             :min="0"
             :max="99"
             :model-value="lifetime"
-            label="Lifetime"
+            :label="t('info.lifetime')"
             prepend-icon="mdi-clock-end"
             control-variant="split"
             :max-width="200"
@@ -171,9 +171,9 @@
 
           {{ timerString }}
           <!-- <br> -->
-          timerDate: {{ timerDate }}
+          <!-- timerDate: {{ timerDate }}
           <br>
-          timerVPS: {{ timerVPS }}
+          timerVPS: {{ timerVPS }} -->
           <!-- {{ props.timer }}
 
           <br>
@@ -206,28 +206,34 @@ import { useDate } from 'vuetify'
 import { useI18n } from "vue-i18n";
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import type { VDRTimerInterface } from "@/stores/interfaces/VdrTimerInterface";
-import type { ShallowRef } from 'vue';
 const {t} = useI18n()
 const date = useDate()
 
-const weekdays = []
-let tmpDate: Date = new Date(0)
-tmpDate = <Date>date.addDays(tmpDate, 4)
-weekdays.push(date.format(tmpDate, 'weekdayShort'))
+const weekday_selection = computed(() => {
 
-for (let w = 0; w < 6; w++) {
-    tmpDate = <Date>date.addDays(tmpDate, 1)
-    weekdays.push(date.format(tmpDate, 'weekdayShort'))
-}
+  const weekdays = []
+  let tmpDate: Date = new Date(0)
+  tmpDate = <Date>date.addDays(tmpDate, 4)
+  weekdays.push(date.format(tmpDate, 'weekdayShort'))
+
+  for (let w = 0; w < 6; w++) {
+      tmpDate = <Date>date.addDays(tmpDate, 1)
+      weekdays.push(date.format(tmpDate, 'weekdayShort'))
+  }
+  return weekdays
+})
 
 const props = defineProps<{
+    color?: string|undefined
     timer: VDRTimerInterface|undefined
+    tooltip?: string|undefined
 }>()
 
 const emit = defineEmits<{
   (e: 'delete', id: number): void
   (e: 'update', value: string): void
 }>()
+
 
 const timerActive = ref(false)
 const timerVPS = ref(false)
@@ -305,7 +311,7 @@ const timerString = computed(() => {
     const aux = props.timer.aux
 
 
-    return `${flags}:${channel_id}:${timerDayResult.value}:${start}:${stop}:${prio}:${life}:${timerTitle.value}:${aux}`
+    return (`${flags}:${channel_id}:${timerDayResult.value}:${start}:${stop}:${prio}:${life}:${timerTitle.value}:${aux}`).trim()
   }
 })
 

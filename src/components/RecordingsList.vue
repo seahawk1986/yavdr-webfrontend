@@ -50,13 +50,7 @@
       <template #item="{ item }">
         <tr>
           <td>
-            <v-icon
-              v-if="item.IsNew"
-              align-self="center"
-              icon="mdi-new-box"
-              size="x-large"
-              :aria-label="$t('recording.isNew')"
-            />
+            <RecordingDetails :recording="item" />
           </td>
           <td>
             {{ getStartDate(item.Start) }}
@@ -66,6 +60,12 @@
               v-if="item.IsEdited"
               icon="mdi-content-cut"
               :aria-label="$t('recording.isEdited')"
+            />
+            <v-icon
+              v-if="item.IsNew"
+              align-self="center"
+              icon="mdi-new-box"
+              :aria-label="$t('recording.isNew')"
             />
             {{ item.InfoTitle }}
           </td>
@@ -103,7 +103,7 @@ const isLoadingRecordings: Ref<boolean> = ref(false)
 const recordingsLoadingState: Ref<RequestState> = ref(RequestState.Unused)
 
 const headers = [{
-    title: i18n.global.t('info.state'),
+    title: i18n.global.t('descriptions.details'),
     headerProps: {
       class: "status-column",
       align: "center"
