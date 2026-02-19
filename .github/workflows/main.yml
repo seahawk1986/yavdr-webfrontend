@@ -1,0 +1,37 @@
+name: Build latest version of yavdr-webfrontend
+on:
+  push:
+    tags:
+      - 'v*' # triggers on facts like v1.0, v2.1.3 etc.
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Projekt bauen
+        run: npm run build
+
+      - name: Create a zip archive from the dist folder
+        run: zip -r yavdr-webfrontend.zip dist/
+
+      - name: Create release and upload asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: yavdr-webfrontend.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
