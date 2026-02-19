@@ -105,5 +105,6 @@ const replayRecording = async () => {
 const deleteRecording = async (isActive: Ref<boolean>) => {
     await vdr.deleteRecording(props.recording.RecNum)
     isActive.value = false
+    emit('delete', props.recording.RecNum)
 }
 </script>

@@ -129,7 +129,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, Ref } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useBackendStore } from '@/stores/backend';
 import { useI18n } from 'vue-i18n';
@@ -181,8 +181,13 @@ async function reloadValue(name: string) {
   }
 }
 
+interface SetupElement {
+  name: string
+  value: string|number
+}
+
 async function sendValue(name: string, value: string|number) {
-  const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
+  const idx = vdrSetupEntries.value.findIndex((element: SetupElement) => element.name === name)
   vdrSetupEntries.value[idx].value = value
   console.log("saved value for: ", name, ': ', value, 'at index', idx)
   try {

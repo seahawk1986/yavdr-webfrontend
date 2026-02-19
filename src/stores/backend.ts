@@ -224,8 +224,8 @@ export const useBackendStore = defineStore("backend", () => {
   async function postRequestWithStreamingResponse(
     url: string,
     payload: unknown,
-    onData: (chunk: unknown) => void,
-    onEnd: (chunk: unknown) => void
+    // onData: (chunk: unknown) => void,
+    // onEnd: (chunk: unknown) => void
   ) {
     console.log("Streaming JSONL response:");
     let returnStatus = false;
@@ -373,7 +373,7 @@ export const useBackendStore = defineStore("backend", () => {
   async function uploadFileWithStreamingResponseTC(
     url: string,
     uploaded_file: File,
-    onData: (chunk: unknown) => void // TODO: use this method to show progress im the client
+    // onData: (chunk: unknown) => void // TODO: use this method to show progress im the client
   ): Promise<boolean> {
     // TODO: why does this fail?
     let returnStatus = false;

@@ -14,12 +14,10 @@
 
 <script setup lang="ts">
 
-import { useDisplay, useLocale } from 'vuetify'
-import { useUIStore } from './stores/ui'
+import { useLocale } from 'vuetify'
 const { current } = useLocale()
 
-const { mobile } = useDisplay()
-const ui = useUIStore()
+
 
 onMounted(() => {
   document.documentElement.setAttribute('lang', current.value) // for some reason this is needed

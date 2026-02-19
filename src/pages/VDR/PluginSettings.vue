@@ -149,12 +149,12 @@ interface argumentFile {
   arguments: string;
 }
 
-interface vdrPluginConfig {
-  pluginName: string;
-  enable: boolean;
-  static: boolean;
-  argumentFiles: argumentFile[];
-}
+// interface vdrPluginConfigInterface {
+//   pluginName: string;
+//   enable: boolean;
+//   static: boolean;
+//   argumentFiles: argumentFile[];
+// }
 
 interface PluginConfig {
   name: string;
@@ -190,7 +190,7 @@ async function loadPlugins() {
 }
 
 const sortedPluginConfig = computed(() => {
-  return vdrPluginConfig.value.sort((a, b) => a.name.localeCompare(b.name));
+  return vdrPluginConfig.value.toSorted((a, b) => a.name.localeCompare(b.name));
 });
 
 onMounted(() => {

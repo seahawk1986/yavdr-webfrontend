@@ -4,7 +4,7 @@
   >
     <template #activator="{ props: activatorProps }">
       <v-icon-btn
-        :v-tooltip="props.vTooltip"
+        :v-tooltip="props.tooltip"
         icon="mdi-timer-edit-outline"
         v-bind="activatorProps"
         text="Open Dialog"
@@ -77,7 +77,7 @@
             :clearable="true"
             density="compact"
             @click:clear="timerDate = null"
-            @update:model-value="(val: unknown) => {timerDate = val}"
+            @update:model-value="(val: Date|null) => {timerDate = val}"
           />
           <!-- TODO: Why is @update:model-value needed?  -->
 
@@ -268,14 +268,16 @@ const showStartMenu: Ref<boolean> = ref(false)
 const showStopMenu: Ref<boolean> = ref(false)
 const weekdaySettings: Ref<number[]> = ref([])
 
-const allowedDates = (val: unknown) => {
+const allowedDates = (val: Date|unknown) => {
     const now = new Date
     const c_year = now.getFullYear()
     const c_month = now.getMonth()
     const c_day = now.getDate()
     const c_date = new Date(c_year, c_month, c_day)
-
-    return c_date <= val
+    if (val instanceof Date) {
+      return c_date <= val
+    }
+    return false
 }
 
 const timerDayResult = computed(() => {
@@ -313,6 +315,7 @@ const timerString = computed(() => {
 
     return (`${flags}:${channel_id}:${timerDayResult.value}:${start}:${stop}:${prio}:${life}:${timerTitle.value}:${aux}`).trim()
   }
+  return null
 })
 
 const updateTimer = async (isActive: Ref<boolean>) => {

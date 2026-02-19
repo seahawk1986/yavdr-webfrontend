@@ -114,8 +114,6 @@ import { computed, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue
 import { useBackendStore } from '@/stores/backend'
 import type { ChannelSubGroup, VDRChannel } from '@/stores/interfaces/VdrChannelInterface'
 import { useI18n } from 'vue-i18n';
-import { useDisplay } from 'vuetify'
-const { smAndUp } = useDisplay()
 
 import ChannelCandidateList from './ChannelCandidateList.vue'
 

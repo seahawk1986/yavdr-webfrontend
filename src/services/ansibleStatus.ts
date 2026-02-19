@@ -1,36 +1,36 @@
 import { useBackendStore } from "@/stores/backend";
-import { useVDRStore } from "@/stores/vdr";
+// import { useVDRStore } from "@/stores/vdr";
 
 const backend = useBackendStore()
-const vdr = useVDRStore()
+// const vdr = useVDRStore()
 
 enum MessageType {
-    "event",
-    "status",
-    "done",
+  "event",
+  "status",
+  "done",
 }
 
-interface ansibleEventInterface{
-    uuid: string
-    parent_uuid: string
-    counter: number
-    stdout: string
-    pid: number
-    created: Date
-    event?: string
-    event_data?: unknown
+interface ansibleEventInterface {
+  uuid: string
+  parent_uuid: string
+  counter: number
+  stdout: string
+  pid: number
+  created: Date
+  event?: string
+  event_data?: unknown
 }
 
-interface doneInterface{
-    status: string
+interface doneInterface {
+  status: string
 }
 
 interface ansibleStatusInterface {
-    uuid: string
+  uuid: string
 }
 
 export type NormalizedTag = {
-    [key in MessageType]: [msg: ansibleEventInterface | ansibleStatusInterface | doneInterface];
+  [key in MessageType]: [msg: ansibleEventInterface | ansibleStatusInterface | doneInterface];
 };
 
 export async function useAnsibleStatus() {

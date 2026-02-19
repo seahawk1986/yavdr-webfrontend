@@ -2,7 +2,7 @@
 import RemoteIconButton from '@/components/remote/RemoteIconButton.vue'
 import RemoteTextButton from '@/components/remote/RemoteTextButton.vue'
 
-import { useDisplay } from 'vuetify'
+// import { useDisplay } from 'vuetify'
 
 import { useBackendStore } from '@/stores/backend';
 import { useUIStore } from '@/stores/ui';

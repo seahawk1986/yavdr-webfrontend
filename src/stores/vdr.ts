@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import type { VDRChannel } from "./interfaces/VdrChannelInterface";
 import { useBackendStore } from "./backend";
 import type { VDRTimerInterface } from "./interfaces/VdrTimerInterface";
-import { consoleError } from "vuetify/lib/util/console.mjs";
 
 const backend = useBackendStore()
 

@@ -14,13 +14,13 @@ const backend = useBackendStore()
     max-width="420"
   >
     <v-card>
-      <v-card-title>{{ $t('language.selectLanguage') }}</v-card-title>
+      <v-card-title>{{ t('language.selectLanguage') }}</v-card-title>
       <v-card-text>
         <LanguageSwitcher />
       </v-card-text>
       <v-card-actions>
         <v-btn
-          :text="$t('actions.close')"
+          :text="t('actions.close')"
           block
           border
           @click="backend.showLanguageOverlay = false"

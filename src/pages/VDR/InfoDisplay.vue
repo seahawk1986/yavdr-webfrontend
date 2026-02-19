@@ -1,7 +1,8 @@
 <template>
+    <div></div>
 
 </template>
 <script lang="ts" setup>
-import { useBackendStore } from '@/stores/backend';
+// import { useBackendStore } from '@/stores/backend';
 
 </script>

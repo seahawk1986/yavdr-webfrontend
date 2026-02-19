@@ -165,7 +165,6 @@ import { Temporal } from "temporal-polyfill";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 import type { VDRTimerInterface } from "@/stores/interfaces/VdrTimerInterface";
-import { consoleError } from "vuetify/lib/util/console.mjs";
 
 const { height } = useDisplay();
 const { t } = useI18n();
@@ -218,9 +217,9 @@ const isLoading: Ref<boolean> = ref(true);
 const epgChannelList: Ref<epgListInterface[]> = ref([]);
 const channelTimers: Ref<VDRTimerInterface[]> = ref([])
 
-function getTimer(element: epgListInterface) {
-  return channelTimers.value.find((timer) => timer.start <= element.start_ts && timer.stop >= (element.start_ts + element.duration.total('seconds')))
-}
+// function getTimer(element: epgListInterface) {
+//   return channelTimers.value.find((timer) => timer.start <= element.start_ts && timer.stop >= (element.start_ts + element.duration.total('seconds')))
+// }
 
 const getEventTimer = (eventId: string) => timerEvents.value.get(eventId);
 

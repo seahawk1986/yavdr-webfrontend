@@ -49,9 +49,9 @@
           />
           <v-data-table-virtual
             :headers="[
-              {title: 'Name', key: 'name', value: 'name', align: 'start'},
-              {title: 'Setting', key: 'setting', value: 'value', sortable: false},
-              {title: 'Action', key: 'action', sortable: false, width:'20vW'},
+              {title: 'Name', key: 'name', value: 'name', align: 'start', width:'20vW'},
+              {title: 'Setting', key: 'setting', value: 'value', sortable: false, width:'60vW'},
+              {title: 'Action', key: 'action', sortable: false, width: '20vW'},
               // {title: 'MinValue', value:'min_value'},
               // {title: 'MaxValue', value:'max_value'},
             ]"
@@ -280,6 +280,7 @@ onMounted(async () => {
   /* Verhindert, dass die Inputs die Zelle aufblähen */
   height: 40px;
   display: flex;
+  min-width: 400px;
   align-items: center;
 }
 

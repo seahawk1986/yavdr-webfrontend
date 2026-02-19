@@ -48,7 +48,7 @@
       <tr>
         <td>
           <EditTimer
-            tooltip="timerStatusLabel(item.status_flags)"
+            :tooltip="timerStatusLabel(item.status_flags)"
             :timer="item"
             :color="timerStatusColor(item.status_flags)"
             :aria-label="
