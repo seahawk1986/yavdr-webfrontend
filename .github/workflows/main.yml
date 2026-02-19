@@ -28,7 +28,9 @@ jobs:
         run: npm run build
 
       - name: Create a zip archive from the dist folder
-        run: zip -r yavdr-webfrontend.zip dist/
+        run: |
+          cd dist
+          zip -r ../yavdr-webfrontend.zip .
 
       - name: Create release and upload asset
         uses: softprops/action-gh-release@v2
