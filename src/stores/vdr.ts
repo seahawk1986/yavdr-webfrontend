@@ -123,7 +123,7 @@ export const useVDRStore = defineStore("vdr", () => {
 
 
   async function getCurrentChannel() {
-    const response = await backend.getRequest('/vdr/channels/current', {})
+    const response = await backend.getRequest('/vdr/channels/current')
     if (response) {
       console.log("current channel is", response.data)
       currentChannel.value = response.data[0]
