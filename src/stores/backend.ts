@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import axios, { type AxiosResponse } from "axios";
+import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { computed, ref, type Ref } from "vue";
 import { until, useLocalStorage } from "@vueuse/core";
 import router from "@/router";
@@ -224,8 +224,8 @@ export const useBackendStore = defineStore("backend", () => {
   async function postRequestWithStreamingResponse(
     url: string,
     payload: unknown,
-    // onData: (chunk: unknown) => void,
-    // onEnd: (chunk: unknown) => void
+    _onData: (chunk: unknown) => void,
+    _onEnd: (chunk: unknown) => void
   ) {
     console.log("Streaming JSONL response:");
     let returnStatus = false;
@@ -373,7 +373,7 @@ export const useBackendStore = defineStore("backend", () => {
   async function uploadFileWithStreamingResponseTC(
     url: string,
     uploaded_file: File,
-    // onData: (chunk: unknown) => void // TODO: use this method to show progress im the client
+    _onData: (chunk: unknown) => void // TODO: use this method to show progress im the client
   ): Promise<boolean> {
     // TODO: why does this fail?
     let returnStatus = false;
@@ -441,7 +441,7 @@ export const useBackendStore = defineStore("backend", () => {
   }
 
   async function deleteRequest(url: string, payload: unknown) {
-    return axios_instance.delete(url, payload).then((response) => {
+    return axios_instance.delete(url, payload as AxiosRequestConfig<any>).then((response) => {
       return response;
     });
   }
