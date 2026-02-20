@@ -50,7 +50,7 @@
       <template #item="{ item }">
         <tr>
           <td>
-            <RecordingDetails :recording="item" />
+            <RecordingDetails :recording="item" @delete="reloadRecordings" />
           </td>
           <td>
             {{ getStartDate(item.Start) }}

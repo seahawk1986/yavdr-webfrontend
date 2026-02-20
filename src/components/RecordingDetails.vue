@@ -22,7 +22,7 @@
       >
         <template #prepend>
           <v-icon-btn
-            v-tooltip="t('action.close')"
+            v-tooltip="t('actions.close')"
             variant="elevated"
             color="red"
             icon="mdi-close"
