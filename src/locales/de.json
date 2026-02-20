@@ -1,0 +1,156 @@
+{
+  "actions": {
+    "reload": "neu laden",
+    "reloadSth": "{what} neu laden",
+    "loadingData": "Lade {what} ...",
+    "openNavbar": "Navigationsmenü",
+    "close": "Schließen",
+    "open": "öffnen",
+    "edit": "{what} bearbeiten",
+    "delete": "Löschen",
+    "delete_sth": "Lösche {what}",
+    "uploadSuccessful": "Upload erfolgreich",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saveChanges": "Änderungen übernehmen",
+    "commit": "Übernehmen",
+    "search": "Suchen",
+    "searchObj": "Suche {what}",
+    "download": "Herunterladen",
+    "downloadSth": "{what} downloaden",
+    "update": "Aktualisieren",
+    "updateSth": "{what} aktualisieren",
+    "upload": "Hochladen",
+    "uploadSth": "{what} hochladen",
+    "loadSth": "{what} laden",
+    "logout": "Abmelden",
+    "shutdown": "Herunterfahren",
+    "reset": "Zurücksetzen",
+    "downloadSyslog": "Syslog ab Boot herunterladen",
+    "rescanDisplays": "Bildschirme erkennen",
+    "apply": "Anwenden",
+    "install": "Installieren",
+    "show_details": "Zeige Details"
+  },
+  "audio": {
+    "audioOutput": "Audio Ausgabe",
+    "vdrAudioChannel": "VDR Audiokanal",
+    "sink": "Ausgang",
+    "profile": "Profil"
+  },
+  "channels": {
+    "channelNumberN": "Kanalnummer {number}",
+    "channelGroup": "Kanalgruppe",
+    "createGroup": "Neue Kanalgruppe",
+    "createNewChannelGroup": "Neue Kanalgruppe erstellen",
+    "editGroup": "Kanalgruppe \"{what}\" bearbeiten",
+    "group": "Gruppe",
+    "location": "Position",
+    "source": "Quelle",
+    "moveToPosition": "Kanal \"{name}\" an Position einfügen",
+    "changePosition": "Kanal \"{name}\" an neue Position verschieben",
+    "appendChannel": "\"{what}\" an Kanalliste des VDR anfügen",
+    "insertChannel": "in Kanalliste einfügen",
+    "moveChannel": "Kanal verschieben",
+    "channelNumber": "Kanalnummer",
+    "scrollToNewPosition": "An neue Position scrollen",
+    "reloadVDRChannels": "VDR Kanäle neu laden",
+    "deleteChannel": "Kanal \"{what}\" löschen",
+    "deleteChannelGroup": "Kanalgruppe \"{what}\" löschen",
+    "selection": "Kanal auswählen",
+    "switchto": "Zum Kanal \"{channel}\" umschalten"
+  },
+  "descriptions": {
+    "draghandle": "Anfasser, um den Kanal \"{name}\" auszuwählen oder per Drag and Drop zu bewegen",
+    "additionalActions": "Weitere Aktionen",
+    "channels_conf": "Kanalliste für den VDR",
+    "remote_conf": "Tastenzuordnung für den VDR. Bitte beachte, dass yaVDR ein vorgegebenes Namensschema nutzt!",
+    "keymacros_conf": "Makros für Fernbedienungstasten zuweisen",
+    "diseqc_conf": "DiSEqC Konfiguration",
+    "sources_conf": "Konfiguriere Satellitenpositionen",
+    "setup_conf": "VDR Einstellungen",
+    "menuorg_xml": "Menülayout für das menuorg Plugin",
+    "arguments_for": "Argumente für {what}",
+    "start_arguments": "Startargumente",
+    "details": "Details"
+  },
+  "errors": {
+    "loadingFailed": "Laden der {what} fehlgeschlagen"
+  },
+  "category": {
+    "displaySettings": "Anzeigeneinstellungen",
+    "audioSettings": "Audio",
+    "timer": "Timer",
+    "recording": "Aufnahme | Aufnahmen",
+    "setup": "Setup",
+    "channels": "Kanäle",
+    "epg": "EPG",
+    "entry": "Eintrag",
+    "editor": "{what} Editor",
+    "vdrArguments": "VDR Startargumente",
+    "installer": "Installer",
+    "configuration": "Konfiguration",
+    "installation": "Installation",
+    "playbook": "Playbook",
+    "mainDisplay": "Hauptbildschirm",
+    "secondaryDisplay": "Zweitbildschirm"
+  },
+  "info": {
+    "state": "Status",
+    "date": "Datum",
+    "duration": "Länge",
+    "title": "Titel",
+    "channel": "Kanal | Kanäle",
+    "priority": "Priorität",
+    "lifetime": "Lebensdauer"
+  },
+  "language": {
+    "selectLanguage": "Sprache auswählen"
+  },
+  "log": {
+    "autoscroll": "Automatisch zum neuesten Eintrag scrollen"
+  },
+  "systeminfo": {
+    "Core": "Kern",
+    "CPU": "CPU",
+    "Device": "Gerät | Geräte",
+    "DiskUsage": "Plattenbelegung",
+    "Fan": "Lüfter",
+    "Fans": "Lüfter",
+    "Memory": "Speicher",
+    "Module": "Modul",
+    "Mount": "Einhängepunkt | Einhängepunkte",
+    "RPM": "U/min",
+    "Sensor": "Sensor",
+    "SystemInfo": "System Info",
+    "Temperature": "Temperatur | Temperaturen",
+    "Type": "Typ",
+    "Usage": "Auslastung"
+  },
+  "recording": {
+    "isEdited": "geschnitten",
+    "isNew": "neu"
+  },
+  "remote": {
+    "hideRemote": "Fernbedienung ausblenden",
+    "showRemote": "Fernbedienung einblenden"
+  },
+  "timer": {
+    "status": {
+      "inactive": "deaktiviert",
+      "recording": "Aufnahme läuft",
+      "pending": "anstehend",
+      "unknown": "unbekannt"
+    },
+    "switch_active": "Aktiv",
+    "noTimers": "keine Timer",
+    "createTimer": "Timer für {entry} von {start} bis {end} anlegen",
+    "editTimer": "Timer for {entry} von {start} bis {end} bearbeiten",
+    "title": "Titel",
+    "use_VPS": "Nutze VPS",
+    "day": "Tag",
+    "start_time": "Anfang",
+    "end_time": "Ende",
+    "repeat_on_weekdays": "Wiederholung an Wochentagen"
+  }
+}

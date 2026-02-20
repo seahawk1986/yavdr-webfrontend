@@ -6,8 +6,9 @@ import Layouts from 'vite-plugin-vue-layouts-next'
 import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
-// import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import browserslistToEsbuild from 'browserslist-to-esbuild'
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import path from 'path'
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -50,11 +51,12 @@ export default defineConfig({
         configFile: 'src/styles/settings.scss',
       },
     }),
-    // VueI18nPlugin({
-    //   /* options */
-    //   // locale messages resource pre-compile option
-    //   //include: resolve(dirname(fileURLToPath(import.meta.url)), './path/to/src/locales/**'),
-    // }),
+    VueI18nPlugin({
+      include: [path.resolve(__dirname, './src/locales/**')],
+      compositionOnly: true,
+      // Hilft beim Debugging von fehlenden Keys
+      runtimeOnly: false,
+    }),
     Fonts({
       fontsource: {
         families: [

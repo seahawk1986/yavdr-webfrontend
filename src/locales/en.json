@@ -1,0 +1,161 @@
+{
+  "actions": {
+    "cancel": "Cancel",
+    "close": "close",
+    "commit": "commit",
+    "delete": "delete",
+    "delete_sth": "delete {what}",
+    "download": "download",
+    "downloadSth": "download {what}",
+    "edit": "edit {what}",
+    "loadingData": "loading {what} ...",
+    "loadSth": "load {what}",
+    "logout": "logout",
+    "open": "öffnen",
+    "openNavbar": "toggle navigation menu",
+    "reload": "reload",
+    "reloadSth": "reload {what}",
+    "reset": "reset",
+    "save": "save",
+    "saveChanges": "save changes",
+    "search": "search",
+    "searchObj": "search {what}",
+    "shutdown": "Poweroff",
+    "update": "update",
+    "updateSth": "update {what}",
+    "upload": "upload",
+    "uploadLabel": "upload file",
+    "uploadSth": "upload {what}",
+    "uploadSuccessful": "Upload successful",
+    "downloadSyslog": "Download syslog for the current boot",
+    "rescanDisplays": "Rescan Displays",
+    "apply": "apply",
+    "install": "install",
+    "show_details": "Show details"
+  },
+  "audio": {
+    "audioOutput": "Audio Output",
+    "vdrAudioChannel": "VDR Audio Channel",
+    "sink": "Output",
+    "profile": "Profile"
+  },
+  "category": {
+    "SystemInfo": "System Info",
+    "displaySettings": "Display Settings",
+    "audioSettings": "Audio Settings",
+    "timer": "Timer | Timers",
+    "recording": "Recording | Recordings",
+    "setup": "Setup",
+    "channels": "Channels",
+    "epg": "EPG",
+    "entry": "Entry",
+    "editor": "{what} Editor",
+    "vdrArguments": "VDR Arguments",
+    "installer": "Installer",
+    "configuration": "Configuration",
+    "installation": "Installation",
+    "playbook": "Playbook"
+  },
+  "mainDisplay": "Main Display",
+  "secondaryDisplay": "Secondary Display",
+  "channels": {
+    "channelNumberN": "channel number {number}",
+    "channelGroup": "channel group",
+    "createGroup": "New channel group",
+    "createNewChannelGroup": "Create new channel group",
+    "editGroup": "Edit channel group \"{what}\"",
+    "group": "Group",
+    "location": "Location",
+    "source": "Source",
+    "changePosition": "move channel \"{name}\" to a new position",
+    "moveToPosition": "insert channel \"{name}\" on position",
+    "appendChannel": "append \"{what}\" to vdr channel list",
+    "insertChannel": "insert channel",
+    "moveChannel": "move channel",
+    "channelNumber": "channel number",
+    "scrollToNewPosition": "scroll to new position",
+    "reloadVDRChannels": "reload VDR channels",
+    "deleteChannel": "delete channel \"{what}\"",
+    "deleteChannelGroup": "delete channel group \"{what}\"",
+    "selection": "choose a channel",
+    "switchto": "switch to channel \"{channel}\""
+  },
+  "errors": {
+    "loadingFailed": "loading {what} failed"
+  },
+  "descriptions": {
+    "draghandle": "handle to drag and drop the channel {name}",
+    "additionalActions": "additional actions",
+    "channels_conf": "Channel entries for VDR",
+    "remote_conf": "Remote control entries for VDR. Be aware that yaVDR uses a special naming scheme.",
+    "keymacros_conf": "Map remote control button presses to VDR actions",
+    "diseqc_conf": "Advanced LNB configuration",
+    "sources_conf": "Map satellite positions",
+    "setup_conf": "VDR settings",
+    "menuorg_xml": "menuorg configuration",
+    "arguments_for": "Arguments for {what}",
+    "start_arguments": "Start arguments",
+    "details": "Details"
+  },
+  "info": {
+    "state": "state",
+    "date": "date",
+    "duration": "duration",
+    "title": "title",
+    "channel": "channel",
+    "priority": "Priority",
+    "lifetime": "Lifetime"
+  },
+  "log": {
+    "autoscroll": "automatically scroll to newest log entry"
+  },
+  "language": {
+    "selectLanguage": "Select language"
+  },
+  "systeminfo": {
+    "Core": "Core",
+    "CPU": "CPU",
+    "Device": "Device | Devices",
+    "DiskUsage": "Disk Usage",
+    "Fan": "Fan",
+    "Fans": "Fans",
+    "Memory": "Memory",
+    "Module": "Module",
+    "Mount": "Mountpoint | Mountpoints",
+    "RPM": "RPM",
+    "Sensor": "Sensor",
+    "SystemInfo": "System Info",
+    "Temperature": "Temperature | Temperatures",
+    "Type": "Type",
+    "Usage": "Usage"
+  },
+  "recording": {
+    "isEdited": "edited",
+    "isNew": "new"
+  },
+  "remote": {
+    "hideRemote": "hide remote control",
+    "showRemote": "show remote control"
+  },
+  "timer": {
+    "status": {
+      "inactive": "disabled",
+      "active": "active",
+      "switch_on": "Enable timer",
+      "switch_of": "Disable timer",
+      "recording": "recording",
+      "pending": "pending",
+      "unknown": "unknown"
+    },
+    "switch_active": "Enable",
+    "createTimer": "create timer for {entry} from {start} to {end}",
+    "editTimer": "edit timer for {entry} from {start} to {end}",
+    "noTimers": "no timers",
+    "title": "Title",
+    "use_VPS": "Use VPS",
+    "day": "Day",
+    "start_time": "Beginning",
+    "end_time": "End",
+    "repeat_on_weekdays": "Repeat on weekdays"
+  }
+}
