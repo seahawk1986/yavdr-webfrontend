@@ -11,9 +11,9 @@ export const Trans = {
   },
 
   get supportedLocales() {
-    console.log(import.meta.env)
+    console.log("environment variables:", import.meta.env)
     const locales: string[] = import.meta.env.VITE_SUPPORTED_LOCALES.split(",")
-    console.log(locales)
+    console.log("supported locales:", locales)
     return locales
   },
 

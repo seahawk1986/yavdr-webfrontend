@@ -17,6 +17,7 @@
     "@mdi/font": "7.4.47",
     "@nuxt/kit": "^3.17.4",
     "@vueuse/core": "^13.9.0",
+    "ansi-to-html": "^0.7.2",
     "axios": "^1.9.0",
     "axios-retry": "^4.5.0",
     "event-source-plus": "^0.1.8",

@@ -224,8 +224,8 @@ export const useBackendStore = defineStore("backend", () => {
   async function postRequestWithStreamingResponse(
     url: string,
     payload: unknown,
-    _onData: (chunk: unknown) => void,
-    _onEnd: (chunk: unknown) => void
+    onData: (chunk: unknown) => void,
+    onEnd: (chunk: unknown) => void
   ) {
     console.log("Streaming JSONL response:");
     let returnStatus = false;
@@ -264,6 +264,7 @@ export const useBackendStore = defineStore("backend", () => {
             try {
               const jsonData = JSON.parse(clean_line);
               console.log("Received JSON:", jsonData);
+              onData(jsonData)
               if (
                 jsonData.status &&
                 (jsonData.status.status === "successful" ||
@@ -271,6 +272,7 @@ export const useBackendStore = defineStore("backend", () => {
               ) {
                 // this is the playbook result
                 returnStatus = true;
+                onEnd(jsonData)
                 // await reader.cancel()
               }
             } catch (error) {

@@ -54,7 +54,9 @@
     "installer": "Installer",
     "configuration": "Configuration",
     "installation": "Installation",
-    "playbook": "Playbook"
+    "playbook": "Playbook",
+    "mainDisplay": "Main Display",
+    "secondaryDisplay": "Secondary Display"
   },
   "mainDisplay": "Main Display",
   "secondaryDisplay": "Secondary Display",

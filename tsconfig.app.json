@@ -25,6 +25,8 @@
       // other types...
       "unplugin-vue-router/client",
       "vite-plugin-vue-layouts-next/client",
+      "vite/client",
+      "vuetify"
     ],
     "lib": [
       "ESNext",
