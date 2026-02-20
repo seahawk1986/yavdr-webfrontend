@@ -1,8 +1,47 @@
 <template>
+  <div>
+  <v-dialog v-model="showLogDialog" modal max-width="900" scrollable persistent>
+    <v-card color="grey-darken-4">
+      <v-card-title class="text-white d-flex align-center">
+        Display Rescan läuft...
+        <v-progress-circular v-if="isLookingForDisplays" indeterminate size="20" class="ml-4" />
+      </v-card-title>
+
+      <v-card-text
+        ref="logContainer"
+        style="height: 450px; font-family: monospace; background: #000; color: white;"
+        @scroll.passive="handleScroll"
+      >
+        <div v-for="(line, i) in playbookLogs" :key="i" v-html="line"></div>
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-actions>
+
+        <v-divider></v-divider>
+          <v-fade-transition>
+          <v-btn
+            v-if="!isAutoScrolling"
+            icon="mdi-arrow-down"
+            color="primary"
+            size="small"
+            elevation="4"
+            class="scroll-bottom-btn"
+            @click="scrollToBottomManual"
+          ></v-btn>
+        </v-fade-transition>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" :disabled="isLookingForDisplays||isSettingConfig" @click="showLogDialog = false">
+          Schließen
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <v-card
-    class="ma-2 pa-2 fill-height overflow-y-auto align-center"
-    :disabled="isLookingForDisplays"
-    :loading="isLookingForDisplays || isSettingConfig"
+  class="ma-2 pa-2 fill-height overflow-y-auto align-center"
+  :disabled="isLookingForDisplays"
+  :loading="isLookingForDisplays || isSettingConfig"
     prepend-icon="mdi-monitor-multiple"
     :title="t('category.displaySettings')"
   >
@@ -32,6 +71,7 @@
     <v-card-text>
       <v-container
         v-if="displayConfig && displayOutputs"
+        :disabled="isSettingConfig||isLookingForDisplays"
       >
         <v-row
           no-gutters
@@ -76,7 +116,6 @@
           </v-col>
 
           <v-col
-            v-if="secondaryDisplay"
             cols="12"
             sm="6"
           >
@@ -112,12 +151,19 @@
       </v-container>
     </v-card-text>
   </v-card>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
 import { useBackendStore } from "@/stores/backend";
 import { useI18n } from "vue-i18n";
+
+import AnsiConverter from 'ansi-to-html';
+import type { VCardText } from "vuetify/components";
+const convert = new AnsiConverter({ fg: '#FFF', bg: '#000', newline: true, escapeXML: true,  // Sicherheit gegen XSS (sehr wichtig bei v-html!)
+  stream: true  });
+
 const backend = useBackendStore();
 
 const {t} = useI18n()
@@ -184,6 +230,9 @@ const secondaryDisplayRefreshRate: Ref<number | undefined> = ref();
 
 const isLookingForDisplays: Ref<boolean> = ref(false);
 const isSettingConfig: Ref<boolean> = ref(false);
+
+const playbookLogs: Ref<string[]> = ref([]);
+const showLogDialog = ref(false);
 // const enableSecondaryDisplay: Ref<boolean> = ref(true);
 
 const updateDisplayConfig = async () => {
@@ -289,20 +338,73 @@ const secondaryDisplayRefreshrateOptions = computed(() => {
   }
 });
 
-async function scanDisplays() {
-  isLookingForDisplays.value = true;
-  const result = await backend.postRequestWithStreamingResponse(
-    "/system/playbook/rescan_displays",
-    null,
-    (data) => {
-      console.log(data);
-    },
-    (chunk) => console.log("finished playbook:", chunk)
-  );
-  console.log("got rescan displays result", result);
-  await updateDisplayConfig()
-  isLookingForDisplays.value = false;
+function processPlaybookOutput(data: AnsibleJobEventInterface)
+{
+  console.log(data);
+  console.log("Process data:", data, data.event?.stdout)
+  if (data.event?.stdout && data.event.stdout.length > 0) {
+    playbookLogs.value.push(convert.toHtml(data.event.stdout));
+  } else if (data.status?.status) {
+    playbookLogs.value.push(`<span class="text-info">Status: ${data.status.status}</span>`);
+  }
+
 }
+
+async function scanDisplays() {
+  playbookLogs.value = []
+  isLookingForDisplays.value = true;
+  showLogDialog.value = true
+  try {
+
+    const result = await backend.postRequestWithStreamingResponse(
+      "/system/playbook/rescan_displays",
+      null,
+      processPlaybookOutput,
+      (chunk) => console.log("finished playbook:", chunk)
+    );
+    console.log("got rescan displays result", result);
+  } catch {
+      playbookLogs.value.push(`<span class="text-error">Fehler: ${e.message}</span>`);
+  } finally {
+    await updateDisplayConfig()
+    isLookingForDisplays.value = false;
+    // showLogDialog.value = false;
+  }
+}
+
+const logContainer = ref<InstanceType<typeof VCardText> | null>(null);
+let isAutoScrolling = ref(true);
+
+const handleScroll = (event: Event) => {
+  const el = event.target as HTMLElement;
+  // Toleranz von 10px, um Rundungsfehler bei High-DPI Displays zu vermeiden
+  const buffer = 10;
+  // Wenn der Abstand zum Boden größer als der Puffer ist, hat der User hochgescrollt
+  isAutoScrolling.value = el.scrollHeight - el.scrollTop <= el.clientHeight + buffer;
+};
+
+const scrollToBottomManual = async () => {
+  isAutoScrolling.value = true;
+  await nextTick();
+  const el = logContainer.value?.$el as HTMLElement | undefined;
+  if (el) {
+    el.scrollTop = el.scrollHeight;
+  }
+};
+
+// auto scroll to latest line
+watch(playbookLogs, () => {
+  if (!isAutoScrolling.value) return;
+  nextTick(() => {
+    if (logContainer.value) {
+      // Zugriff auf das native DOM-Element (bei Vuetify Komponenten evtl. .$el nutzen)
+      const el = logContainer.value.$el as HTMLElement | undefined
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
+    }
+  });
+}, { deep: true });
 
 watch(primaryDisplay, async (newValue, oldValue) => {
   if (!newValue) return;
@@ -377,6 +479,9 @@ watch(secondaryDisplay, async (newValue, oldValue) => {
 });
 
 const setDisplayConfig = async () => {
+  playbookLogs.value = []
+  isSettingConfig.value = true;
+  showLogDialog.value = true;
   if (
     primaryDisplay.value &&
     primaryDisplayResolution.value &&
@@ -413,9 +518,19 @@ const setDisplayConfig = async () => {
     })();
     console.log("newXorgConfig:", newXorgConfig);
     // TODO: make the backend call
-    const success = await backend.postRequestWithStreamingResponse('/system/xorg_config', newXorgConfig, (chunk) => {console.log("got chunk response:", chunk)}, () => {console.log("Setting xorg conf request finished")})
-    console.log("success:", success)
-    isSettingConfig.value = false;
+    try {
+      const success = await backend.postRequestWithStreamingResponse('/system/xorg_config', newXorgConfig,
+        processPlaybookOutput,
+        (chunk) => console.log("finished playbook:", chunk)
+      );
+      console.log("got rescan displays result", success);
+    } catch(e) {
+        playbookLogs.value.push(`<span class="text-error">Fehler: ${e.message}</span>`);
+    } finally {
+      await updateDisplayConfig()
+      isSettingConfig.value = false;
+      // showLogDialog.value = false;
+    }
   }
-};
+}
 </script>
