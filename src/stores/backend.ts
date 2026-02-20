@@ -28,7 +28,7 @@ export const useBackendStore = defineStore("backend", () => {
   const hasToken = computed(() => jwToken.value !== null && jwToken.value.length > 0);
   const requiresLogin = computed(() => jwToken.value === null || jwToken.value.length === 0)
   // const refreshToken: Ref<string> = ref('')
-  const showNavigation: Ref<boolean> = ref(false);
+  const showNavigation: Ref<boolean | null> = ref(null);
   const showRemote: Ref<boolean> = ref(false);
   const showLanguageOverlay: Ref<boolean> = ref(false);
 
@@ -196,6 +196,15 @@ export const useBackendStore = defineStore("backend", () => {
   //   return final_result;
   // }
 
+  interface AnsibleJobEventInterface {
+    event?: {
+      stdout: string
+    },
+    status?: {
+      status: string
+    }
+  }
+
   async function getRequest(url: string): Promise<AxiosResponse | undefined> {
     let final_result = null;
     do {
@@ -224,8 +233,8 @@ export const useBackendStore = defineStore("backend", () => {
   async function postRequestWithStreamingResponse(
     url: string,
     payload: unknown,
-    onData: (chunk: unknown) => void,
-    onEnd: (chunk: unknown) => void
+    onData: (chunk: AnsibleJobEventInterface) => void,
+    onEnd: (chunk: AnsibleJobEventInterface) => void
   ) {
     console.log("Streaming JSONL response:");
     let returnStatus = false;

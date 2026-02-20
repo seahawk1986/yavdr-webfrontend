@@ -4,17 +4,17 @@
     v-model:model-value="store.showNavigation"
     app
   >
-    <v-list>
+    <v-list @click="() => {if (mobile) store.showNavigation = false}">
       <v-list-item
         prepend-icon="mdi-home"
         to="/"
         title="Home"
       />
-      <v-list-item
+      <!-- <v-list-item
         prepend-icon="mdi-view-dashboard"
         to="/dashboard"
         :title="t('systeminfo.SystemInfo')"
-      />
+      /> -->
       <!-- <v-list-item
         prepend-icon="mdi-cog"
         to="/system/settings"
@@ -38,16 +38,16 @@
         to="/system/AudioSettings"
         :title="t('category.audioSettings')"
       />
-      <v-list-item
+      <!-- <v-list-item
         prepend-icon="mdi-link-box"
         link
         title="Avahi-Linker"
-      />
-      <v-list-item
+      /> -->
+      <!-- <v-list-item
         prepend-icon="mdi-power"
         link
         title="Power Settings"
-      />
+      /> -->
       <v-divider />
       <v-divider />
       <!-- <v-list-item
@@ -75,26 +75,26 @@
         to="/vdr/SetupEditor"
         title="Setup"
       />
-      <v-list-item
+      <!-- <v-list-item
         prepend-icon="mdi-toy-brick"
         to="/vdr/PluginSettings"
         title="Plugins"
-      />
-      <v-list-item
+      /> -->
+      <!-- <v-list-item
         prepend-icon="mdi-toy-brick"
         to="/vdr/VDRStartArguments"
         title="Start Arguments"
-      />
+      /> -->
       <v-list-item
         prepend-icon="mdi-list-box-outline"
         to="/System/LogViewer"
         title="Syslog"
       />
-      <v-list-item
+      <!-- <v-list-item
         prepend-icon="mdi-upload"
         to="/System/UploadFile"
         title="Upload file"
-      />
+      /> -->
       <!-- <v-list-item
         prepend-icon="mdi-video-input-component"
         to="/system/yavdr-frontend"
@@ -106,8 +106,10 @@
 
 <script lang="ts" setup>
   import { useBackendStore } from "@/stores/backend"
+  import { useDisplay } from "vuetify"
   import { useI18n } from "vue-i18n"
   const { t } = useI18n()
+  const { mobile } = useDisplay()
   const store = useBackendStore()
 
 </script>
