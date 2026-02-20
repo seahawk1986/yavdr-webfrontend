@@ -6,6 +6,7 @@ import router from "@/router";
 import { EventSourceController, EventSourcePlus } from "event-source-plus";
 import type { SystemStatusInterface } from "./interfaces/SystemStatusInterface";
 import { downloadBlob } from "@/services/download";
+import type { AnsibleJobEventInterface } from "./interfaces/AnsibleInterface";
 
 
 interface OptionInterface {
@@ -195,15 +196,6 @@ export const useBackendStore = defineStore("backend", () => {
   //   } while (final_result === null);
   //   return final_result;
   // }
-
-  interface AnsibleJobEventInterface {
-    event?: {
-      stdout: string
-    },
-    status?: {
-      status: string
-    }
-  }
 
   async function getRequest(url: string): Promise<AxiosResponse | undefined> {
     let final_result = null;

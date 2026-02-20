@@ -161,6 +161,7 @@ import { useI18n } from "vue-i18n";
 
 import AnsiConverter from 'ansi-to-html';
 import type { VCardText } from "vuetify/components";
+import type { AnsibleJobEventInterface } from "@/stores/interfaces/AnsibleInterface";
 const convert = new AnsiConverter({ fg: '#FFF', bg: '#000', newline: true, escapeXML: true,  // Sicherheit gegen XSS (sehr wichtig bei v-html!)
   stream: true  });
 
@@ -363,8 +364,9 @@ async function scanDisplays() {
       (chunk) => console.log("finished playbook:", chunk)
     );
     console.log("got rescan displays result", result);
-  } catch {
-      playbookLogs.value.push(`<span class="text-error">Fehler: ${e.message}</span>`);
+  } catch(e) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      playbookLogs.value.push(`<span class="text-error">Fehler: ${errorMessage}</span>`);
   } finally {
     await updateDisplayConfig()
     isLookingForDisplays.value = false;
@@ -525,7 +527,8 @@ const setDisplayConfig = async () => {
       );
       console.log("got rescan displays result", success);
     } catch(e) {
-        playbookLogs.value.push(`<span class="text-error">Fehler: ${e.message}</span>`);
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      playbookLogs.value.push(`<span class="text-error">Fehler: ${errorMessage}</span>`);
     } finally {
       await updateDisplayConfig()
       isSettingConfig.value = false;
