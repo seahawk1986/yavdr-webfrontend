@@ -49,7 +49,7 @@
         title="Power Settings"
       /> -->
       <v-list-item
-        prepend-icon="mdi-speaker"
+        prepend-icon="mdi-update"
         to="/system/Updates"
         :title="t('category.updates')"
       />
