@@ -47,45 +47,35 @@ const debianLoadingState: Ref<boolean> = ref(false)
 const snapLoadingState: Ref<boolean> = ref(false)
 const flatpakLoadingState: Ref<boolean> = ref(false)
 
-const sleep = async (ms: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// const sleep = async (ms: number): Promise<void> => {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
 
 async function updateAll() {
-  allLoadingState.value = true
-  await sleep(500)
-  try {
-    const success = await backend.postRequest('/system/update/all', {})
-    console.log("update result", success)
-  } catch (error) {
-    console.log(error)
-  } finally {
-    allLoadingState.value = false
-  }
-
+  await update("all", allLoadingState)
 }
-async function updateDebian() {
-  debianLoadingState.value = true
-  await sleep(5000)
-  const success = await backend.postRequest('/system/update/debian', {})
-  console.log("update result", success)
 
-  debianLoadingState.value = false
+async function updateDebian() {
+  await update("debian", debianLoadingState)
 }
 async function updateSnaps() {
-  snapLoadingState.value = true
-  await sleep(5000)
-  const success = await backend.postRequest('/system/update/snap', {})
-  console.log("update result", success.data)
-
-  snapLoadingState.value = false
+  await update("snap", snapLoadingState)
 }
 async function updateFlatpak() {
-  flatpakLoadingState.value = true
-  await sleep(5000)
-  const success = await backend.postRequest('/system/update/flatpak', {})
-  console.log("update result", success)
+  await update("flatpak", flatpakLoadingState)
+}
 
-  flatpakLoadingState.value = false
+async function update(what: string, stateHandler: Ref<boolean>) {
+  stateHandler.value = true
+  try {
+    const success = await backend.postRequest(`/system/update/${what}`, {})
+    console.log("update result:", success.data)
+
+  } catch(error) {
+    console.log(`Updating ${what} failed: ${error}`)
+  } finally {
+    stateHandler.value = false
+  }
+
 }
 </script>
