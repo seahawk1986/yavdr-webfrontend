@@ -220,7 +220,7 @@ function getIconBySouce(source: string): string {
   } else if (source === "DVB-T") {
     return "mdi-antenna"
   }
-  return "mdi-questionmark"
+  return "mdi-help-rhombus"
 }
 
 const getLocationTitle = (title: string) => {

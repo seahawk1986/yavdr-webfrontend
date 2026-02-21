@@ -94,7 +94,11 @@
     "playbook": "Playbook",
     "mainDisplay": "Hauptbildschirm",
     "secondaryDisplay": "Zweitbildschirm",
-    "updates": "Aktualisierungen"
+    "updates": "Aktualisierungen",
+    "flatpak_packages": "Flatpak-Pakete",
+    "snap packages": "Snap-Pakete",
+    "debian_packages": "Debian-Pakete",
+    "all": "Alle Pakete"
   },
   "info": {
     "state": "Status",

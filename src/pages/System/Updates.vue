@@ -8,28 +8,28 @@
         <v-btn
           variant="elevated"
           class="ma-2"
-          text="All"
+          text="t('category.all')"
           :loading="allLoadingState"
           @click="updateAll"
         />
         <v-btn
           variant="elevated"
           class="ma-2"
-          text="Debian Packages"
+          text="t('category.debian_packages')"
           :loading="debianLoadingState"
           @click="updateDebian"
         />
         <v-btn
           variant="elevated"
           class="ma-2"
-          text="Snap Packages"
+          text="t('category.snap packages')"
           :loading="snapLoadingState"
           @click="updateSnaps"
         />
         <v-btn
           variant="elevated"
           class="ma-2"
-          text="Flatpak Packages"
+          :text="t('category.flatpak_packages')"
           :loading="flatpakLoadingState"
           @click="updateFlatpak"
         />
@@ -40,6 +40,9 @@
 
 <script setup lang="ts">
 import { useBackendStore } from '@/stores/backend'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+
 const backend = useBackendStore()
 
 const allLoadingState: Ref<boolean> = ref(false)

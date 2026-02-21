@@ -57,7 +57,11 @@
     "playbook": "Playbook",
     "mainDisplay": "Main Display",
     "secondaryDisplay": "Secondary Display",
-    "updates": "Updates"
+    "updates": "Updates",
+    "flatpak_packages": "Flatpak Packages",
+    "snap packages": "Snap Packages",
+    "debian_packages": "Debian Packages",
+    "all": "All Packages"
   },
   "mainDisplay": "Main Display",
   "secondaryDisplay": "Secondary Display",
