@@ -93,7 +93,8 @@
     "installation": "Installation",
     "playbook": "Playbook",
     "mainDisplay": "Hauptbildschirm",
-    "secondaryDisplay": "Zweitbildschirm"
+    "secondaryDisplay": "Zweitbildschirm",
+    "updates": "Aktualisierungen"
   },
   "info": {
     "state": "Status",

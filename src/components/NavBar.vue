@@ -48,6 +48,11 @@
         link
         title="Power Settings"
       /> -->
+      <v-list-item
+        prepend-icon="mdi-speaker"
+        to="/system/Updates"
+        :title="t('category.updates')"
+      />
       <v-divider />
       <v-divider />
       <!-- <v-list-item
