@@ -67,6 +67,17 @@ export default defineConfig({
           },
         ],
       },
+      custom: {
+        families: [
+          {
+            name: 'Material Design Icons',
+            local: 'Material Design Icons',
+            src: './node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2',
+          },
+        ],
+        display: 'auto',
+        preload: true,
+      },
     }),
   ],
   define: { 'process.env': {} },
