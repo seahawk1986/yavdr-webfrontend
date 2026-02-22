@@ -3,7 +3,7 @@
   <v-dialog v-model="showLogDialog" modal max-width="900" scrollable persistent>
     <v-card color="grey-darken-4">
       <v-card-title class="text-white d-flex align-center">
-        Display Rescan läuft...
+        {{ PlaybookAction }}
         <v-progress-circular v-if="isLookingForDisplays" indeterminate size="20" class="ml-4" />
       </v-card-title>
 
@@ -234,6 +234,7 @@ const isSettingConfig: Ref<boolean> = ref(false);
 
 const playbookLogs: Ref<string[]> = ref([]);
 const showLogDialog = ref(false);
+const PlaybookAction = ref("")
 // const enableSecondaryDisplay: Ref<boolean> = ref(true);
 
 const updateDisplayConfig = async () => {
@@ -352,6 +353,8 @@ function processPlaybookOutput(data: AnsibleJobEventInterface)
 }
 
 async function scanDisplays() {
+  PlaybookAction.value = t('actions.scan_displays')
+
   playbookLogs.value = []
   isLookingForDisplays.value = true;
   showLogDialog.value = true
@@ -484,6 +487,7 @@ const setDisplayConfig = async () => {
   playbookLogs.value = []
   isSettingConfig.value = true;
   showLogDialog.value = true;
+  PlaybookAction.value = t('actions.write_display_config')
   if (
     primaryDisplay.value &&
     primaryDisplayResolution.value &&

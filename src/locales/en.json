@@ -31,7 +31,9 @@
     "rescanDisplays": "Rescan Displays",
     "apply": "apply",
     "install": "install",
-    "show_details": "Show details"
+    "show_details": "Show details",
+    "write_display_config": "Write Display Configuration",
+    "scan_displays": "Rescan Displays"
   },
   "audio": {
     "audioOutput": "Audio Output",

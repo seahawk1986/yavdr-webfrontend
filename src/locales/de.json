@@ -30,7 +30,9 @@
     "rescanDisplays": "Bildschirme erkennen",
     "apply": "Anwenden",
     "install": "Installieren",
-    "show_details": "Zeige Details"
+    "show_details": "Zeige Details",
+    "write_display_config": "Schreibe Displaykonfiguration ...",
+    "scan_displays": "Suche nach Bildschirmen"
   },
   "audio": {
     "audioOutput": "Audio Ausgabe",

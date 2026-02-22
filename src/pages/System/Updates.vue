@@ -8,21 +8,21 @@
         <v-btn
           variant="elevated"
           class="ma-2"
-          text="t('category.all')"
+          :text="t('category.all')"
           :loading="allLoadingState"
           @click="updateAll"
         />
         <v-btn
           variant="elevated"
           class="ma-2"
-          text="t('category.debian_packages')"
+          :text="t('category.debian_packages')"
           :loading="debianLoadingState"
           @click="updateDebian"
         />
         <v-btn
           variant="elevated"
           class="ma-2"
-          text="t('category.snap packages')"
+          :text="t('category.snap packages')"
           :loading="snapLoadingState"
           @click="updateSnaps"
         />
