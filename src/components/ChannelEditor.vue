@@ -508,8 +508,7 @@ async function saveChanges() {
   const blob = new Blob([newChannelsConfData.join('\n')], { type: "text/plain" });
   const file = new File([blob], 'channels.conf');
   const r = await backend.uploadFileWithStreamingResponseTC(
-    `${encodeURI('vdr/configfile/channels.conf')}`,
-    file, (data) => {console.log(data)},
+    'vdr/configfile', {filename: 'channels.conf', uploaded_file: file}, (data) => {console.log(data)},
   );
   console.log("file upload:", r);
   if (r) {
