@@ -7,6 +7,7 @@ import { EventSourceController, EventSourcePlus } from "event-source-plus";
 import type { SystemStatusInterface } from "./interfaces/SystemStatusInterface";
 import { downloadBlob } from "@/services/download";
 import type { AnsibleJobEventInterface } from "./interfaces/AnsibleInterface";
+import type { ConfigFileUploadData } from "./interfaces/configFileInterface";
 
 
 interface OptionInterface {
@@ -371,11 +372,6 @@ export const useBackendStore = defineStore("backend", () => {
       .catch((error) => {
         console.error(error); // Handle upload errors
       });
-  }
-
-  interface ConfigFileUploadData {
-    filename: string
-    uploaded_file: File
   }
 
   async function uploadFileWithStreamingResponseTC(
