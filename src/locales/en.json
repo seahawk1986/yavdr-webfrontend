@@ -63,7 +63,9 @@
     "flatpak_packages": "Flatpak Packages",
     "snap packages": "Snap Packages",
     "debian_packages": "Debian Packages",
-    "all": "All Packages"
+    "all": "All Packages",
+    "setupEntries": "setup entries",
+    "setupValueFor": "setup entry for {what}"
   },
   "mainDisplay": "Main Display",
   "secondaryDisplay": "Secondary Display",

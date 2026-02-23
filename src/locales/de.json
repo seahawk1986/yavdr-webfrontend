@@ -102,7 +102,9 @@
     "flatpak_packages": "Flatpak-Pakete",
     "snap packages": "Snap-Pakete",
     "debian_packages": "Debian-Pakete",
-    "all": "Alle Pakete"
+    "all": "Alle Pakete",
+    "setupEntries": "Setup Einträge",
+    "setupValueFor": "Setup Eintrag für {what}"
   },
   "info": {
     "state": "Status",

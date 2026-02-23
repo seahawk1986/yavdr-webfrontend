@@ -16,6 +16,13 @@
             VDR Setup
           </h2>
           <v-btn
+            :tooltip="t('actions.reload')"
+            color="primary"
+            :text="t('actions.reload')"
+            prepend-icon="mdi-reload"
+            @click="loadVDRSetup"
+          />
+          <v-btn
             color="primary"
             prepend-icon="mdi-download"
             @click="offerSetupConf"
@@ -27,173 +34,145 @@
 
 
       <v-card-text
-        class="flex-grow-1"
         style="position: relative; min-height: 0;"
       >
-        <!-- {{ vdrSetupEntries}} -->
-        <div
-          class="d-flex flex-column"
-          style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 16px;"
-        >
-          <v-text-field
-            id="searchbar"
-            v-model="searchText"
-            class="flex-none mb-2"
-            prepend-inner-icon="mdi-magnify"
-            :label="t('actions.searchObj', {what: t('category.entry')})"
-            :aria-label="t('actions.searchObj', {what: t('category.entry')})"
-            variant="outlined"
-            clearable
-            hide-details
-            single-line
-          />
-          <v-data-table-virtual
-            :headers="[
-              {title: 'Name', key: 'name', value: 'name', align: 'start', width:'20vW'},
-              {title: 'Setting', key: 'setting', value: 'value', sortable: false, width:'60vW'},
-              {title: 'Action', key: 'action', sortable: false, width: '20vW'},
-              // {title: 'MinValue', value:'min_value'},
-              // {title: 'MaxValue', value:'max_value'},
-            ]"
-            :items="vdrSetupEntries"
-            :item-height="70"
-            :loading="isLoading"
-            :filter-keys="['name']"
-            :search="searchText"
-            :custom-filter="(text, searchTerm) => {
-              return text?.toLowerCase().includes(searchTerm.toLowerCase())
-            }"
-            height="900"
-            width="50vw"
-            fixed-header
-            item-key="name"
-            item-value="name"
-            class="flex-grow-1"
-          >
-            <template #item="{ item, itemRef }">
-              <tr
-                :ref="itemRef"
-                class="text-no-wrap"
-                style="height:65;"
-              >
-                <td>
-                  <v-icon-btn
-                    icon="mdi-reload"
-                    color="secondary"
-                    size="small"
-                    class="ml-2"
-                    :aria-label="t('actions.updateSth', {what: t('category.entry') + ' ' + item.name})"
-                    @click="reloadValue(item.name)"
-                  />
-                  <v-divider
-                    thickness="10"
-                    vertical
-                  />
-                  {{ item.name }}
-                </td>
-                <td>
-                  <!-- boolean value -->
-                  <v-switch
-                    v-if="item.min_value == 0 && item.max_value == 1"
-                    v-model="item.value"
-                    color="primary"
-                    density="compact"
-                    :inline="true"
-                    :true-value="1"
-                    :false-value="0"
-                    :aria-label="item.name"
-                    inset
-                    hide-details="auto"
-                    :center-affix="true"
-                  />
-                  <!-- most likely a string value with a given maximum length-->
-                  <v-text-field
-                    v-else-if="(item.min_value == null) && (item.max_value !==null)"
-                    v-model="item.value"
-                    :aria-label="item.name"
-                    variant="outlined"
-                    density="compact"
-                    :rules="[
-                      ((value: string) => {
-                        if (item.max_value && item.max_value > 0) {
-                          if (value.length > item.max_value) return `Value longer than ${item.max_value}`
-                        }
-                        return false
-                      }),
-                    ]"
-                  />
-                  <v-number-input
-                    v-else-if="
-                      !(item.max_value == null)
-                        &&
-                        !(item.min_value == null)"
-                    :model-value="Number(item.value)"
-                    :hide-spin-buttons="mobile"
-                    :min="0"
-                    :max="9007199254740991"
-                    variant="outlined"
-                    hide-details
-                    density="compact"
-                    :aria-label="item.name"
-                  />
-                  <v-number-input
-                    v-else-if="(item.min_value !== null) && (item.max_value !== null)"
-                    :model-value="Number(item.value)"
-                    :min="item.min_value"
-                    :max="item.max_value"
-                    variant="outlined"
-                    hide-details
-                    density="compact"
-                  />
-                </td>
-                <td>
-                  <!-- <v-btn
-                icon="mdi-reload"
-                color="secondary"
-                size="small"
-                class="ml-2"
-                @click="reloadValue(item.name)"
-              /> -->
 
-                  <v-icon-btn
-                    color="primary"
-                    icon="mdi-floppy"
-                    size="small"
-                    @click="sendValue(item.name, item.value)"
-                  />
-                  <!-- <v-col
-                cols="4"
-                md="6"
-                lg="2"
-                class="md-3 mt-2 mb-2"
-                align="start"
-                justify="bottom"
-              >
-              </v-col> -->
-                </td>
-                <!-- <td>{{ item.min_value }}</td>
-            <td>{{ item.max_value }}</td> -->
-              </tr>
+      <v-text-field
+        v-model="searchText"
+        prepend-inner-icon="mdi-magnify"
+        :aria-label="t('actions.searchObj', {what: t('category.entry')})"
+        :label="`${t('actions.searchObj', {what: t('category.setupEntries')})} ...`"
+        variant="outlined"
+        hide-details
+        single-line
+        clearable
+      />
+
+      <v-virtual-scroll
+        :items="filteredEntries"
+        height="95%"
+        item-height="64"
+        class="border rounded"
+      >
+        <template #default="{ item }">
+          <v-list-item
+            :title="item.name"
+            :subtitle="`Aktueller Wert: ${item.value}`"
+            @click="openEdit(item)"
+          >
+            <template #append>
+              <v-btn icon="mdi-pencil" variant="text" size="small" />
             </template>
-          </v-data-table-virtual>
-        </div>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
+
+      <!-- Zentraler Bearbeitungs-Dialog -->
+      <v-dialog v-model="showEditDialog" max-width="500">
+        <v-card v-if="selectedItem">
+          <v-card-title>{{ t('actions.edit', {what: t('category.setupValueFor', {what: `'${selectedItem.name}'`})}) }}</v-card-title>
+          <v-card-text>
+            <!-- Hier deine Widget-Logik (Switch, Number, Text) basierend auf selectedItem -->
+            <v-switch
+                v-if="selectedItem.min_value == 0 && selectedItem.max_value == 1"
+                v-model="selectedItem.value"
+                color="primary"
+                :inline="true"
+                :true-value="1"
+                :false-value="0"
+                :aria-label="selectedItem.name"
+                :label="selectedItem.name"
+                inset
+                hide-details="auto"
+                :center-affix="true"
+            />
+            <v-text-field
+              v-else-if="((selectedItem !== null) && selectedItem.min_value == null) && (selectedItem.max_value !==null)"
+              v-model="selectedItem.value"
+              class="w-100"
+              :aria-label="selectedItem.name"
+              variant="outlined"
+              density="compact"
+              :rules="[
+                ((value: string) => {
+                  if (selectedItem?.max_value && selectedItem?.max_value > 0) {
+                    if (value.length > selectedItem?.max_value) return `Value longer than ${selectedItem?.max_value}`
+                  }
+                  return false
+                }),
+              ]"
+            />
+            <v-number-input
+              v-else-if="selectedItem.min_value !== null && selectedItem.max_value !== null && (typeof selectedItem.value === 'number')"
+              v-model="selectedItem.value"
+              :min="selectedItem.min_value"
+              :max="selectedItem.max_value"
+              variant="outlined"
+            />
+
+            <v-number-input
+              v-else-if="
+                !(selectedItem.max_value == null)
+                  &&
+                  !(selectedItem.min_value == null)"
+              class="w-100"
+              :model-value="Number(selectedItem.value)"
+              :min="0"
+              :max="9007199254740991"
+              variant="outlined"
+              hide-details
+              :aria-label="selectedItem.name"
+            />
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn text="Abbrechen" @click="showEditDialog = false" />
+            <v-btn color="primary" text="Speichern" @click="saveValue" />
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
       </v-card-text>
     </v-card>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useDisplay } from 'vuetify'
 import { useBackendStore } from '@/stores/backend';
 import { useI18n } from 'vue-i18n';
 import { downloadBlob } from '@/services/download';
 
-const { mobile } = useDisplay()
 const { t } = useI18n();
 const store = useBackendStore()
 
 const isLoading: Ref<boolean> = ref(false)
-const searchText: Ref<string> = ref("")
+const searchText = ref("")
+const selectedItem = ref<VDRSetupInterface | null>(null)
+const showEditDialog = ref(false)
+
+// Filtert die Einträge basierend auf der Suche
+const filteredEntries = computed(() => {
+  if (!searchText.value) return vdrSetupEntries.value
+  const term = searchText.value.toLowerCase()
+  return vdrSetupEntries.value.filter(entry =>
+    entry.name.toLowerCase().includes(term)
+  )
+})
+
+// Öffnet den Dialog für einen spezifischen Eintrag
+function openEdit(item: VDRSetupInterface) {
+  selectedItem.value = { ...item } // Kopie erstellen, um Original erst bei Save zu ändern
+  showEditDialog.value = true
+}
+
+async function saveValue() {
+  if (selectedItem.value) {
+    await sendValue(selectedItem.value.name, selectedItem.value.value)
+    showEditDialog.value = false
+    loadVDRSetup() // Liste neu laden
+  }
+}
 
 interface VDRSetupInterface {
   name: string
@@ -218,21 +197,21 @@ async function loadVDRSetup() {
 
 }
 
-async function reloadValue(name: string) {
-  try {
-    const response = await store.getRequest(`/vdr/setup?key=${encodeURIComponent(name)}`)
-    if (response?.data) {
-      const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
-      vdrSetupEntries.value[idx].value = response.data
-      // const idx2 = visibleEntries.value.findIndex((element) => element.name === name)
-      // visibleEntries.value[idx2].value = value
-      console.log("updated value for: ", name, ': ', response.data, 'at index', idx)
-      // console.log("updated value for: ", name, ': ', value, 'at index', idx2)
-    }
-  } catch(error) {
-    console.error(error)
-  }
-}
+// async function reloadValue(name: string) {
+//   try {
+//     const response = await store.getRequest(`/vdr/setup?key=${encodeURIComponent(name)}`)
+//     if (response?.data) {
+//       const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
+//       vdrSetupEntries.value[idx].value = response.data
+//       // const idx2 = visibleEntries.value.findIndex((element) => element.name === name)
+//       // visibleEntries.value[idx2].value = value
+//       console.log("updated value for: ", name, ': ', response.data, 'at index', idx)
+//       // console.log("updated value for: ", name, ': ', value, 'at index', idx2)
+//     }
+//   } catch(error) {
+//     console.error(error)
+//   }
+// }
 
 async function sendValue(name: string, value: string|number) {
   const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
@@ -262,77 +241,3 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="css" scoped>
-
-/* 1. Erzwinge die Höhe für die Tabellen-Zellen */
-:deep(.v-data-table-virtual tr),
-:deep(.v-data-table-virtual td) {
-  height: 64px !important;
-  max-height: 64px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-/* 2. Neutralisiere die Vuetify-Inputs innerhalb der Tabelle */
-:deep(.v-table__wrapper .v-input) {
-  margin: 0 !important;
-  padding: 0 !important;
-  /* Verhindert, dass die Inputs die Zelle aufblähen */
-  height: 40px;
-  display: flex;
-  min-width: 400px;
-  align-items: center;
-}
-
-/* 3. Verstecke Fehlermeldungs-Platzhalter komplett */
-:deep(.v-input__details) {
-  display: none !important;
-}
-
-/* 4. Fixiere den Scroll-Container */
-:deep(.v-table__wrapper) {
-  overflow-y: auto !important;
-}
-
-
-/* Dieser Teil erzwingt, dass der interne Wrapper der Tabelle wirklich scrollt */
-:deep(.v-data-table__td) {
-  height: 70px !important;
-}
-
-/* Verhindert, dass die Tabelle über die Card hinausragt */
-.vdr-table {
-  display: flex;
-  flex-direction: column;
-}
-
-:deep(.v-table__wrapper) {
-  flex-grow: 1;
-  overflow-y: auto !important;
-}
-
-/* Zwinge die Tabelle, den Platz des v-card-text einzunehmen */
-/* :deep(.v-table__wrapper) {
-  height: 100% !important;
-  overflow-y: auto !important;
-} */
-
-/* Fixiere die Zeilenhöhe für korrekte Virtualisierung */
-:deep(.v-data-table-virtual tr) {
-  height: 70px !important;
-}
-.v-data-table-virtual tr {
-  height: 70px !important;
-}
-
-.v-data-table-virtual td {
-  height: 70px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-/* Verhindert, dass Input-Details (Fehlermeldungen) die Zeile aufblähen */
-.v-data-table-virtual .v-input__details {
-  display: none !important;
-}
-</style>

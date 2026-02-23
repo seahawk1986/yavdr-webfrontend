@@ -25,6 +25,7 @@ declare module 'vue-router/auto-routes' {
     '/Installer/ConfigForm': RouteRecordInfo<'/Installer/ConfigForm', '/Installer/ConfigForm', Record<never, never>, Record<never, never>>,
     '/RemoteSettings': RouteRecordInfo<'/RemoteSettings', '/RemoteSettings', Record<never, never>, Record<never, never>>,
     '/System/AudioSettings': RouteRecordInfo<'/System/AudioSettings', '/System/AudioSettings', Record<never, never>, Record<never, never>>,
+    '/System/ConfigFiles': RouteRecordInfo<'/System/ConfigFiles', '/System/ConfigFiles', Record<never, never>, Record<never, never>>,
     '/System/DisplaySettings': RouteRecordInfo<'/System/DisplaySettings', '/System/DisplaySettings', Record<never, never>, Record<never, never>>,
     '/System/LogViewer': RouteRecordInfo<'/System/LogViewer', '/System/LogViewer', Record<never, never>, Record<never, never>>,
     '/System/Updates': RouteRecordInfo<'/System/Updates', '/System/Updates', Record<never, never>, Record<never, never>>,

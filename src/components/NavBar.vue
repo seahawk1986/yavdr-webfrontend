@@ -80,11 +80,11 @@
         to="/vdr/ConfigFiles"
         title="VDR Config files"
       />
-      <!-- <v-list-item
+      <v-list-item
         prepend-icon="mdi-code-braces"
         to="/vdr/SetupEditor"
-        title="Setup"
-      /> -->
+        :title="t('category.setup')"
+      />
       <!-- <v-list-item
         prepend-icon="mdi-toy-brick"
         to="/vdr/PluginSettings"
