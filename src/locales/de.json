@@ -74,7 +74,9 @@
     "menuorg_xml": "Menülayout für das menuorg Plugin",
     "arguments_for": "Argumente für {what}",
     "start_arguments": "Startargumente",
-    "details": "Details"
+    "details": "Details",
+    "avahi-linker": "Avahi-Linker-Konfiguration",
+    "yavdr-frontend": "Konfigurationsdatei für yavdr-frontend"
   },
   "errors": {
     "loadingFailed": "Laden der {what} fehlgeschlagen"

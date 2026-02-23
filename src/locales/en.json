@@ -104,7 +104,9 @@
     "menuorg_xml": "menuorg configuration",
     "arguments_for": "Arguments for {what}",
     "start_arguments": "Start arguments",
-    "details": "Details"
+    "details": "Details",
+    "avahi-linker": "avahi-linker configuration",
+    "yavdr-frontend": "Configuration for yavdr-frontend"
   },
   "info": {
     "state": "state",

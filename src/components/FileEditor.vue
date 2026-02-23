@@ -143,7 +143,7 @@ function createDownloadFile() {
 async function loadFileContent(config: configFileInterface) {
   try {
     const response = await backend.getRequest(
-      `${config.url}?filename=${encodeURIComponent(config.filename)}`
+      config.url, {params: {filename: config.filename}}
     );
     if (response?.data) editableFileContent.value = response.data;
   } catch (error) {
@@ -165,8 +165,11 @@ async function saveFilecontent(content: string, config: configFileInterface) {
   const blob = new Blob([content], { type: "text/plain" });
   const file = new File([blob], config.filename);
   const r = await backend.uploadFileWithStreamingResponseTC(
-    `${encodeURI(`${config.url}/${config.filename}`)}`,
-    file, (data) => {console.log(data)},
+    config.url,
+   {
+    filename: config.filename,
+    uploaded_file: file
+   }, (data) => {console.log(data)},
   );
   console.log("file upload:", r);
   if (r) {

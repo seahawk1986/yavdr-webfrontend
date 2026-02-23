@@ -197,11 +197,11 @@ export const useBackendStore = defineStore("backend", () => {
   //   return final_result;
   // }
 
-  async function getRequest(url: string): Promise<AxiosResponse | undefined> {
+  async function getRequest(url: string, payload: AxiosRequestConfig<any> | undefined = undefined): Promise<AxiosResponse | undefined> {
     let final_result = null;
     do {
       final_result = await axios_instance
-        .get(url)
+        .get(url, payload)
         .then((result: AxiosResponse) => {
           return result;
         })
@@ -373,9 +373,14 @@ export const useBackendStore = defineStore("backend", () => {
       });
   }
 
+  interface ConfigFileUploadData {
+    filename: string
+    uploaded_file: File
+  }
+
   async function uploadFileWithStreamingResponseTC(
     url: string,
-    uploaded_file: File,
+    data: ConfigFileUploadData,
     _onData: (chunk: unknown) => void // TODO: use this method to show progress im the client
   ): Promise<boolean> {
     // TODO: why does this fail?
@@ -385,13 +390,14 @@ export const useBackendStore = defineStore("backend", () => {
       const response = await axios_instance.postForm(
         url,
         {
-          uploaded_file: uploaded_file,
+          filename: data.filename,
+          uploaded_file: data.uploaded_file,
+        },
+        {
           headers: {
             Accept: "application/json",
             "Content-Type": "multipart/form-data",
           },
-        },
-        {
           responseType: "stream",
           adapter: "fetch",
           timeout: 60 * 60 * 1000,
