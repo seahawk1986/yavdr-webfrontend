@@ -38,6 +38,11 @@
         to="/system/AudioSettings"
         :title="t('category.audioSettings')"
       />
+      <v-list-item
+        prepend-icon="mdi-code-braces"
+        to="/system/ConfigFiles"
+        title="System Config files"
+      />
       <!-- <v-list-item
         prepend-icon="mdi-link-box"
         link
@@ -75,11 +80,11 @@
         to="/vdr/ConfigFiles"
         title="VDR Config files"
       />
-      <v-list-item
+      <!-- <v-list-item
         prepend-icon="mdi-code-braces"
         to="/vdr/SetupEditor"
         title="Setup"
-      />
+      /> -->
       <!-- <v-list-item
         prepend-icon="mdi-toy-brick"
         to="/vdr/PluginSettings"
