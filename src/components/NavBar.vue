@@ -4,12 +4,14 @@
     v-model:model-value="store.showNavigation"
     app
   >
-    <v-list @click="() => {if (mobile) store.showNavigation = false}">
-      <v-list-item
-        prepend-icon="mdi-home"
-        to="/"
-        title="Home"
-      />
+    <v-list
+      @click="
+        () => {
+          if (mobile) store.showNavigation = false;
+        }
+      "
+    >
+      <v-list-item prepend-icon="mdi-home" to="/" title="Home" />
       <!-- <v-list-item
         prepend-icon="mdi-view-dashboard"
         to="/dashboard"
@@ -20,14 +22,16 @@
         to="/system/settings"
         title="System"
         subtitle="Settings"
-      /> -->
+        /> -->
       <!-- <v-list-item
         prepend-icon="mdi-tune"
         to="/vdr/setup"
         title="VDR"
         subtitle="Settings"
-      /> -->
+        /> -->
       <v-divider />
+      <v-list-subheader>{{ t("category.system") }}</v-list-subheader>
+
       <v-list-item
         prepend-icon="mdi-monitor"
         to="/system/DisplaySettings"
@@ -44,8 +48,8 @@
         title="System Config files"
       />
       <!-- <v-list-item
-        prepend-icon="mdi-link-box"
-        link
+      prepend-icon="mdi-link-box"
+      link
         title="Avahi-Linker"
       /> -->
       <!-- <v-list-item
@@ -58,8 +62,15 @@
         to="/system/Updates"
         :title="t('category.updates')"
       />
+
+      <v-list-item
+        prepend-icon="mdi-list-box-outline"
+        to="/System/LogViewer"
+        title="Syslog"
+      />
       <v-divider />
-      <v-divider />
+      <v-list-subheader>{{ t("category.vdr") }}</v-list-subheader>
+
       <!-- <v-list-item
         prepend-icon="mdi-playlist-edit"
         to="/vdr/channels"
@@ -95,11 +106,8 @@
         to="/vdr/VDRStartArguments"
         title="Start Arguments"
       /> -->
-      <v-list-item
-        prepend-icon="mdi-list-box-outline"
-        to="/System/LogViewer"
-        title="Syslog"
-      />
+      <v-divider />
+
       <!-- <v-list-item
         prepend-icon="mdi-upload"
         to="/System/UploadFile"
@@ -115,11 +123,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { useBackendStore } from "@/stores/backend"
-  import { useDisplay } from "vuetify"
-  import { useI18n } from "vue-i18n"
-  const { t } = useI18n()
-  const { mobile } = useDisplay()
-  const store = useBackendStore()
-
+import { useBackendStore } from "@/stores/backend";
+import { useDisplay } from "vuetify";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+const { mobile } = useDisplay();
+const store = useBackendStore();
 </script>
