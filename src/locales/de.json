@@ -104,7 +104,9 @@
     "debian_packages": "Debian-Pakete",
     "all": "Alle Pakete",
     "setupEntries": "Setup Einträge",
-    "setupValueFor": "Setup Eintrag für {what}"
+    "setupValueFor": "Setup Eintrag für {what}",
+    "system": "System",
+    "vdr": "VDR"
   },
   "info": {
     "state": "Status",

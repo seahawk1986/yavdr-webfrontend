@@ -65,7 +65,9 @@
     "debian_packages": "Debian Packages",
     "all": "All Packages",
     "setupEntries": "setup entries",
-    "setupValueFor": "setup entry for {what}"
+    "setupValueFor": "setup entry for {what}",
+    "system": "System",
+    "vdr": "VDR"
   },
   "mainDisplay": "Main Display",
   "secondaryDisplay": "Secondary Display",
