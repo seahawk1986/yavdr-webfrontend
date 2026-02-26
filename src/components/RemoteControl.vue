@@ -170,7 +170,7 @@ onMounted(() => {
     </template>
     <v-card-text class="ma-0 pt-0" style="max-height: 100%; overflow-y: auto">
       <v-container
-        class="ma-0 pt-0 fill-height d-flex align-center justify-center overflow-y-auto"
+        class="ma-0 pt-0 fill-height d-flex flex-column align-center justify-center overflow-y-auto"
       >
         <!-- The Remote Body -->
         <!-- <v-sheet
@@ -215,7 +215,7 @@ onMounted(() => {
         </v-row>
         <v-row class="pt-2" density="compact" justify="center">
           <!-- Directional Pad (Using 12-col grid to simulate 3x3) -->
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Volume Up"
               icon-name="mdi-volume-plus"
@@ -224,7 +224,7 @@ onMounted(() => {
               color="secondary-darken-1"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="EPG"
               icon-name="mdi-newspaper-variant-multiple-outline"
@@ -232,7 +232,7 @@ onMounted(() => {
               keyname="KEY_EPG"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Up"
               icon-name="mdi-arrow-up-thick"
@@ -241,7 +241,7 @@ onMounted(() => {
               color="primary-darken-1"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Info"
               icon-name="mdi-information-variant"
@@ -249,7 +249,7 @@ onMounted(() => {
               keyname="KEY_INFO"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Channel up"
               icon-name="mdi-arrow-up-bold"
@@ -259,7 +259,7 @@ onMounted(() => {
             />
           </v-col>
           <!-- next row" -->
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Mute"
               icon-name="mdi-volume-off"
@@ -268,7 +268,7 @@ onMounted(() => {
               color="red"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Left"
               icon-name="mdi-arrow-left-thick"
@@ -277,7 +277,7 @@ onMounted(() => {
               color="primary-darken-1"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="OK"
               icon-name="mdi-circle-outline"
@@ -286,7 +286,7 @@ onMounted(() => {
               color="primary-darken-1"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Right"
               icon-name="mdi-arrow-right-thick"
@@ -295,7 +295,7 @@ onMounted(() => {
               color="primary-darken-1"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Channel Menu"
               icon-name="mdi-playlist-edit"
@@ -304,7 +304,7 @@ onMounted(() => {
             />
           </v-col>
           <!-- next row -->
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Volume Down"
               icon-name="mdi-volume-minus"
@@ -313,7 +313,7 @@ onMounted(() => {
               color="secondary-darken-1"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Back"
               icon-name="mdi-arrow-u-left-top"
@@ -321,7 +321,7 @@ onMounted(() => {
               keyname="KEY_ESC"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Down"
               icon-name="mdi-arrow-down-thick"
@@ -330,7 +330,7 @@ onMounted(() => {
               color="primary-darken-1"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="VDR Menu"
               icon-name="mdi-menu"
@@ -338,7 +338,7 @@ onMounted(() => {
               keyname="KEY_Menu"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Channel down"
               icon-name="mdi-arrow-down-bold"
@@ -387,7 +387,7 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row class="pt-2" density="compact" justify="center">
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Skip backward"
               icon-name="mdi-skip-backward"
@@ -395,7 +395,7 @@ onMounted(() => {
               keyname="KEY_BACK"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Rewind"
               icon-name="mdi-rewind"
@@ -403,7 +403,7 @@ onMounted(() => {
               keyname="KEY_REWIND"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Play"
               icon-name="mdi-play"
@@ -411,7 +411,7 @@ onMounted(() => {
               keyname="KEY_PLAY"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Fast Forward"
               icon-name="mdi-fast-forward"
@@ -419,7 +419,7 @@ onMounted(() => {
               keyname="KEY_FASTFORWARD"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Skip forward"
               icon-name="mdi-skip-forward"
@@ -429,7 +429,7 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row density="compact" justify="center">
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Record"
               icon-name="mdi-record"
@@ -438,7 +438,7 @@ onMounted(() => {
               color="red"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Stop"
               icon-name="mdi-stop"
@@ -446,7 +446,7 @@ onMounted(() => {
               keyname="KEY_STOP"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Pause"
               icon-name="mdi-pause"
@@ -454,7 +454,7 @@ onMounted(() => {
               keyname="KEY_PAUSE"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Subtitles"
               icon-name="mdi-subtitles"
@@ -462,7 +462,7 @@ onMounted(() => {
               keyname="KEY_SUBTITLE"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Audio"
               icon-name="mdi-speaker-multiple"
@@ -472,7 +472,7 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row density="compact" justify="center">
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="KODI"
               icon-name="mdi-kodi"
@@ -481,7 +481,7 @@ onMounted(() => {
               icon_color="blue"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Webbrowser"
               icon-name="mdi-web"
@@ -489,7 +489,7 @@ onMounted(() => {
               keyname="KEY_FN"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Open Settings"
               icon-name="mdi-cog"
@@ -497,7 +497,7 @@ onMounted(() => {
               keyname="KEY_SETUP"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Recordings"
               icon-name="mdi-movie-open"
@@ -505,7 +505,7 @@ onMounted(() => {
               keyname="KEY_PVR"
             />
           </v-col>
-          <v-col style="width: 20%" class="pa-1 d-flex justify-center">
+          <v-col style="width: 15%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Timers"
               icon-name="mdi-timetable"
