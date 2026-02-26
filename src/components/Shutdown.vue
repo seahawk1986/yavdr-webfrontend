@@ -31,7 +31,7 @@ const restarting = ref(false);
 async function restart() {
   restarting.value = true;
   try {
-    await backend.postRequest("/system/power/restart", {});
+    await backend.postRequest("/system/power/reboot", {});
   } catch (error) {
     console.log("could not send restart request:", error);
   } finally {
