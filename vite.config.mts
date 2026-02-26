@@ -82,6 +82,19 @@ export default defineConfig({
         preload: false,
       },
     }),
+    {
+      name: 'exclude-unused-fonts',
+      // Dieser Hook wird aufgerufen, bevor Vite ein Asset generiert
+      generateBundle(_, bundle) {
+        for (const fileName in bundle) {
+          // Prüfe auf die Dateiendungen, die du NICHT willst
+          if (fileName.match(/\.(ttf|eot|woff|otf)$/)) {
+            delete bundle[fileName];
+            console.log(`🗑️  Asset entfernt: ${fileName}`);
+          }
+        }
+      }
+    }
     // {
     //   name: 'remove-mdi-preloads',
     //   enforce: "post",
