@@ -70,25 +70,29 @@ export default defineConfig({
           },
         ],
       },
-      // custom: {
-      //   families: [
-      //     {
-      //       name: 'Material Design Icons',
-      //       local: 'Material Design Icons',
-      //       src: './node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2',
-      //     },
-      //   ],
-      //   display: 'auto',
-      //   preload: false,
-      // },
+      custom: {
+        families: [
+          {
+            name: 'Material Design Icons',
+            local: 'Material Design Icons',
+            src: './node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2',
+          },
+        ],
+        display: 'block',
+        preload: false,
+      },
     }),
-    {
-      name: 'remove-mdi-preloads',
-      transformIndexHtml(html) {
-        // Entfernt die störenden Preload-Links für die alten Formate im finalen Build
-        return html.replace(/<link rel="preload" [^>]+?\.(eot|ttf|woff)(?!\d)[^>]*?>/g, '')
-      }
-    }
+    // {
+    //   name: 'remove-mdi-preloads',
+    //   enforce: "post",
+    //   transformIndexHtml: {
+    //     order: 'post',
+    //     handler(html) {
+    //       // Entfernt die störenden Preload-Links für die alten Formate im finalen Build
+    //       return html.replace(/<link rel="preload" [^>]+?\.(eot|ttf|woff)(?!\d)[^>]*?>/g, '')
+    //     }
+    //   }
+    // }
   ],
   define: { 'process.env': {} },
   resolve: {
