@@ -18,7 +18,10 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   base: '/',
   build: {
-    target: browserslistToEsbuild()
+    target: browserslistToEsbuild(),
+    modulePreload: {
+      polyfill: false
+    }
   },
   plugins: [
     VueRouter({
@@ -67,18 +70,25 @@ export default defineConfig({
           },
         ],
       },
-      custom: {
-        families: [
-          {
-            name: 'Material Design Icons',
-            local: 'Material Design Icons',
-            src: './node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2',
-          },
-        ],
-        display: 'auto',
-        preload: true,
-      },
+      // custom: {
+      //   families: [
+      //     {
+      //       name: 'Material Design Icons',
+      //       local: 'Material Design Icons',
+      //       src: './node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2',
+      //     },
+      //   ],
+      //   display: 'auto',
+      //   preload: false,
+      // },
     }),
+    {
+      name: 'remove-mdi-preloads',
+      transformIndexHtml(html) {
+        // Entfernt die störenden Preload-Links für die alten Formate im finalen Build
+        return html.replace(/<link rel="preload" [^>]+?\.(eot|ttf|woff)(?!\d)[^>]*?>/g, '')
+      }
+    }
   ],
   define: { 'process.env': {} },
   resolve: {
