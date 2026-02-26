@@ -187,7 +187,7 @@ onMounted(() => {
             class="pa-1 d-flex justify-center"
           >
             <RemoteTextButton
-              v-tooltip="`Key ${n}`"
+              :tooltip="`Key ${n}`"
               :name="`${n}`"
               :keyname="`KEY_${n}`"
             />

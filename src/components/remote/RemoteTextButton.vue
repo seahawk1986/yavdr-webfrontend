@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useBackendStore } from '@/stores/backend'
-const store = useBackendStore()
+import { useBackendStore } from "@/stores/backend";
+const store = useBackendStore();
 export interface Props {
-  name: string
-  tooltip: string
-  keyname: string
-  color?: string
+  name: string;
+  tooltip: string;
+  keyname: string;
+  color?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
   color: "",
-})
+});
 </script>
 
 <template>
