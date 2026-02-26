@@ -207,37 +207,45 @@ async function loadVDRSetup() {
 
 // async function reloadValue(name: string) {
 //   try {
-//     const response = await store.getRequest(`/vdr/setup?key=${encodeURIComponent(name)}`)
+//     const response = await store.getRequest(
+//       `/vdr/setup?key=${encodeURIComponent(name)}`,
+//     );
 //     if (response?.data) {
-//       const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
-//       vdrSetupEntries.value[idx].value = response.data
+//       const idx = vdrSetupEntries.value.findIndex(
+//         (element) => element.name === name,
+//       );
+//       const setupEntry = vdrSetupEntries.value?[idx];
+//       if (setupEntry?.value) setupEntry.value = response.data;
 //       // const idx2 = visibleEntries.value.findIndex((element) => element.name === name)
 //       // visibleEntries.value[idx2].value = value
-//       console.log("updated value for: ", name, ': ', response.data, 'at index', idx)
+//       console.log(
+//         "updated value for: ",
+//         name,
+//         ": ",
+//         response.data,
+//         "at index",
+//         idx,
+//       );
 //       // console.log("updated value for: ", name, ': ', value, 'at index', idx2)
 //     }
-//   } catch(error) {
-//     console.error(error)
+//   } catch (error) {
+//     console.error(error);
 //   }
 // }
 
 async function sendValue(name: string, value: string | number) {
-  const idx = vdrSetupEntries.value.findIndex(
-    (element) => element.name === name,
-  );
-  const setupEntry = vdrSetupEntries.value[idx];
-  if (setupEntry?.value) {
-    setupEntry.value = value;
-    console.log("saved value for: ", name, ": ", value, "at index", idx);
-    try {
-      await store.postRequest(
-        `/vdr/setup?key=${encodeURIComponent(name)}&value=${encodeURIComponent(value)}`,
-        {},
-      );
-    } catch (error) {
-      console.error(error);
-    }
+  console.log("saved value for: ", name, ": ", value);
+  try {
+    await store.postRequest(
+      `/vdr/setup?key=${encodeURIComponent(name)}&value=${encodeURIComponent(value)}`,
+      {},
+    );
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await loadVDRSetup();
   }
+  // }
 }
 
 async function offerSetupConf() {

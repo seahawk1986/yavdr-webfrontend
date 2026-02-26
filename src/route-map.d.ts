@@ -159,13 +159,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/VDR/SetupEditor2': RouteRecordInfo<
-      '/VDR/SetupEditor2',
-      '/VDR/SetupEditor2',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/VDR/VDRStartArguments': RouteRecordInfo<
       '/VDR/VDRStartArguments',
       '/VDR/VDRStartArguments',
@@ -297,12 +290,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/VDR/SetupEditor.vue': {
       routes:
         | '/VDR/SetupEditor'
-      views:
-        | never
-    }
-    'src/pages/VDR/SetupEditor2.vue': {
-      routes:
-        | '/VDR/SetupEditor2'
       views:
         | never
     }
