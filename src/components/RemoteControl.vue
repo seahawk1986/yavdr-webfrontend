@@ -179,7 +179,7 @@ onMounted(() => {
         class="pa-4 ga-0 ma-0 bg-blue-grey-darken-4"
         style="max-width: 400px; width: 100%; max-height: 95dvh;"
       > -->
-        <v-row no-gutters justify="center">
+        <v-row density="compact" justify="center">
           <v-col
             v-for="n in 9"
             :key="n"
@@ -213,7 +213,7 @@ onMounted(() => {
             />
           </v-col>
         </v-row>
-        <v-row class="pt-2" no-gutters justify="center">
+        <v-row class="pt-2" density="compact" justify="center">
           <!-- Directional Pad (Using 12-col grid to simulate 3x3) -->
           <v-col style="width: 20%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
@@ -348,7 +348,7 @@ onMounted(() => {
             />
           </v-col>
         </v-row>
-        <v-row class="pt-2" no-gutters justify="center">
+        <v-row class="pt-2" density="compact" justify="center">
           <v-col cols="3" class="pa-1 d-flex justify-center">
             <RemoteTextButton
               name="R"
@@ -386,7 +386,7 @@ onMounted(() => {
             />
           </v-col>
         </v-row>
-        <v-row class="pt-2" no-gutters justify="center">
+        <v-row class="pt-2" density="compact" justify="center">
           <v-col style="width: 20%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Skip backward"
@@ -428,7 +428,7 @@ onMounted(() => {
             />
           </v-col>
         </v-row>
-        <v-row no-gutters justify="center">
+        <v-row density="compact" justify="center">
           <v-col style="width: 20%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="Record"
@@ -471,7 +471,7 @@ onMounted(() => {
             />
           </v-col>
         </v-row>
-        <v-row no-gutters justify="center">
+        <v-row density="compact" justify="center">
           <v-col style="width: 20%" class="pa-1 d-flex justify-center">
             <RemoteIconButton
               name="KODI"

@@ -1,4 +1,3 @@
-
 <template>
   <!-- TODO: Channel Editor capabilities:
     * Swap two channels
@@ -6,16 +5,12 @@
     * Scratchpad to park subgroups of channels
     * Upload/Download channels.conf
     -->
-  <v-container
-    :class="['pa-0', smAndUp ? 'fill-height' : '']"
-    fluid
-  >
+  <v-container :class="['pa-0', smAndUp ? 'fill-height' : '']" fluid>
     <v-row
       id="secondRow"
-      dense
+      density="comfortable"
       fill-height
       justify="center"
-      no-gutters
       :class="['flex-column flex-sm-row', smAndUp ? 'fill-height' : '']"
       :style="!smAndUp ? 'height: auto;' : ''"
     >
@@ -36,7 +31,11 @@
                 scroll_to_channel_id(channel.channel_id);
               }
             "
-            @insert-channel="(channel: VDRChannel, number: number, scroll: boolean) => {insertChannel(channel, number, scroll)}"
+            @insert-channel="
+              (channel: VDRChannel, number: number, scroll: boolean) => {
+                insertChannel(channel, number, scroll);
+              }
+            "
           />
         </v-card>
       </v-col>
@@ -44,23 +43,15 @@
         cols="12"
         sm="6"
         :class="['d-flex flex-column', smAndUp ? 'fill-height' : '']"
-        style="min-height: 0;"
+        style="min-height: 0"
       >
         <v-card
           :class="['ma-2 d-flex flex-column', smAndUp ? 'fill-height' : '']"
         >
           <v-card-title>
             <v-row justify="center">
-              <v-col
-                cols="12"
-                md="4"
-              >
-                channels.conf
-              </v-col>
-              <v-col
-                cols="12"
-                md="8"
-              >
+              <v-col cols="12" md="4"> channels.conf </v-col>
+              <v-col cols="12" md="8">
                 <v-btn
                   color="info"
                   :text="t('channels.reloadVDRChannels')"
@@ -71,18 +62,17 @@
                 />
               </v-col>
             </v-row>
-            <v-dialog
-              v-model="showGroupAddDialog"
-              max-width="500"
-              persistent
-            >
+            <v-dialog v-model="showGroupAddDialog" max-width="500" persistent>
               <ChannelGroupInput
                 :channel-group-edit-title="t('channels.createGroup')"
                 :old-channel-group="inputChannel"
                 :confirm-button-title="confirmGroupDialogTitle"
                 :cancel-button-title="t('actions.cancel')"
                 @abort="showGroupAddDialog = false"
-                @confirm="(name: string, position: number|null, scroll: boolean) => processChannelGroup(name, position, scroll)"
+                @confirm="
+                  (name: string, position: number | null, scroll: boolean) =>
+                    processChannelGroup(name, position, scroll)
+                "
                 @keydown.esc="showGroupAddDialog = false"
               />
             </v-dialog>
@@ -90,7 +80,7 @@
           <v-card-text
             ref="cardTextRef"
             class="flex-grow-1 overflow-y-auto pa-0"
-            style="min-height: 0;"
+            style="min-height: 0"
           >
             <!-- TODO: how to use drag and drop in a vuetifyjs VirtualScroll Element? -->
             <v-list
@@ -105,52 +95,62 @@
                 :id="channel.channel_id"
                 :key="channel.channel_id"
                 role="listitem"
-                :aria-label="t('channels.channelNumberN', {number: runningChannelNumbers[channel_idx]?.toString()}) + ', ' + channel.name"
+                :aria-label="
+                  t('channels.channelNumberN', {
+                    number: runningChannelNumbers[channel_idx]?.toString(),
+                  }) +
+                  ', ' +
+                  channel.name
+                "
                 density="compact"
                 :base-color="isRadio(channel) ? 'secondary' : ''"
               >
                 <template #title>
                   {{
                     channel.name +
-                      (channel.is_group ? "" : ` (${channel.provider})`)
+                    (channel.is_group ? "" : ` (${channel.provider})`)
                   }}
                 </template>
                 <template #prepend>
                   <v-icon
-                    :aria-label="t('descriptions.draghandle', {name: channel.name})"
+                    :aria-label="
+                      t('descriptions.draghandle', { name: channel.name })
+                    "
                     class="drag-handle"
                     icon="mdi-drag"
                     style="cursor: grab"
                   />
                   <pre>{{
-                      (!channel.is_group
-                        ? runningChannelNumbers[channel_idx]?.toString()
-                        : `${
-                            channel.number > 0
-                              ? `@${channel.number.toString()}`
-                              : ""
-                          }`
-                      ).padStart(channelNumberPadding, " ") + " "
+                    (channel.is_group
+                      ? channel.number > 0
+                        ? `@${channel.number}`
+                        : ""
+                      : (runningChannelNumbers[channel_idx]?.toString() ?? "")
+                    ).padStart(channelNumberPadding, " ") + " "
                   }}</pre>
                   <v-icon
                     :color="isRadio(channel) ? 'secondary' : ''"
                     :icon="getSourceIcon(channel.source)"
                   />
-                  <v-divider
-                    vertical
-                    thickness="5"
-                    opacity="0"
-                  />
+                  <v-divider vertical thickness="5" opacity="0" />
                   <v-icon
                     :color="isRadio(channel) ? 'secondary' : ''"
-                    :icon="isRadio(channel) ? 'mdi-radio' : (channel.is_group ? 'mdi-list-box-outline' : 'mdi-television')"
+                    :icon="
+                      isRadio(channel)
+                        ? 'mdi-radio'
+                        : channel.is_group
+                          ? 'mdi-list-box-outline'
+                          : 'mdi-television'
+                    "
                   />
                 </template>
                 <template #append>
                   <div class="justify-center flex-wrap ga-2">
                     <v-icon-btn
                       v-if="channel.is_group"
-                      v-tooltip="t('channels.editGroup', {what: channel.name})"
+                      v-tooltip="
+                        t('channels.editGroup', { what: channel.name })
+                      "
                       icon="mdi-pencil"
                       color="primary"
                       variant="tonal"
@@ -160,26 +160,34 @@
                     />
                     <v-icon-btn
                       v-else
-                      v-tooltip="t('channels.changePosition', {name: channel.name})"
+                      v-tooltip="
+                        t('channels.changePosition', { name: channel.name })
+                      "
                       icon="mdi-dialpad"
                       variant="tonal"
                       color="primary"
                       density="comfortable"
-                      :aria-label="t('channels.changePosition', {name: channel.name})"
+                      :aria-label="
+                        t('channels.changePosition', { name: channel.name })
+                      "
                       @click="showChannelNumberInput(channel)"
                     />
-                    <v-divider
-                      vertical
-                      opacity="0.0"
-                      thickness="5"
-                    />
+                    <v-divider vertical opacity="0.0" thickness="5" />
                     <v-icon-btn
-                      v-tooltip="channel.is_group ? t('channels.deleteChannelGroup', {what: channel.name}) : t('channels.deleteChannel', {what: channel.name})"
+                      v-tooltip="
+                        channel.is_group
+                          ? t('channels.deleteChannelGroup', {
+                              what: channel.name,
+                            })
+                          : t('channels.deleteChannel', { what: channel.name })
+                      "
                       icon="mdi-close-circle"
                       variant="tonal"
                       color="red"
                       density="comfortable"
-                      :aria-label="t('channels.deleteChannel', {what: channel.name})"
+                      :aria-label="
+                        t('channels.deleteChannel', { what: channel.name })
+                      "
                       @click="deleteChannel(channel.channel_id, channel_idx)"
                     />
                   </div>
@@ -195,16 +203,18 @@
               variant="tonal"
               @click="addGroup"
             />
-            <v-dialog
-              v-model="showMoveChannelInputDialogue"
-              max-width="500"
-            >
+            <v-dialog v-model="showMoveChannelInputDialogue" max-width="500">
               <MoveChannelInput
-                :channel-edit-title="t('channels.moveToPosition', { name: inputChannel?.name })"
+                :channel-edit-title="
+                  t('channels.moveToPosition', { name: inputChannel?.name })
+                "
                 :confirm-move-title="t('channels.moveChannel')"
                 :input-channel="inputChannel"
                 @abort="showMoveChannelInputDialogue = false"
-                @move-channel="(channel: VDRChannel, position: number, scroll: boolean) => insertChannel(channel, position, scroll)"
+                @move-channel="
+                  (channel: VDRChannel, position: number, scroll: boolean) =>
+                    insertChannel(channel, position, scroll)
+                "
               />
             </v-dialog>
             <v-btn
@@ -223,40 +233,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, type Ref } from "vue"
+import { computed, onMounted, ref, type Ref } from "vue";
 // import { useConfirmDialog } from '@vueuse/core'
-import { useLayout, useDisplay, useGoTo} from "vuetify"
-import type { VCardText } from 'vuetify/components'
-import { useDragAndDrop } from "@formkit/drag-and-drop/vue"
+import { useLayout, useDisplay, useGoTo } from "vuetify";
+import type { VCardText } from "vuetify/components";
+import { useDragAndDrop } from "@formkit/drag-and-drop/vue";
 // import { animations, dropOrSwap, insert } from '@formkit/drag-and-drop'
 // import { useBackendStore } from "@/stores/backend";
 import { useVDRStore } from "@/stores/vdr";
-import SourceSelection from "./channelpedia/SourceSelection.vue"
-import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface"
+import SourceSelection from "./channelpedia/SourceSelection.vue";
+import type { VDRChannel } from "@/stores/interfaces/VdrChannelInterface";
 import { useBackendStore } from "@/stores/backend";
 import { useI18n } from "vue-i18n";
 
-const { smAndUp, mobile } = useDisplay()
+const { smAndUp, mobile } = useDisplay();
 // import { downloadBlob } from "@/services/download";
-const { t } = useI18n()
+const { t } = useI18n();
 
 const backend = useBackendStore();
 
-const layout = useLayout()
+const layout = useLayout();
 // const backend = useBackendStore()
-const vdr = useVDRStore()
-const goTo = useGoTo()
+const vdr = useVDRStore();
+const goTo = useGoTo();
 // Extract the options type from the goTo function's second argument
-type GoToOptions = Parameters<typeof goTo>[1]
+type GoToOptions = Parameters<typeof goTo>[1];
 
 // Dynamically enable/disable main page scrolling
 watchEffect(() => {
   if (mobile.value) {
-    document.documentElement.style.overflow = 'auto'
+    document.documentElement.style.overflow = "auto";
   } else {
-    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.overflow = "hidden";
   }
-})
+});
 
 // const revealChannelGroupInput: Ref<boolean> = ref(false)
 // const ChannelGroupDialog = useConfirmDialog(revealChannelGroupInput)
@@ -269,11 +279,10 @@ watchEffect(() => {
 // }
 
 const showMoveChannelInputDialogue: Ref<boolean> = ref(false);
-const groupDialogTitle: Ref<string> = ref(t('channels.createGroup'))
-const confirmGroupDialogTitle: Ref<string> = ref(t('channels.createGroup'))
-const inputChannel: Ref<VDRChannel|null> = ref(null);
-const isSaving = ref(false)
-
+const groupDialogTitle: Ref<string> = ref(t("channels.createGroup"));
+const confirmGroupDialogTitle: Ref<string> = ref(t("channels.createGroup"));
+const inputChannel: Ref<VDRChannel | null> = ref(null);
+const isSaving = ref(false);
 
 const [channelsConfRef, channelsConf] = useDragAndDrop([] as VDRChannel[], {
   group: "channels",
@@ -341,30 +350,34 @@ const showGroupAddDialog: Ref<boolean> = ref(false);
 // const newChannelGroupName: Ref<string> = ref(t("channels.channelGroup"));
 // const newChannelGroupNumber: Ref<number | null> = ref(null);
 
-const editGroup = async function(group: VDRChannel) {
-  inputChannel.value = group
-  groupDialogTitle.value = t('channels.editGroup')
-  confirmGroupDialogTitle.value = t('channels.editGroup')
-  showGroupAddDialog.value = true
-}
+const editGroup = async function (group: VDRChannel) {
+  inputChannel.value = group;
+  groupDialogTitle.value = t("channels.editGroup");
+  confirmGroupDialogTitle.value = t("channels.editGroup");
+  showGroupAddDialog.value = true;
+};
 
-const addGroup = async function() {
-  inputChannel.value = null
-  groupDialogTitle.value = t('channels.createGroup')
-  confirmGroupDialogTitle.value = t('channels.createGroup')
-  showGroupAddDialog.value = true
-}
+const addGroup = async function () {
+  inputChannel.value = null;
+  groupDialogTitle.value = t("channels.createGroup");
+  confirmGroupDialogTitle.value = t("channels.createGroup");
+  showGroupAddDialog.value = true;
+};
 
-const processChannelGroup = async function (newName: string, newPosition: number|null, scrollToNewGroup: boolean) {
-  const oldChannel = inputChannel.value
-  showGroupAddDialog.value = false
+const processChannelGroup = async function (
+  newName: string,
+  newPosition: number | null,
+  scrollToNewGroup: boolean,
+) {
+  const oldChannel = inputChannel.value;
+  showGroupAddDialog.value = false;
   // get a (at least locally unique) id - we only need this for the channel list on the client
-  let uuid = null;
+  let uuid: string;
   if (window.isSecureContext) {
     uuid = self.crypto.randomUUID();
   } else {
     const u =
-    Date.now().toString(16) + Math.random().toString(16) + "0".repeat(16);
+      Date.now().toString(16) + Math.random().toString(16) + "0".repeat(16);
     uuid = [
       u.substring(0, 8),
       u.substring(8, 4),
@@ -375,57 +388,57 @@ const processChannelGroup = async function (newName: string, newPosition: number
   const channelId = `${newName}-${uuid}`;
   if (oldChannel !== null) {
     // update the old channel group
-    console.log("edit existing channel group")
-    const idx = channelsConf.value.findIndex((channel) => oldChannel.channel_id === channel.channel_id)
-    channelsConf.value[idx].name = newName
-    channelsConf.value[idx].number = newPosition ? newPosition : -1
-    channelsConf.value[idx].channel_id = channelId
-  } else {
-    console.log(
-      "add channel group",
-      newName,
-      "at position",
-      newPosition
-    )
-
-  const newGroup = {
-    channel_id: channelId,
-    number: newPosition ? newPosition : -1,
-    channel_string: newName,
-    is_group: true,
-    is_radio: false,
-    name: `${newName}`,
-    provider: "",
-    ca: "",
-    source: "",
-  };
-  console.log("newGroup has number", newGroup.number);
-  console.log("runningChannelNumbers", runningChannelNumbers.value);
-  if (newPosition !== null) {
-    const currentChannelGrupNumber = newGroup.number;
-    let position = runningChannelNumbers.value.findIndex((value) => {
-      if (value > currentChannelGrupNumber) {
-        return true;
-      }
-    });
-    if (position < 0) {
-      console.log(
-        "all numbers are smaller than the group number, so we append it at the end"
-      );
-      position = channelsConf.value.length;
-    } else {
-      console.log("newGroup got calculated position", position);
-      position = Math.max(0, position - 1);
+    console.log("edit existing channel group");
+    const idx = channelsConf.value.findIndex(
+      (channel) => oldChannel.channel_id === channel.channel_id,
+    );
+    const targetChannel = channelsConf.value[idx];
+    if (targetChannel) {
+      targetChannel.name = newName;
+      targetChannel.number = newPosition ? newPosition : -1;
+      targetChannel.channel_id = channelId;
     }
-    console.log("inserting new group at position:", position);
-    channelsConf.value.splice(position, 0, newGroup);
   } else {
-    channelsConf.value.push(newGroup);
-  }
+    console.log("add channel group", newName, "at position", newPosition);
+
+    const newGroup = {
+      channel_id: channelId,
+      number: newPosition ? newPosition : -1,
+      channel_string: newName,
+      is_group: true,
+      is_radio: false,
+      name: `${newName}`,
+      provider: "",
+      ca: "",
+      source: "",
+    };
+    console.log("newGroup has number", newGroup.number);
+    console.log("runningChannelNumbers", runningChannelNumbers.value);
+    if (newPosition !== null) {
+      const currentChannelGrupNumber = newGroup.number;
+      let position = runningChannelNumbers.value.findIndex((value) => {
+        if (value > currentChannelGrupNumber) {
+          return true;
+        }
+      });
+      if (position < 0) {
+        console.log(
+          "all numbers are smaller than the group number, so we append it at the end",
+        );
+        position = channelsConf.value.length;
+      } else {
+        console.log("newGroup got calculated position", position);
+        position = Math.max(0, position - 1);
+      }
+      console.log("inserting new group at position:", position);
+      channelsConf.value.splice(position, 0, newGroup);
+    } else {
+      channelsConf.value.push(newGroup);
+    }
   }
   if (scrollToNewGroup) {
     console.log("Scroll to new channel Group");
-    const css_identifier = `#${CSS.escape(channelId)}`
+    const css_identifier = `#${CSS.escape(channelId)}`;
     const element = await waitForElm(css_identifier);
     if (element) {
       console.log("Scroll to new channel Group Element:", element);
@@ -447,11 +460,11 @@ async function scroll_to_channel_id(channelId: string) {
   }
 }
 
-const cardTextRef = ref<InstanceType<typeof VCardText> | null>(null)
+const cardTextRef = ref<InstanceType<typeof VCardText> | null>(null);
 
 const scrollOptions = computed<GoToOptions>(() => {
   return {
-    container: (cardTextRef.value?.$el as HTMLElement) || '#goto-container', //container: "#goto-container",
+    container: (cardTextRef.value?.$el as HTMLElement) || "#goto-container", //container: "#goto-container",
     duration: 100,
     easing: "easeInOutCubic",
     offset: -50,
@@ -459,7 +472,7 @@ const scrollOptions = computed<GoToOptions>(() => {
 });
 
 function getSourceIcon(source: string) {
-  if (source.length == 0) return "mdi-tag"
+  if (source.length == 0) return "mdi-tag";
   switch (source.slice(0, 1)) {
     case "T":
       return "mdi-antenna";
@@ -468,70 +481,76 @@ function getSourceIcon(source: string) {
     case "C":
       return "mdi-audio-input-stereo-minijack";
     case "I":
-      return "mdi-IP"
+      return "mdi-IP";
     case "V":
-      return "mdi-video-input-component"
+      return "mdi-video-input-component";
     default:
       return "mdi-tag";
   }
 }
 
 function isRadio(channel: VDRChannel): boolean {
-  const parts = channel.channel_string.split(':')
+  const parts = channel.channel_string.split(":");
   // console.log(channel.channel_string, '->', parts, ':', (Number(parts[5]) <= 1))
-  return Boolean(Number(parts[5]) <= 1)
+  return Boolean(Number(parts[5]) <= 1);
 }
 
 const reloadChannels = async function () {
   try {
-    channelsConf.value = await vdr.loadChannels()
+    channelsConf.value = await vdr.loadChannels();
   } catch (error) {
     console.log("could not load channelpedia sources", error);
   }
 };
 
 async function saveChanges() {
-  isSaving.value = true
+  isSaving.value = true;
   const newChannelsConfData = channelsConf.value.flatMap((entry) => {
-    if (!entry.name.length && entry.number < 0)
-    return []
-    if (entry.is_group) { // handle channel groups
+    if (!entry.name.length && entry.number < 0) return [];
+    if (entry.is_group) {
+      // handle channel groups
       if (entry.number > 0) {
-        return `:@${entry.number}${entry.name.length > 0 ? " " + entry.name : ""}`
+        return `:@${entry.number}${entry.name.length > 0 ? " " + entry.name : ""}`;
       } else {
-        return `:${entry.name}`
+        return `:${entry.name}`;
       }
     } else {
-      return entry.channel_string
+      return entry.channel_string;
     }
-  })
-  const blob = new Blob([newChannelsConfData.join('\n')], { type: "text/plain" });
-  const file = new File([blob], 'channels.conf');
+  });
+  const blob = new Blob([newChannelsConfData.join("\n")], {
+    type: "text/plain",
+  });
+  const file = new File([blob], "channels.conf");
   const r = await backend.uploadFileWithStreamingResponseTC(
-    'vdr/configfile', {filename: 'channels.conf', uploaded_file: file}, (data) => {console.log(data)},
+    "vdr/configfile",
+    { filename: "channels.conf", uploaded_file: file },
+    (data) => {
+      console.log(data);
+    },
   );
   console.log("file upload:", r);
   if (r) {
     // emit("saved");
   }
   // downloadBlob(channelsConfFile, 'channels.conf')
-  isSaving.value = false
+  isSaving.value = false;
 }
 
 function showChannelNumberInput(channel: VDRChannel) {
-  inputChannel.value = channel
+  inputChannel.value = channel;
   showMoveChannelInputDialogue.value = true;
 }
 
 function insertChannel(channel: VDRChannel, number: number, scroll: boolean) {
-  showMoveChannelInputDialogue.value = false
-  console.log("move channel", channel, "to position", number)
+  showMoveChannelInputDialogue.value = false;
+  console.log("move channel", channel, "to position", number);
   if (channelIdSet.value.value.has(channel.channel_id)) {
     const old_idx = channelsConf.value.findIndex((element: VDRChannel) => {
       return element.channel_id === channel.channel_id;
-    })
-    const old_channel  = channelsConf.value.splice(old_idx, 1)
-    console.log("removed old channel:", old_channel)
+    });
+    const old_channel = channelsConf.value.splice(old_idx, 1);
+    console.log("removed old channel:", old_channel);
   }
   const channelNumber = number;
   console.log("splice", channel, "into VDRChannels at", channelNumber);
@@ -543,7 +562,8 @@ function insertChannel(channel: VDRChannel, number: number, scroll: boolean) {
   if (position < 0) {
     channelsConf.value.push(channel);
   } else {
-    if (channelsConf.value[position].is_group) {
+    const targetChannel = channelsConf.value[position];
+    if (targetChannel && targetChannel.is_group) {
       position++;
     }
     channelsConf.value.splice(position, 0, channel);
@@ -558,14 +578,14 @@ const deleteChannel = function (channel_id: string, channel_idx: number) {
     "delete channel with id",
     channel_id,
     "at index position",
-    channel_idx
+    channel_idx,
   );
   channelsConf.value.splice(channel_idx, 1);
 };
 
 onMounted(async () => {
   await reloadChannels();
-  console.log("Main rect size", layout.mainRect.value)
-  console.log("row dimensions", layout.getLayoutItem('secondRow'))
+  console.log("Main rect size", layout.mainRect.value);
+  console.log("row dimensions", layout.getLayoutItem("secondRow"));
 });
 </script>

@@ -2,17 +2,15 @@
   <!-- Der Wrapper füllt den gesamten v-main Platz aus -->
   <div
     class="d-flex flex-column flex-grow-1 pa-4"
-    style="height: 100%; min-height: 0;"
+    style="height: 100%; min-height: 0"
   >
     <v-card
       class="d-flex flex-column mx-auto w-100"
-      style="height: 100%; min-height: 0;"
+      style="height: 100%; min-height: 0"
     >
       <v-card-title class="flex-none pt-4 px-4">
         <div class="d-flex align-center justify-space-between w-100">
-          <h2 class="text-h5">
-            VDR Setup
-          </h2>
+          <h2 class="text-h5">VDR Setup</h2>
           <v-btn
             color="primary"
             prepend-icon="mdi-download"
@@ -27,19 +25,19 @@
       <v-card-text
         ref="tableContainer"
         class="flex-grow-1 pa-0"
-        style="position: relative; min-height: 0; overflow: hidden;"
+        style="position: relative; min-height: 0; overflow: hidden"
       >
         <!-- Absolute Positionierung, um sich an v-card-text zu klammern -->
         <div
           class="d-flex flex-column pa-4"
-          style="position: absolute; inset: 0;"
+          style="position: absolute; inset: 0"
         >
           <v-text-field
             id="searchbar"
             v-model="searchText"
             class="flex-none mb-4"
             prepend-inner-icon="mdi-magnify"
-            :label="t('actions.searchObj', {what: t('category.entry')})"
+            :label="t('actions.searchObj', { what: t('category.entry') })"
             variant="outlined"
             clearable
             hide-details
@@ -68,11 +66,7 @@
                     size="small"
                     @click="reloadValue(item.name)"
                   />
-                  <v-divider
-                    thickness="2"
-                    vertical
-                    class="mx-2"
-                  />
+                  <v-divider thickness="2" vertical class="mx-2" />
                   {{ item.name }}
                 </td>
 
@@ -129,87 +123,100 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick, Ref } from 'vue'
-import { useDisplay } from 'vuetify'
-import { useBackendStore } from '@/stores/backend';
-import { useI18n } from 'vue-i18n';
-import { downloadBlob } from '@/services/download';
+import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { useDisplay } from "vuetify";
+import { useBackendStore } from "@/stores/backend";
+import { useI18n } from "vue-i18n";
+import { downloadBlob } from "@/services/download";
 
-const { mobile } = useDisplay()
+const { mobile } = useDisplay();
 const { t } = useI18n();
-const store = useBackendStore()
+const store = useBackendStore();
 
-const isLoading: Ref<boolean> = ref(false)
-const searchText: Ref<string> = ref("")
+const isLoading: Ref<boolean> = ref(false);
+const searchText: Ref<string> = ref("");
 
 interface VDRSetupInterface {
-  name: string
-  value: string|number
-  max_value: number|null
-  min_value: number|null
+  name: string;
+  value: string | number;
+  max_value: number | null;
+  min_value: number | null;
 }
 
-const vdrSetupEntries: Ref<VDRSetupInterface[]> = ref([])
+const vdrSetupEntries: Ref<VDRSetupInterface[]> = ref([]);
 
 async function loadVDRSetup() {
-  isLoading.value = true
+  isLoading.value = true;
   try {
-    const response = await store.getRequest('/vdr/setup')
+    const response = await store.getRequest("/vdr/setup");
     if (response?.data) {
-      vdrSetupEntries.value = response.data
+      vdrSetupEntries.value = response.data;
     }
   } catch (error) {
-    console.error("could not load setup from vdr:", error)
+    console.error("could not load setup from vdr:", error);
   }
-  isLoading.value = false
-
+  isLoading.value = false;
 }
 
 async function reloadValue(name: string) {
   try {
-    const response = await store.getRequest(`/vdr/setup?key=${encodeURIComponent(name)}`)
+    const response = await store.getRequest(
+      `/vdr/setup?key=${encodeURIComponent(name)}`,
+    );
     if (response?.data) {
-      const idx = vdrSetupEntries.value.findIndex((element) => element.name === name)
-      vdrSetupEntries.value[idx].value = response.data
+      const idx = vdrSetupEntries.value.findIndex(
+        (element) => element.name === name,
+      );
+      vdrSetupEntries.value[idx].value = response.data;
       // const idx2 = visibleEntries.value.findIndex((element) => element.name === name)
       // visibleEntries.value[idx2].value = value
-      console.log("updated value for: ", name, ': ', response.data, 'at index', idx)
+      console.log(
+        "updated value for: ",
+        name,
+        ": ",
+        response.data,
+        "at index",
+        idx,
+      );
       // console.log("updated value for: ", name, ': ', value, 'at index', idx2)
     }
-  } catch(error) {
-    console.error(error)
+  } catch (error) {
+    console.error(error);
   }
 }
 
 interface SetupElement {
-  name: string
-  value: string|number
+  name: string;
+  value: string | number;
 }
 
-async function sendValue(name: string, value: string|number) {
-  const idx = vdrSetupEntries.value.findIndex((element: SetupElement) => element.name === name)
-  vdrSetupEntries.value[idx].value = value
-  console.log("saved value for: ", name, ': ', value, 'at index', idx)
+async function sendValue(name: string, value: string | number) {
+  const idx = vdrSetupEntries.value.findIndex(
+    (element: SetupElement) => element.name === name,
+  );
+  vdrSetupEntries.value[idx].value = value;
+  console.log("saved value for: ", name, ": ", value, "at index", idx);
   try {
-    await store.postRequest(`/vdr/setup?key=${encodeURIComponent(name)}&value=${encodeURIComponent(value)}`, {})
-  } catch(error) {
-    console.error(error)
+    await store.postRequest(
+      `/vdr/setup?key=${encodeURIComponent(name)}&value=${encodeURIComponent(value)}`,
+      {},
+    );
+  } catch (error) {
+    console.error(error);
   }
-
-};
+}
 
 async function offerSetupConf() {
-  const setupConfList: string[] = []
+  const setupConfList: string[] = [];
   vdrSetupEntries.value.forEach((entry) => {
-    setupConfList.push(`${entry.name} = ${entry.value}\n`)
-  })
-  const blob = new Blob(setupConfList, {type: "text/plain"})
-  downloadBlob(blob, "setup.conf")
+    setupConfList.push(`${entry.name} = ${entry.value}\n`);
+  });
+  const blob = new Blob(setupConfList, { type: "text/plain" });
+  downloadBlob(blob, "setup.conf");
 }
 
-
-const tableContainer = ref<HTMLElement | null>(null)
-const dynamicTableHeight = ref(500) // Startwert
+const tableContainer = ref<HTMLElement | null>(null);
+const dynamicTableHeight = ref(500); // Startwert
 
 // Dynamische Höhenberechnung
 const updateHeight = () => {
@@ -231,14 +238,14 @@ const resizeObserver = new ResizeObserver(() => {
 });
 
 onMounted(async () => {
-  loadVDRSetup() // Dein API Aufruf
-  await nextTick()
-  updateHeight()
-  if (tableContainer.value) resizeObserver.observe(tableContainer.value)
-})
+  loadVDRSetup(); // Dein API Aufruf
+  await nextTick();
+  updateHeight();
+  if (tableContainer.value) resizeObserver.observe(tableContainer.value);
+});
 
 onUnmounted(async () => {
-  loadVDRSetup()
+  loadVDRSetup();
   await nextTick();
 
   // Warten auf die Transition und sicherstellen, dass $el existiert
@@ -250,13 +257,19 @@ onUnmounted(async () => {
       resizeObserver.observe(el);
     }
   }, 200); // 200ms Puffer für die 'slide' Transition
-})
+});
 
 const headers = [
-  { title: 'Name', key: 'name', align: 'start' },
-  { title: 'Setting', key: 'value', sortable: false },
-  { title: 'Action', key: 'action', sortable: false, width: '100px', align: 'center' },
-] as const
+  { title: "Name", key: "name", align: "start" },
+  { title: "Setting", key: "value", sortable: false },
+  {
+    title: "Action",
+    key: "action",
+    sortable: false,
+    width: "100px",
+    align: "center",
+  },
+] as const;
 </script>
 
 <style scoped>

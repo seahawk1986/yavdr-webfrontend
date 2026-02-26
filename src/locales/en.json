@@ -113,7 +113,9 @@
     "yavdr-frontend": "Configuration for yavdr-frontend",
     "acpiwakeup": "config file for vdr-addon-acpiwakeup",
     "stm32_wakeup": "config file for vdr-addon-stm32irmp-wakeup",
-    "picoirmp_wakeup": "config file for PICO irmp wakeup"
+    "picoirmp_wakeup": "config file for PICO irmp wakeup",
+    "lifeguard": "Config files for vdr-addon-lifeguard",
+    "lifeguard-ng": "Config files for vdr-addon-lifeguard-ng"
   },
   "info": {
     "state": "state",

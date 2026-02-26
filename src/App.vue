@@ -1,35 +1,21 @@
 <template>
-  <router-view v-slot="{ Component, route }">
-    <transition
-      name="slide"
-      mode="out-in"
-    >
-      <component
-        :is="Component"
-        :key="route.fullPath"
-      />
-    </transition>
-  </router-view>
+  <router-view />
 </template>
 
 <script setup lang="ts">
-
-import { useLocale } from 'vuetify'
-const { current } = useLocale()
-
-
+import { useLocale } from "vuetify";
+const { current } = useLocale();
 
 onMounted(() => {
-  document.documentElement.setAttribute('lang', current.value) // for some reason this is needed
-})
-
-
+  document.documentElement.setAttribute("lang", current.value); // for some reason this is needed
+});
 </script>
 
 <style lang="css">
 /* Enable page scrolling ONLY on mobile */
 @media (max-width: 599px) {
-  html, body {
+  html,
+  body {
     overflow-y: auto !important;
     height: auto !important; /* Critical to let the page grow */
   }
@@ -37,7 +23,8 @@ onMounted(() => {
 
 /* Keep internal scrolling for desktop */
 @media (min-width: 600px) {
-  html, body {
+  html,
+  body {
     overflow: hidden !important;
   }
 }

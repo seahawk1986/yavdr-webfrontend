@@ -1,10 +1,7 @@
 <template>
   <!-- Card fills the container height -->
-  <v-card
-    ref="mainCard"
-    class="ma-2 pa-2 fill-height d-flex flex-column"
-  >
-    <v-card-title style="width: 100%; max-width: 1440px;">
+  <v-card ref="mainCard" class="ma-2 pa-2 fill-height d-flex flex-column">
+    <v-card-title style="width: 100%; max-width: 1440px">
       <v-toolbar
         id="innerToolbar"
         class="bg-surface"
@@ -22,11 +19,7 @@
           variant="tonal"
           @click="scrollToLastElement = !scrollToLastElement"
         />
-        <v-divider
-          vertical
-          thickness="5"
-          opacity="0"
-        />
+        <v-divider vertical thickness="5" opacity="0" />
         <v-btn
           v-tooltip:bottom="t('actions.downloadSyslog')"
           :aria-label="t('actions.downloadSyslog')"
@@ -40,25 +33,18 @@
         <template v-if="$vuetify.display.mdAndUp">
           <div
             v-for="level in logLevelSelection.filter(
-              (element) => element.prio <= filterLogLevel
+              (element) => element.prio <= filterLogLevel,
             )"
             :key="level.prio"
           >
             <span
               :class="`${getBackgroundColorByPrio(level.prio)} pa-2 text-body-2`"
-            >{{ level.name }}</span>
-            <v-divider
-              thickness="1ch"
-              opacity="0"
-              vertical
-            />
+              >{{ level.name }}</span
+            >
+            <v-divider thickness="1ch" opacity="0" vertical />
           </div>
         </template>
-        <v-divider
-          thickness="2ch"
-          opacity="0"
-          vertical
-        />
+        <v-divider thickness="2ch" opacity="0" vertical />
         <v-select
           v-model="filterLogLevel"
           class="mt-6 mr-4 flex-grow-0"
@@ -71,10 +57,7 @@
         />
       </v-toolbar>
     </v-card-title>
-    <v-card-text
-      class="flex-grow-1 overflow-hidden"
-      style="min-height: 0;"
-    >
+    <v-card-text class="flex-grow-1 overflow-hidden" style="min-height: 0">
       <v-infinite-scroll
         id="goto-container"
         ref="infiniteScroller"
@@ -84,39 +67,21 @@
         @load="load"
       >
         <template #loading>
-          <v-progress-linear
-            color="primary"
-            indeterminate
-            rounded
-          />
+          <v-progress-linear color="primary" indeterminate rounded />
         </template>
 
-        <template
-          v-for="item in filteredLogEntries"
-          :key="item.CURSOR"
-        >
-          <div
-            :id="item.CURSOR"
-            class="text-body-2`"
-          >
+        <template v-for="item in filteredLogEntries" :key="item.CURSOR">
+          <div :id="item.CURSOR" class="text-body-2`">
             <!-- <span :class="getBackgroundColorByPrio(item.PRIORITY)"> -->
             {{ item.FORMATTED_TIMESTAMP }}
             <!-- </span> -->
 
-            <v-divider
-              thickness="1ch"
-              vertical
-              opacity="0"
-            />
+            <v-divider thickness="1ch" vertical opacity="0" />
             <template v-if="$vuetify.display.lgAndUp">
               <span :class="getBackgroundColorByPrio(item.PRIORITY)">
                 {{ item.HOSTNAME }}:
               </span>
-              <v-divider
-                thickness="1ch"
-                vertical
-                opacity="0"
-              />
+              <v-divider thickness="1ch" vertical opacity="0" />
             </template>
             <span lang="en">{{ item.MESSAGE }}</span>
           </div>
@@ -127,14 +92,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useBackendStore } from "@/stores/backend"
-import { useDate } from "vuetify"
-import { useI18n } from "vue-i18n"
-import type { VInfiniteScroll } from "vuetify/components"
+import { useBackendStore } from "@/stores/backend";
+import { useDate } from "vuetify";
+import { useI18n } from "vue-i18n";
+import type { VInfiniteScroll } from "vuetify/components";
 
-const { t } = useI18n()
-const date = useDate()
-
+const { t } = useI18n();
+const date = useDate();
 
 const store = useBackendStore();
 const logEntries: Ref<Array<logEntryInterface>> = ref([]);
@@ -143,14 +107,14 @@ const scrollToLastElement: Ref<boolean> = ref(true);
 function formatDate(element: logEntryInterface) {
   return `${date.format(element.REALTIME_TIMESTAMP, "shortDate")} ${date.format(
     element.REALTIME_TIMESTAMP,
-    "fullTime24h"
+    "fullTime24h",
   )}`;
 }
 
 onMounted(async () => {
   const response = await store.getRequest(
-    "/logs/?start=now&n_entries=200&direction=forward"
-  )
+    "/logs/?start=now&n_entries=200&direction=forward",
+  );
   if (response?.data) {
     const data: Array<logEntryInterface> = response.data;
     logEntries.value = data.map((element) => {
@@ -188,7 +152,8 @@ const logLevelSelection = [
 ];
 
 function getBackgroundColorByPrio(prio: number) {
-  const color = logLevelSelection[prio].color;
+  const prio_data = logLevelSelection[prio];
+  const color = prio_data ? prio_data.color : "blue-grey-lighten-5";
   return `text-${color}`;
 }
 
@@ -203,28 +168,27 @@ async function downloadSyslog() {
 const filterLogLevel: Ref<number> = ref(7);
 const filteredLogEntries = computed(() => {
   return logEntries.value.filter(
-    (entry) => entry.PRIORITY <= filterLogLevel.value
+    (entry) => entry.PRIORITY <= filterLogLevel.value,
   );
 });
 
-const infiniteScroller = ref<InstanceType<typeof VInfiniteScroll> | null>(null)
+const infiniteScroller = ref<InstanceType<typeof VInfiniteScroll> | null>(null);
 
 const scrollToBottom = async () => {
   await nextTick();
   if (infiniteScroller.value) {
     // console.log("use root element scroll")
-    const scroller = document.getElementById('goto-container')
+    const scroller = document.getElementById("goto-container");
     if (scroller) {
       // console.log("scrolling to position", scroller.scrollHeight)
-      scroller.scrollTo({top: scroller.scrollHeight, behavior: 'auto'})
-
+      scroller.scrollTo({ top: scroller.scrollHeight, behavior: "auto" });
     }
   }
 };
 
 async function load(
   this: VInfiniteScroll,
-  { side, done }: { side: string; done: doInterface }
+  { side, done }: { side: string; done: doInterface },
 ) {
   // console.log("called load with:", side);
   if (side === "start") {
@@ -233,7 +197,7 @@ async function load(
     if (firstElement) {
       const ts = firstElement.REALTIME_TIMESTAMP;
       const response = await store.getRequest(
-        `/logs/?start=${ts}&n_entries=200&direction=backward&uuid=${firstElement.CURSOR}`
+        `/logs/?start=${ts}&n_entries=200&direction=backward&uuid=${firstElement.CURSOR}`,
       );
       if (response?.data) {
         const data: logEntryInterface[] = response.data;
@@ -255,7 +219,7 @@ async function load(
     if (lastElement) {
       const ts = lastElement.REALTIME_TIMESTAMP;
       const response = await store.getRequest(
-        `/logs/?start=${ts}&n_entries=200&direction=forward&uuid=${lastElement.CURSOR}`
+        `/logs/?start=${ts}&n_entries=200&direction=forward&uuid=${lastElement.CURSOR}`,
       );
       if (response?.data) {
         const data: logEntryInterface[] = response.data;
@@ -267,17 +231,19 @@ async function load(
               element.FORMATTED_TIMESTAMP = formatDate(element);
               return element;
             });
-            const filtered_entries = entries.filter((element) => element.CURSOR != lastElement.CURSOR)
+            const filtered_entries = entries.filter(
+              (element) => element.CURSOR != lastElement.CURSOR,
+            );
             logEntries.value.push(...filtered_entries);
             if (scrollToLastElement.value && infiniteScroller.value) {
-                // console.log("calling scrollToBottom")
-                await scrollToBottom()
-              }
+              // console.log("calling scrollToBottom")
+              await scrollToBottom();
             }
           }
         }
       }
     }
+  }
 
   done("ok");
 }

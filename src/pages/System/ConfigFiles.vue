@@ -1,9 +1,9 @@
 <template>
   <v-sheet fill-horizonal height="100%">
     <v-container fluid>
-      <v-row dense>
+      <v-row density="comfortable">
         <v-col
-          v-for="config in configurationFiles"
+          v-for="config in existingConfigFiles"
           :key="config.filename"
           cols="12"
           md="4"
@@ -48,11 +48,13 @@
 
 <script lang="ts" setup>
 import type { configFileInterface } from "@/components/FileEditor/interfaces";
+import { useBackendStore } from "@/stores/backend";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
+const backend = useBackendStore();
 
-// TODO: request from backend
+const existingConfigFileSet: Ref<Set<string>> = ref(new Set());
 
 const configurationFiles: Ref<configFileInterface[]> = ref([
   {
@@ -72,7 +74,7 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     showEditor: false,
   },
   {
-    filename: "/etc/vdr/acpiwakeup.conf",
+    filename: "/etc/vdr/vdr-addon-acpiwakeup.conf",
     url: "system/configfile",
     title: "vdr-addon-acpiwakeup",
     description: "descriptions.acpiwakeup",
@@ -90,12 +92,45 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
   },
 
   {
-    filename: "/etc/vdr/acpiwakeup.conf",
+    filename: "/etc/vdr/vdr-addon-picoirmp-wakeup.conf",
     url: "system/configfile",
     title: "irmpalarm",
     description: "descriptions.picoirmp_wakeup",
     icon: "mdi-clock-fast",
     showEditor: false,
   },
+  {
+    filename: "/etc/lifeguard.conf",
+    url: "system/configfile",
+    title: "lifeguard",
+    description: "descriptions.lifeguard",
+    icon: "mdi-lifebuoy",
+    showEditor: false,
+  },
+  {
+    filename: "/etc/lifeguard.yml",
+    url: "system/configfile",
+    title: "lifeguard-ng",
+    description: "descriptions.lifeguard-ng",
+    icon: "mdi-lifebuoy",
+    showEditor: false,
+  },
 ]);
+
+const existingConfigFiles = computed(() => {
+  return configurationFiles.value.filter((data) => {
+    if (existingConfigFileSet.value.has(data.filename)) return data;
+  });
+});
+
+onMounted(async () => {
+  try {
+    const r = await backend.getRequest("/system/configfiles");
+    if (r) {
+      existingConfigFileSet.value = new Set(r.data);
+    }
+  } catch (error) {
+    console.log("getting list of existing configuration files failed:", error);
+  }
+});
 </script>

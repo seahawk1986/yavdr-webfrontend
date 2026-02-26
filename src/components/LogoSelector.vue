@@ -1,44 +1,50 @@
 <script lang="ts" setup>
-import axios from 'axios'
-import { onMounted, ref, type Ref } from 'vue'
+import axios from "axios";
+import { onMounted, ref, type Ref } from "vue";
 
-const url = 'https://api.github.com/users/Jasmeet181/repos'
-const languages: Ref<Map<string, string>> = ref(new Map())
-const discontinued_languages: Ref<Map<string, string>> = ref(new Map())
-const selected_languages: Ref<Array<string>> = ref(['de'])
+const url = "https://api.github.com/users/Jasmeet181/repos";
+const languages: Ref<Map<string, string>> = ref(new Map());
+const discontinued_languages: Ref<Map<string, string>> = ref(new Map());
+const selected_languages: Ref<Array<string>> = ref(["de"]);
 
 interface RepoInterface {
   // shortened version of the long GitHub entry for a repository
-  name: string
-  full_name: string
-  description: string
+  name: string;
+  full_name: string;
+  description: string;
 }
 
 async function get_languages() {
   try {
-    const data = await axios.get(url)
-    languages.value.clear()
-    discontinued_languages.value.clear()
+    const data = await axios.get(url);
+    languages.value.clear();
+    discontinued_languages.value.clear();
     data.data.forEach((element: RepoInterface) => {
-      if (element.name.match('mediaportal-[^-]+-logos')) {
-        const key = (/^mediaportal-([^-]+)-logos$/.exec(element.name) || '')[1]
-        const value = element.description.replace(" for Mediaportal 1's LogoManager plugin", '')
-        if (element.description.startsWith('Discontinued')) {
-          discontinued_languages.value.set(key, value)
+      if (element.name.match("mediaportal-[^-]+-logos")) {
+        const key = (/^mediaportal-([^-]+)-logos$/.exec(element.name) || "")[1];
+        const value = element.description.replace(
+          " for Mediaportal 1's LogoManager plugin",
+          "",
+        );
+        if (!key) {
+          throw "got no key";
+        }
+        if (element.description.startsWith("Discontinued")) {
+          discontinued_languages.value.set(key, value);
         } else {
-          languages.value.set(key, value)
+          languages.value.set(key, value);
         }
         // console.log(element.name, element.description)
       }
-    })
+    });
     console.log(
       selected_languages.value.filter((entry) => {
         // console.log('check if ', entry, 'in ', languages.value)
-        languages.value.has(entry)
-      })
-    )
+        languages.value.has(entry);
+      }),
+    );
   } catch (error) {
-    console.log('failed to retrieve logo repos', error)
+    console.log("failed to retrieve logo repos", error);
   }
 }
 
@@ -46,20 +52,20 @@ async function get_languages() {
 const getFlagEmoji = (countryCode: string) => {
   const codePoints = countryCode
     .toUpperCase()
-    .split('')
-    .map((char) => 127397 + char.charCodeAt(0))
-  return String.fromCodePoint(...codePoints)
-}
+    .split("")
+    .map((char) => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+};
 
 async function refresh() {
-  await get_languages()
+  await get_languages();
 }
 
 async function save() {}
 
 onMounted(async () => {
-  await get_languages()
-})
+  await get_languages();
+});
 </script>
 
 <template>
@@ -72,7 +78,7 @@ onMounted(async () => {
         <div>
           <!-- {{ selected_languages }} -->
           <v-container>
-            <v-row no-gutters>
+            <v-row density="compact">
               <v-col
                 v-for="[lang, description] in languages"
                 :key="lang"
@@ -94,7 +100,7 @@ onMounted(async () => {
           <v-expansion-panels>
             <v-expansion-panel title="Discontinued Logo Repositories">
               <v-expansion-panel-text>
-                <v-row no-gutters>
+                <v-row density="compact">
                   <v-col
                     v-for="[lang, description] in discontinued_languages"
                     :key="lang"
@@ -118,18 +124,10 @@ onMounted(async () => {
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-refresh"
-          @click="refresh"
-        >
+        <v-btn color="primary" prepend-icon="mdi-refresh" @click="refresh">
           Refresh
         </v-btn>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-send"
-          @click="save"
-        >
+        <v-btn color="primary" prepend-icon="mdi-send" @click="save">
           Save
         </v-btn>
       </v-card-actions>

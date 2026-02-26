@@ -4,15 +4,10 @@
     :height="height - backend.titlebarHeight"
     style="min-width: 80%"
   >
-    <v-toolbar
-      flat
-      rounded
-      density="compact"
-    >
+    <v-toolbar flat rounded density="compact">
       <v-toolbar-title>
-        {{ $t('category.epg') }} - {{ $t('channels.selection') }}:
+        {{ $t("category.epg") }} - {{ $t("channels.selection") }}:
       </v-toolbar-title>
-
 
       <v-icon-btn
         v-tooltip="t('channels.switchto', { channel: selectedChannelName })"
@@ -21,11 +16,7 @@
         icon="mdi-television-classic"
         @click="switchChannel"
       />
-      <v-divider
-        vertical
-        thickness="10"
-        opacity="0"
-      />
+      <v-divider vertical thickness="10" opacity="0" />
       <v-select
         id="channel-selection"
         v-model="selectedChannel"
@@ -38,10 +29,7 @@
       />
     </v-toolbar>
 
-    <v-spacer
-      vertical
-    />
-
+    <v-spacer vertical />
 
     <div v-if="isLoading">
       <v-progress-linear indeterminate />
@@ -65,7 +53,7 @@
           :title="
             date.format(
               item.dtStart.toPlainDate.toString(),
-              'fullDateWithWeekday'
+              'fullDateWithWeekday',
             )
           "
           variant="outlined"
@@ -130,9 +118,11 @@
           </template>
           <template #append>
             <v-icon-btn
-              v-if="((item.description ? item.description : '').length > 0)"
-              v-tooltip="(item.description ? item.description : '').replaceAll('|', '\n')"
-              style="white-space: pre-wrap;"
+              v-if="(item.description ? item.description : '').length > 0"
+              v-tooltip="
+                (item.description ? item.description : '').replaceAll('|', '\n')
+              "
+              style="white-space: pre-wrap"
               icon="mdi-information"
               variant="flat"
             />
@@ -143,7 +133,7 @@
           :title="
             date.format(
               item.dtEnd.toPlainDate().toString(),
-              'fullDateWithWeekday'
+              'fullDateWithWeekday',
             )
           "
           slim
@@ -200,22 +190,21 @@ interface epgListInterface {
   // isSeparator: boolean
 }
 
-function truncate(s: string, n: number){
-          return s.substring(0,n-1)+(s.length>n?'…':'');
-      };
-
+function truncate(s: string, n: number) {
+  return s.substring(0, n - 1) + (s.length > n ? "…" : "");
+}
 
 const selectedChannel: Ref<string | null> = ref(null);
 const selectedChannelName = computed(() => {
   return vdr.vdrChannels.find(
     (channel: { channel_id: string | null }) =>
-      channel.channel_id == selectedChannel.value
+      channel.channel_id == selectedChannel.value,
   )?.name;
 });
 const isLoading: Ref<boolean> = ref(true);
 
 const epgChannelList: Ref<epgListInterface[]> = ref([]);
-const channelTimers: Ref<VDRTimerInterface[]> = ref([])
+const channelTimers: Ref<VDRTimerInterface[]> = ref([]);
 
 // function getTimer(element: epgListInterface) {
 //   return channelTimers.value.find((timer) => timer.start <= element.start_ts && timer.stop >= (element.start_ts + element.duration.total('seconds')))
@@ -227,9 +216,10 @@ const timerEvents = computed(() => {
   const timerEventMap = new Map<string, VDRTimerInterface>();
 
   for (const timer of channelTimers.value) {
-    const matchingEvents = epgChannelList.value.filter(event =>
-      timer.start <= event.start_ts &&
-      timer.stop >= (event.start_ts + event.duration.total('seconds'))
+    const matchingEvents = epgChannelList.value.filter(
+      (event) =>
+        timer.start <= event.start_ts &&
+        timer.stop >= event.start_ts + event.duration.total("seconds"),
     );
 
     for (const event of matchingEvents) {
@@ -240,8 +230,8 @@ const timerEvents = computed(() => {
 });
 
 const selectable_channels = computed(() => {
-  return vdr.vdrChannels.filter((channel) => !channel.is_group)
-})
+  return vdr.vdrChannels.filter((channel) => !channel.is_group);
+});
 
 function formatTime(dtTime: Temporal.PlainDateTime): string {
   return `${dtTime.hour.toString().padStart(2, "0")}:${dtTime.minute
@@ -251,22 +241,25 @@ function formatTime(dtTime: Temporal.PlainDateTime): string {
 
 function formatTimespan(
   dtStart: Temporal.PlainDateTime,
-  dtEnd: Temporal.PlainDateTime
+  dtEnd: Temporal.PlainDateTime,
 ) {
   return `${formatTime(dtStart)} - ${formatTime(dtEnd)}`;
 }
-
 
 async function refreshTimers() {
   if (!selectedChannel.value) return;
 
   const timers = await vdr.loadTimers();
-  channelTimers.value = timers.filter(t => t.channel_id === selectedChannel.value);
+  channelTimers.value = timers.filter(
+    (t) => t.channel_id === selectedChannel.value,
+  );
 }
 
 async function loadEpgData(channel_id: string | null) {
   isLoading.value = true;
-  channelTimers.value = (await vdr.loadTimers()).filter(t => t.channel_id === channel_id)
+  channelTimers.value = (await vdr.loadTimers()).filter(
+    (t) => t.channel_id === channel_id,
+  );
 
   if (channel_id) {
     const response = await vdr.loadEPG(channel_id);
@@ -274,7 +267,7 @@ async function loadEpgData(channel_id: string | null) {
       const data: epgEntryInterface[] = response.data;
       if (data) {
         const epgListData: epgListInterface[] = data.map((element) => {
-          const event_id = element.event_id
+          const event_id = element.event_id;
           const dtStart = Temporal.PlainDateTime.from(element.start);
           const duration = Temporal.Duration.from(element.duration);
           const dtEnd = dtStart.add(duration);
@@ -292,7 +285,7 @@ async function loadEpgData(channel_id: string | null) {
             title: element.title,
             subtitle: element.subtitle,
             description: element.description,
-            timer: timer
+            timer: timer,
           };
         });
         epgChannelList.value = epgListData;
@@ -313,10 +306,10 @@ async function switchChannel() {
   if (channel) {
     const response = await backend.postRequest(
       `/vdr/channel?channel=${encodeURIComponent(channel)}`,
-      {}
+      {},
     );
     if (response?.data) {
-      const data = response.data
+      const data = response.data;
       console.log(data);
       if (data.startsWith("250 ")) {
         const msg = data.slice(3);
@@ -326,12 +319,14 @@ async function switchChannel() {
           text: data.slice(3),
           timeout: 4000,
           color: "primary",
+          closable: true,
         });
       } else {
         notifications.messages.push({
           text: data,
           timeout: 1000,
           color: "secondary",
+          closable: true,
         });
       }
     } else {
@@ -346,30 +341,30 @@ async function createTimer(epgEntry: epgListInterface) {
     dt_start: epgEntry.dtStart,
     dt_end: epgEntry.dtEnd,
     title: epgEntry.title,
-
-  })
+  });
   await refreshTimers();
 }
 
 async function updateTimer(timerEntry: string) {
   if (timerEntry) {
-    console.log("edit timer for:", timerEntry)
-    await vdr.updateTimer(timerEntry)
+    console.log("edit timer for:", timerEntry);
+    await vdr.updateTimer(timerEntry);
   }
-  await refreshTimers()
+  await refreshTimers();
 }
 
-
 async function deleteTimer(id: number) {
-  await vdr.deleteTimer(id)
-  await refreshTimers()
+  await vdr.deleteTimer(id);
+  await refreshTimers();
 }
 
 onMounted(async () => {
   // load the channels
   await vdr.loadChannels();
-  const [_channel_num, channel_string] = await vdr.getCurrentChannel()
-  const first = selectable_channels.value.find((channel) => channel.channel_string === channel_string);
+  const [_channel_num, channel_string] = await vdr.getCurrentChannel();
+  const first = selectable_channels.value.find(
+    (channel) => channel.channel_string === channel_string,
+  );
   if (first) {
     selectedChannel.value = first.channel_id;
     await loadEpgData(selectedChannel.value);

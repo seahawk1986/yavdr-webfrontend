@@ -57,20 +57,23 @@ export async function useAnsibleStatus() {
     onMessage(msg) {
       console.log("got event:", msg);
       const jsonData = JSON.parse(msg.data)
-      const [key, value] = Object.entries(jsonData)[0]
+      const entries = Object.entries(jsonData);
+      const firstEntry = entries[0];
+      if (!firstEntry) return; // Beendet die Funktion, wenn das Objekt leer ist
+
+      const [key, value] = firstEntry;
       switch (key) {
-        case "event": {
+        case "event":
+        case "status":
           break
-        }
-        case "status": {
-          break
-        }
         case "job": {
-          const msg: string = value as string
-          if (msg.endsWith("done")) {
-            console.log("job", msg.split(' ')[0], "is done")
+          const jobMsg = String(value);
+          if (jobMsg.endsWith("done")) {
+            // Extrahiert das erste Wort (den Job-Namen)
+            const jobName = jobMsg.split(' ')[0];
+            console.log(`job ${jobName} is done`);
           }
-          break
+          break;
         }
         default: {
           console.log("unknown signal:", jsonData)

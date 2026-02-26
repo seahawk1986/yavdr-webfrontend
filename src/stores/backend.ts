@@ -308,11 +308,14 @@ export const useBackendStore = defineStore("backend", () => {
       );
       const parts =
         headerContentDisp && headerContentDisp.split("filename*=utf-8");
-      const filename = parts.length > 1 && parts[1].replace(/["']/g, ""); // TODO improve parsing
+      const p1 = parts[1]
+      if (p1) {
+        const filename = p1.replace(/["']/g, ""); // TODO improve parsing
+        console.log("downloaded file '", result.data, "' in browser");
+        downloadBlob(result.data, filename ? filename : null);
+      }
       // const contentType = result.headers["content-type"];
 
-      console.log("downloaded file '", result.data, "' in browser");
-      downloadBlob(result.data, filename ? filename : null);
     } catch (error) {
       console.error("download for", url, "failed:", error);
     }

@@ -5,14 +5,17 @@
  */
 
 // Composables
-import {
-  createRouter,
-  createWebHistory,
-  type NavigationFailure,
-  type RouteLocationNormalizedLoaded,
-} from "vue-router";
+// import {
+//   createRouter,
+//   createWebHistory,
+//   type NavigationFailure,
+//   type RouteLocationNormalizedLoaded,
+// } from "vue-router";
+
+import { createRouter, createWebHistory } from 'vue-router'
 import { setupLayouts } from "virtual:generated-layouts";
-import { routes } from "vue-router/auto-routes";
+// @ts-expect-error: Virtuelles Modul wird erst zur Laufzeit von Vite aufgelöst
+import { routes } from 'vue-router/auto-routes'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,32 +23,32 @@ const router = createRouter({
 });
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
-router.onError(
-  (err: NavigationFailure | Error, to?: RouteLocationNormalizedLoaded) => {
-    if (
-      err?.message?.includes?.("Failed to fetch dynamically imported module")
-    ) {
-      if (!localStorage.getItem("vuetify:dynamic-reload")) {
-        console.log("Reloading page to fix dynamic import error");
-        localStorage.setItem("vuetify:dynamic-reload", "true");
+// router.onError(
+//   (err: NavigationFailure | Error, to?: RouteLocationNormalizedLoaded) => {
+//     if (
+//       err?.message?.includes?.("Failed to fetch dynamically imported module")
+//     ) {
+//       if (!localStorage.getItem("vuetify:dynamic-reload")) {
+//         console.log("Reloading page to fix dynamic import error");
+//         localStorage.setItem("vuetify:dynamic-reload", "true");
 
-        if (to) {
-          location.assign(to.fullPath);
-        } else {
-          // fallback if route info isn’t available
-          location.reload();
-        }
-      } else {
-        console.error(
-          "Dynamic import error, reloading page did not fix it",
-          err
-        );
-      }
-    } else {
-      console.error(err);
-    }
-  }
-);
+//         if (to) {
+//           location.assign(to.fullPath);
+//         } else {
+//           // fallback if route info isn’t available
+//           location.reload();
+//         }
+//       } else {
+//         console.error(
+//           "Dynamic import error, reloading page did not fix it",
+//           err
+//         );
+//       }
+//     } else {
+//       console.error(err);
+//     }
+//   }
+// );
 
 router.isReady().then(() => {
   localStorage.removeItem('vuetify:dynamic-reload')

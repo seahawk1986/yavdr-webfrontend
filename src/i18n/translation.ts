@@ -81,32 +81,10 @@ export const Trans = {
       return userPreferredLocale.locale
     }
 
-    if (Trans.isLocaleSupported(userPreferredLocale.localeNoRegion)) {
+    if (userPreferredLocale.localeNoRegion && Trans.isLocaleSupported(userPreferredLocale.localeNoRegion)) {
       return userPreferredLocale.localeNoRegion
     }
 
     return Trans.defaultLocale
   },
-
-  // async routeMiddleware(to, _from, next) {
-  //   const paramLocale = to.params.locale
-
-  //   if(!Trans.isLocaleSupported(paramLocale)) {
-  //     return next(Trans.guessDefaultLocale())
-  //   }
-
-  //   await Trans.switchLanguage(paramLocale)
-
-  //   return next()
-  // },
-
-  // i18nRoute(to) {
-  //   return {
-  //     ...to,
-  //     params: {
-  //       locale: Trans.currentLocale,
-  //       ...to.params
-  //     }
-  //   }
-  // }
 }

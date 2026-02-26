@@ -1,12 +1,7 @@
 <template>
-  <v-sheet
-    fill-horizonal
-    height="100%"
-  >
-    <v-container
-      fluid
-    >
-      <v-row dense>
+  <v-sheet fill-horizonal height="100%">
+    <v-container fluid>
+      <v-row density="comfortable">
         <v-col
           v-for="config in configurationFiles"
           :key="config.filename"
@@ -52,13 +47,10 @@
 </template>
 
 <script lang="ts" setup>
-import type { configFileInterface } from '@/components/FileEditor/interfaces';
-import { useI18n } from 'vue-i18n';
+import type { configFileInterface } from "@/components/FileEditor/interfaces";
+import { useI18n } from "vue-i18n";
 
-
-const { t } = useI18n()
-
-
+const { t } = useI18n();
 
 const configurationFiles: Ref<configFileInterface[]> = ref([
   {
@@ -117,6 +109,5 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     icon: "mdi-list-box-outline",
     showEditor: false,
   },
-
-])
+]);
 </script>

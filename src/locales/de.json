@@ -79,7 +79,9 @@
     "yavdr-frontend": "Konfigurationsdatei für yavdr-frontend",
     "acpiwakeup": "Konfigurationsdatei für vdr-addon-acpiwakeup",
     "stm32_wakeup": "Konfigurationsdatei für STM32 IRMP Wakeup",
-    "picoirmp_wakeup": "Konfigurationsdatei für PICO IMRP Wakeup"
+    "picoirmp_wakeup": "Konfigurationsdatei für PICO IMRP Wakeup",
+    "lifeguard": "Konfigurationsdateien für vdr-addon-lifeguard",
+    "lifeguard-ng": "Konfigurationsdateien für vdr-addon-lifeguard-ng"
   },
   "errors": {
     "loadingFailed": "Laden der {what} fehlgeschlagen"
