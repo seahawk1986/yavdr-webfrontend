@@ -110,7 +110,10 @@
     "start_arguments": "Start arguments",
     "details": "Details",
     "avahi-linker": "avahi-linker configuration",
-    "yavdr-frontend": "Configuration for yavdr-frontend"
+    "yavdr-frontend": "Configuration for yavdr-frontend",
+    "acpiwakeup": "config file for vdr-addon-acpiwakeup",
+    "stm32_wakeup": "config file for vdr-addon-stm32irmp-wakeup",
+    "picoirmp_wakeup": "config file for PICO irmp wakeup"
   },
   "info": {
     "state": "state",

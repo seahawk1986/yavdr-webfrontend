@@ -76,7 +76,10 @@
     "start_arguments": "Startargumente",
     "details": "Details",
     "avahi-linker": "Avahi-Linker-Konfiguration",
-    "yavdr-frontend": "Konfigurationsdatei für yavdr-frontend"
+    "yavdr-frontend": "Konfigurationsdatei für yavdr-frontend",
+    "acpiwakeup": "Konfigurationsdatei für vdr-addon-acpiwakeup",
+    "stm32_wakeup": "Konfigurationsdatei für STM32 IRMP Wakeup",
+    "picoirmp_wakeup": "Konfigurationsdatei für PICO IMRP Wakeup"
   },
   "errors": {
     "loadingFailed": "Laden der {what} fehlgeschlagen"
