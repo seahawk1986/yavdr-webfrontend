@@ -81,7 +81,8 @@
     "stm32_wakeup": "Konfigurationsdatei für STM32 IRMP Wakeup",
     "picoirmp_wakeup": "Konfigurationsdatei für PICO IMRP Wakeup",
     "lifeguard": "Konfigurationsdateien für vdr-addon-lifeguard",
-    "lifeguard-ng": "Konfigurationsdateien für vdr-addon-lifeguard-ng"
+    "lifeguard-ng": "Konfigurationsdateien für vdr-addon-lifeguard-ng",
+    "rc_config": "Zuweisung von Keymaps zu Treibern"
   },
   "errors": {
     "loadingFailed": "Laden der {what} fehlgeschlagen"

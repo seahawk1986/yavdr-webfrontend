@@ -115,7 +115,8 @@
     "stm32_wakeup": "config file for vdr-addon-stm32irmp-wakeup",
     "picoirmp_wakeup": "config file for PICO irmp wakeup",
     "lifeguard": "Config files for vdr-addon-lifeguard",
-    "lifeguard-ng": "Config files for vdr-addon-lifeguard-ng"
+    "lifeguard-ng": "Config files for vdr-addon-lifeguard-ng",
+    "rc_config": "Assign keymaps to drivers"
   },
   "info": {
     "state": "state",

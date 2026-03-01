@@ -63,6 +63,7 @@
               </v-col>
             </v-row>
             <v-dialog v-model="showGroupAddDialog" max-width="500" persistent>
+              <!-- Make the channel-group-edit-title and confirmGroupDialogTitle context-dependent -->
               <ChannelGroupInput
                 :channel-group-edit-title="t('channels.createGroup')"
                 :old-channel-group="inputChannel"
@@ -352,8 +353,8 @@ const showGroupAddDialog: Ref<boolean> = ref(false);
 
 const editGroup = async function (group: VDRChannel) {
   inputChannel.value = group;
-  groupDialogTitle.value = t("channels.editGroup");
-  confirmGroupDialogTitle.value = t("channels.editGroup");
+  groupDialogTitle.value = t("channels.editGroup", { what: group.name });
+  confirmGroupDialogTitle.value = t("channels.editGroup", { what: group.name });
   showGroupAddDialog.value = true;
 };
 
@@ -553,6 +554,7 @@ function insertChannel(channel: VDRChannel, number: number, scroll: boolean) {
     console.log("removed old channel:", old_channel);
   }
   const channelNumber = number;
+  // TODO: find the correct position respecting channel groups and their numbers
   console.log("splice", channel, "into VDRChannels at", channelNumber);
   let position = runningChannelNumbers.value.findIndex((value: number) => {
     if (value >= channelNumber) {
