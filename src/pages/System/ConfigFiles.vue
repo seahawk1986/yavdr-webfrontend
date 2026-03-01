@@ -115,6 +115,14 @@ const configurationFiles: Ref<configFileInterface[]> = ref([
     icon: "mdi-lifebuoy",
     showEditor: false,
   },
+  {
+    filename: "/etc/rc_maps.cfg",
+    url: "system/configfile",
+    title: "rc_maps.cfg",
+    description: "descriptions.rc_config",
+    icon: "mdi-remote",
+    showEditor: false,
+  },
 ]);
 
 const existingConfigFiles = computed(() => {
