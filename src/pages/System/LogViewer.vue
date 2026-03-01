@@ -9,7 +9,7 @@
         dark
         flat
       >
-        <v-toolbar-title>System Journal</v-toolbar-title>
+        <v-toolbar-title class="flex-grow-1">System Journal</v-toolbar-title>
         <v-btn
           v-tooltip:bottom="t('log.autoscroll')"
           aria-label="Scroll to show newest syslog entries"
@@ -30,20 +30,6 @@
           variant="tonal"
           @click="downloadSyslog"
         />
-        <template v-if="$vuetify.display.mdAndUp">
-          <div
-            v-for="level in logLevelSelection.filter(
-              (element) => element.prio <= filterLogLevel,
-            )"
-            :key="level.prio"
-          >
-            <span
-              :class="`${getBackgroundColorByPrio(level.prio)} pa-2 text-body-2`"
-              >{{ level.name }}</span
-            >
-            <v-divider thickness="1ch" opacity="0" vertical />
-          </div>
-        </template>
         <v-divider thickness="2ch" opacity="0" vertical />
         <v-select
           v-model="filterLogLevel"
@@ -54,7 +40,24 @@
           item-value="prio"
           variant="outlined"
           density="compact"
+          min-width="120"
         />
+        <v-divider thickness="2ch" opacity="0" vertical />
+        <template v-if="$vuetify.display.xlAndUp">
+          <div
+            v-for="level in logLevelSelection.filter(
+              (element) => element.prio <= filterLogLevel,
+            )"
+            :key="level.prio"
+            class="flex-grow-1"
+          >
+            <span
+              :class="`${getBackgroundColorByPrio(level.prio)} pa-2 text-body-2`"
+              >{{ level.name }}</span
+            >
+            <v-divider thickness="1ch" opacity="0" vertical />
+          </div>
+        </template>
       </v-toolbar>
     </v-card-title>
     <v-card-text class="flex-grow-1 overflow-hidden" style="min-height: 0">
