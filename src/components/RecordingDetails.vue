@@ -10,15 +10,14 @@
       />
     </template>
 
-
-
     <template #default="{ isActive }">
       <v-card
-        :title="props.recording.InfoTitle
-          ? props.recording.InfoTitle
-          : props.recording.Name"
+        :title="
+          props.recording.InfoTitle
+            ? props.recording.InfoTitle
+            : props.recording.Name
+        "
         :subtitle="props.recording.InfoShortText"
-        :text="props.recording.InfoDescription"
       >
         <template #prepend>
           <v-icon-btn
@@ -38,11 +37,7 @@
             class="cursor-pointer"
             @click="playRecording"
           />
-          <v-divider
-            vertical
-            thickness="10"
-            :opacity="0"
-          />
+          <v-divider vertical thickness="10" :opacity="0" />
           <v-icon-btn
             v-tooltip="'play recording from begining'"
             icon="mdi-replay"
@@ -50,11 +45,7 @@
             class="cursor-pointer"
             @click="replayRecording"
           />
-          <v-divider
-            vertical
-            thickness="10"
-            :opacity="0"
-          />
+          <v-divider vertical thickness="10" :opacity="0" />
           <v-icon-btn
             v-tooltip="'delete recording'"
             icon="mdi-delete"
@@ -62,7 +53,13 @@
             color="red"
             @click="deleteRecording(isActive)"
           />
-
+        </template>
+        <template #text>
+          <div style="white-space: pre-line">
+            {{ props.recording.InfoDescription }}
+          </div>
+          <br />
+          <div class="text-title-medium">{{ props.recording.Path }}</div>
         </template>
         <!-- <template #actions>
           {{ props.recording }}
@@ -72,39 +69,36 @@
   </v-dialog>
 </template>
 
-
 <script setup lang="ts">
-import type { VDRRecordingInterface } from '@/stores/interfaces/VdrRecordingInterface';
-import { useVDRStore } from '@/stores/vdr';
-import { useI18n } from 'vue-i18n';
+import type { VDRRecordingInterface } from "@/stores/interfaces/VdrRecordingInterface";
+import { useVDRStore } from "@/stores/vdr";
+import { useI18n } from "vue-i18n";
 
-const vdr = useVDRStore()
-const {t} = useI18n()
+const vdr = useVDRStore();
+const { t } = useI18n();
 
 const props = defineProps<{
-    recording: VDRRecordingInterface
-}>()
+  recording: VDRRecordingInterface;
+}>();
 
 const emit = defineEmits<{
-  (e: 'delete', id: number): void
-//   (e: 'update', value: string): void
-}>()
+  (e: "delete", id: number): void;
+  //   (e: 'update', value: string): void
+}>();
 
 const playRecording = async () => {
-    console.log("playig recording", props.recording
-    )
-    vdr.playRecording(props.recording.RecNum)
-}
+  console.log("playig recording", props.recording);
+  vdr.playRecording(props.recording.RecNum);
+};
 
 const replayRecording = async () => {
-    console.log("playig recording", props.recording
-    )
-    vdr.playRecording(props.recording.RecNum, 0)
-}
+  console.log("playig recording", props.recording);
+  vdr.playRecording(props.recording.RecNum, 0);
+};
 
 const deleteRecording = async (isActive: Ref<boolean>) => {
-    await vdr.deleteRecording(props.recording.RecNum)
-    isActive.value = false
-    emit('delete', props.recording.RecNum)
-}
+  await vdr.deleteRecording(props.recording.RecNum);
+  isActive.value = false;
+  emit("delete", props.recording.RecNum);
+};
 </script>
