@@ -69,8 +69,13 @@ async function updateFlatpak() {
 async function update(what: string, stateHandler: Ref<boolean>) {
   stateHandler.value = true;
   try {
-    const success = await backend.postRequest(`/system/update/${what}`, {});
-    console.log("update result:", success.data);
+    const success = await backend.postRequestWithStreamingResponse(
+      `/system/update/${what}`,
+      {},
+      (msg) => console.log(msg),
+      (msg) => console.log(msg),
+    );
+    console.log("update was successful:", success);
   } catch (error) {
     console.log(`Updating ${what} failed: ${error}`);
   } finally {
