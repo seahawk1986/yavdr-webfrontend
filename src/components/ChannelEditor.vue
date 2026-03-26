@@ -307,7 +307,7 @@ const runningChannelNumbers = computed(() => {
   channelsConf.value.map((channel) => {
     if (channel.is_group) {
       runningNumber = Math.max(runningNumber, channel.number);
-      channelNumberList.push(channel.number);
+      channelNumberList.push(runningNumber);
     } else {
       channelNumberList.push(runningNumber);
       runningNumber++;
