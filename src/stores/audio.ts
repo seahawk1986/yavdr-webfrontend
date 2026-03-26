@@ -81,6 +81,11 @@ export const useAudioStore = defineStore("audio", () => {
     await backend.postRequest("/system/audio/pulseaudio_output_profile", { card_name: card, profile_name: profile })
   }
 
+  async function setSystemVolume(device: string, volume: number) {
+    await backend.postRequest("/system/audio/volume", { device: device, volume: volume })
+
+  }
+
   return {
     listedPulseSinks,
     listedPulseProfiles,
@@ -89,5 +94,6 @@ export const useAudioStore = defineStore("audio", () => {
     listPulseaudioSinks,
     listPulseaudioProfiles,
     setPulseProfile,
+    setSystemVolume,
   }
 })

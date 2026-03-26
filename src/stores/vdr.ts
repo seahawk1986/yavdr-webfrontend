@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type { VDRChannel } from "./interfaces/VdrChannelInterface";
 import { useBackendStore } from "./backend";
 import type { VDRTimerInterface } from "./interfaces/VdrTimerInterface";
+import type { VDRVolumeInterface } from "./interfaces/VdrVolumeInterface";
 
 const backend = useBackendStore()
 
@@ -10,6 +11,8 @@ export const useVDRStore = defineStore("vdr", () => {
   const vdrChannels: Ref<VDRChannel[]> = ref([])
   const isLoadingChannels: Ref<boolean> = ref(false);
   const isDeletingTimer: Ref<boolean> = ref(false);
+  const currentVolume: Ref<number> = ref(0);
+  const isMuted: Ref<boolean> = ref(false);
 
   async function loadChannels() {
     isLoadingChannels.value = true;
@@ -130,11 +133,36 @@ export const useVDRStore = defineStore("vdr", () => {
       return response.data
     }
   }
+
+  async function getVolume() {
+    const response = await backend.getRequest("/vdr/volume")
+    if (response) {
+      const data = response.data as VDRVolumeInterface
+      console.log("volume:", data.volume)
+      console.log("is muted:", data.muted)
+      currentVolume.value = data.volume
+      isMuted.value = data.muted
+      return data
+    }
+  }
+
+  async function setVolume(volume: number, muted: boolean) {
+    const response = await backend.postRequest("/vdr/volume", { volume: volume, muted: muted })
+    if (response) {
+      const data = response.data as VDRVolumeInterface
+      currentVolume.value = data.volume
+      isMuted.value = data.muted
+      return data
+    }
+  }
+
   return {
     vdrChannels,
     currentChannel,
     isLoadingChannels,
     isDeletingTimer,
+    currentVolume,
+    isMuted,
     getCurrentChannel,
     loadChannels,
     saveChannels,
@@ -146,5 +174,7 @@ export const useVDRStore = defineStore("vdr", () => {
     vdrTimers,
     playRecording,
     deleteRecording,
+    getVolume,
+    setVolume,
   }
 })
