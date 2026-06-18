@@ -14,10 +14,15 @@ import type {
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
 } from 'vue-router'
+import type {
+  _ExtractParamParserType,
+} from 'vue-router/experimental'
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers: never
+    _ParamParsers: {}
+    RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
+    _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
   }
 }
 
@@ -184,11 +189,15 @@ declare module 'vue-router/auto-routes' {
         | '/'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/DashBoard.vue': {
       routes:
         | '/DashBoard'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/Installer/Assistant.vue': {
@@ -196,11 +205,15 @@ declare module 'vue-router/auto-routes' {
         | '/Installer/Assistant'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/Installer/ConfigComponent.vue': {
       routes:
         | '/Installer/ConfigComponent'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/Installer/ConfigForm.vue': {
@@ -208,11 +221,15 @@ declare module 'vue-router/auto-routes' {
         | '/Installer/ConfigForm'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/RemoteSettings.vue': {
       routes:
         | '/RemoteSettings'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/System/AudioSettings.vue': {
@@ -220,11 +237,15 @@ declare module 'vue-router/auto-routes' {
         | '/System/AudioSettings'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/System/ConfigFiles.vue': {
       routes:
         | '/System/ConfigFiles'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/System/DisplaySettings.vue': {
@@ -232,11 +253,15 @@ declare module 'vue-router/auto-routes' {
         | '/System/DisplaySettings'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/System/LogViewer.vue': {
       routes:
         | '/System/LogViewer'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/System/Updates.vue': {
@@ -244,11 +269,15 @@ declare module 'vue-router/auto-routes' {
         | '/System/Updates'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/System/UploadFile.vue': {
       routes:
         | '/System/UploadFile'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/SystemSettings.vue': {
@@ -256,11 +285,15 @@ declare module 'vue-router/auto-routes' {
         | '/SystemSettings'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/VDR/ChannelpediaEditor.vue': {
       routes:
         | '/VDR/ChannelpediaEditor'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/VDR/ConfigFiles.vue': {
@@ -268,11 +301,15 @@ declare module 'vue-router/auto-routes' {
         | '/VDR/ConfigFiles'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/VDR/EPGViewer.vue': {
       routes:
         | '/VDR/EPGViewer'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/VDR/InfoDisplay.vue': {
@@ -280,11 +317,15 @@ declare module 'vue-router/auto-routes' {
         | '/VDR/InfoDisplay'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/VDR/PluginSettings.vue': {
       routes:
         | '/VDR/PluginSettings'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/VDR/SetupEditor.vue': {
@@ -292,11 +333,15 @@ declare module 'vue-router/auto-routes' {
         | '/VDR/SetupEditor'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/VDR/VDRStartArguments.vue': {
       routes:
         | '/VDR/VDRStartArguments'
       views:
+        | never
+      pathParamNames:
         | never
     }
   }
