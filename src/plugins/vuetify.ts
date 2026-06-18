@@ -15,9 +15,6 @@ import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import { en, de } from 'vuetify/locale'
 
-import { VIconBtn } from 'vuetify/labs/VIconBtn'
-import { VFileUpload } from 'vuetify/labs/VFileUpload'
-
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   blueprint: md3,
