@@ -19,8 +19,6 @@ import { en, de } from 'vuetify/locale'
 export default createVuetify({
   blueprint: md3,
   components: {
-    VIconBtn,
-    VFileUpload,
   },
   icons: {
     defaultSet: 'mdi',
