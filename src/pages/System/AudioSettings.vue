@@ -1,17 +1,15 @@
 <template>
-  <v-sheet
-    class="overflow-y-auto pa-4 d-flex flex-wrap align-self-center justify-space-between"
+  <v-card
+    class="fill-height overflow-y-auto d-flex flex-wrap"
     color="background"
   >
     <v-card
       v-if="currentSink"
       title="System Volume"
-      min-width="350px"
-      class="pa-2 ma-2"
+      class="pa-2 ma-2 flex-grow-1"
     >
       <v-slider
         v-model="currentSink.volume_values[0]"
-        width="320px"
         :min="0"
         :max="allowSystemVolumeOverride ? 1.53 : 1.0"
         thumb-label
@@ -39,6 +37,7 @@
                 audio.listPulseaudioSinks();
               "
             ></v-checkbox> -->
+            <v-icon icon="mdi-volume-high" @click.stop=""></v-icon>
             <v-icon-btn
               icon="mdi-reload"
               @click="audio.listPulseaudioSinks"
@@ -48,10 +47,10 @@
       </v-slider>
     </v-card>
 
-    <v-card title="VDR Volume" min-width="350px" class="pa-2 ma-2">
+    <v-card title="VDR Volume" min-width="48vw" class="pa-2 ma-2 flex-grow-1">
       <v-slider
         v-model="vdr.currentVolume"
-        width="320px"
+        width="100%"
         :min="0"
         :max="255"
         :step="5"
@@ -77,7 +76,7 @@
 
     <v-card
       prepend-icon="mdi-speaker-multiple"
-      min-width="350px"
+      min-width="48vw"
       class="pa-2 ma-2"
       :title="t('audio.audioOutput') + ' (Pipewire)'"
     >
@@ -131,7 +130,7 @@
       class="pa-2 ma-2"
       prepend-icon="mdi-soundbar"
       :title="t('audio.vdrAudioChannel')"
-      min-width="350px"
+      min-width="40vw"
     >
       <v-card-text>
         <v-radio-group
@@ -164,7 +163,83 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-  </v-sheet>
+
+    <v-card
+      title="Alsa Mixers"
+      class="pa-2 ma-2 flex-grow-1"
+      prepend-icon="mdi-tune"
+    >
+      <v-card-text>
+        <!-- Alsa data: '{{ audio.listedAlsaMixers }}' -->
+        <v-list>
+          <template
+            v-for="mixer in audio.listedAlsaMixers"
+            :key="mixer.card_idx + ':' + mixer.name"
+          >
+            <v-list-item>
+              <template #title>
+                <v-icon-btn
+                  variant="flat"
+                  :color="mixer.is_muted ? 'red' : 'primary'"
+                  :icon="
+                    mixer.is_muted ? 'mdi-volume-off' : 'mdi-volume-source'
+                  "
+                  density="compact"
+                  size="small"
+                  rounded="0"
+                  @click="
+                    audio.setAlsaMixer({
+                      mixer_name: mixer.name,
+                      card_idx: mixer.card_idx,
+                      volume: mixer.volume,
+                      muted: !mixer.is_muted,
+                    })
+                  "
+                >
+                </v-icon-btn>
+                {{ mixer.name }} (Card {{ mixer.card_idx }})
+              </template>
+              <v-slider
+                v-model="mixer.volume"
+                width="100%"
+                :min="mixer.volume_range[0]"
+                :max="mixer.volume_range[1]"
+                step="1"
+                prepend-icon="mdi-volume-low"
+                append-icon="mdi-volume-high"
+                thumb-label
+                @click:prepend="
+                  audio.setAlsaMixer({
+                    mixer_name: mixer.name,
+                    card_idx: mixer.card_idx,
+                    volume: mixer.volume,
+                    muted: !mixer.is_muted,
+                  })
+                "
+                @update:model-value="
+                  audio.setAlsaMixer({
+                    mixer_name: mixer.name,
+                    card_idx: mixer.card_idx,
+                    volume: mixer.volume,
+                    muted: mixer.is_muted,
+                  })
+                "
+              ></v-slider>
+            </v-list-item>
+          </template>
+        </v-list>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-refresh"
+          @click="audio.listAlsaMixers"
+        >
+          {{ t("actions.reload") }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-card>
 </template>
 
 <!-- TODO: choosing the profile for a output doesn't work with pipewire -->
@@ -198,6 +273,7 @@ onMounted(async () => {
   await Promise.allSettled([
     audio.listPulseaudioSinks(),
     audio.listPulseaudioProfiles(),
+    audio.listAlsaMixers(),
     refreshVDRAudioChannels(),
     vdr.getVolume(),
   ]);
@@ -273,6 +349,7 @@ async function setSystemVolume(device: string, volume: number) {
 async function refresh() {
   await audio.listPulseaudioSinks();
   await audio.listPulseaudioProfiles();
+  await audio.listAlsaMixers();
 }
 
 async function refreshVDRAudioChannels() {

@@ -32,6 +32,23 @@ export interface ListedPulseCardInterface {
   profile_active: string
 }
 
+type volumeRange = [number, number]
+
+export interface AlsaMixerInterface {
+  name: string
+  card_idx: number
+  volume: number
+  volume_range: volumeRange
+  is_muted: boolean
+}
+
+export interface AlsaMixerSetting {
+  mixer_name: string
+  card_idx: number
+  volume: number
+  muted: boolean
+}
+
 import { defineStore } from "pinia";
 import { useBackendStore } from "./backend"
 
@@ -41,8 +58,9 @@ export const useAudioStore = defineStore("audio", () => {
   const listedPulseSinks = ref(new ListedPulseSinks())
   const listedPulseProfiles: Ref<ListedPulseCardInterface[]> = ref([])
   const pulseErrorMessage: Ref<string | null> = ref(null)
+  const listedAlsaMixers: Ref<AlsaMixerInterface[]> = ref([])
 
-  async function listPulseaudioSinks() {
+  async function listPulseaudioSinks () {
     console.log("called listPulseAudioSinks");
     backend.getRequest("audio/list_pulseaudio_sinks")
       .then((response) => {
@@ -62,7 +80,7 @@ export const useAudioStore = defineStore("audio", () => {
     return listedPulseSinks.value.pulse_devices.find((device: PulseDeviceInterface) => listedPulseSinks.value.default_sink == device.device)
   })
 
-  async function listPulseaudioProfiles() {
+  async function listPulseaudioProfiles () {
     console.log("called listProfiles()")
     backend.getRequest("/system/audio/pulseaudio_output_profiles").then((response) => {
       if (response?.status && response.status == 200 && response?.data != null) {
@@ -77,23 +95,55 @@ export const useAudioStore = defineStore("audio", () => {
     })
   }
 
-  async function setPulseProfile(card: string, profile: string) {
+  async function setPulseProfile (card: string, profile: string) {
     await backend.postRequest("/system/audio/pulseaudio_output_profile", { card_name: card, profile_name: profile })
   }
 
-  async function setSystemVolume(device: string, volume: number) {
+  async function setSystemVolume (device: string, volume: number) {
     await backend.postRequest("/system/audio/volume", { device: device, volume: volume })
-
   }
+
+  async function listAlsaMixers () {
+    console.log("called listPulseAudioSinks");
+    backend.getRequest("/system/audio/alsa_mixers")
+      .then((response) => {
+        if (response?.status && response.status == 200 && response?.data != null) {
+          listedAlsaMixers.value = response.data;
+          console.log("alsa mixers:", response.data);
+          pulseErrorMessage.value = null;
+        }
+      }).catch((error) => {
+        console.log("listing alsa mixers failed:", error.toJSON());
+        pulseErrorMessage.value = error.toJSON().message;
+      })
+  }
+
+  async function setAlsaMixer (data: AlsaMixerSetting) {
+    backend.postRequest("/system/audio/alsa_mixer_setting", data).then((response) => {
+      if (response?.status && response.status == 200 && response?.data != null) {
+        listedAlsaMixers.value = response.data;
+        console.log("alsa mixers:", response.data);
+        pulseErrorMessage.value = null;
+      }
+    }).catch((error) => {
+      console.log("listing alsa mixers failed:", error.toJSON());
+      pulseErrorMessage.value = error.toJSON().message;
+    })
+  }
+
+
 
   return {
     listedPulseSinks,
     listedPulseProfiles,
+    listedAlsaMixers,
     defaultSink,
     pulseErrorMessage,
     listPulseaudioSinks,
     listPulseaudioProfiles,
+    listAlsaMixers,
     setPulseProfile,
     setSystemVolume,
+    setAlsaMixer,
   }
 })
