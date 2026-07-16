@@ -197,7 +197,8 @@
                   "
                 >
                 </v-icon-btn>
-                {{ mixer.name }} (Card {{ mixer.card_idx }})
+                {{ mixer.name }} (Card {{ mixer.card_idx }}:
+                {{ mixer.card_name }})
               </template>
               <v-slider
                 v-model="mixer.volume"
@@ -208,14 +209,6 @@
                 prepend-icon="mdi-volume-low"
                 append-icon="mdi-volume-high"
                 thumb-label
-                @click:prepend="
-                  audio.setAlsaMixer({
-                    mixer_name: mixer.name,
-                    card_idx: mixer.card_idx,
-                    volume: mixer.volume,
-                    muted: !mixer.is_muted,
-                  })
-                "
                 @update:model-value="
                   audio.setAlsaMixer({
                     mixer_name: mixer.name,

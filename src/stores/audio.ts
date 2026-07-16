@@ -37,6 +37,7 @@ type volumeRange = [number, number]
 export interface AlsaMixerInterface {
   name: string
   card_idx: number
+  card_name: string
   volume: number
   volume_range: volumeRange
   is_muted: boolean
