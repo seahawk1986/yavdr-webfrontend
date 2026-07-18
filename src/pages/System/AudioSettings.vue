@@ -319,6 +319,10 @@ function setNewDefaultSink() {
   }
 }
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function setProfile() {
   if (cardForCurrentSink.value) {
     const currentCard = cardForCurrentSink.value;
@@ -332,7 +336,8 @@ async function setProfile() {
       cardForCurrentSink.value.profile_active,
     );
   }
-  // await refresh() # TODO: this additional refresh() call breaks the switching of the profiles - why?
+  await sleep(500);
+  await refresh(); // TODO: this additional refresh() call breaks the switching of the profiles - why?
 }
 
 async function setSystemVolume(device: string, volume: number) {
